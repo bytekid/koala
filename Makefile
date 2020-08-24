@@ -356,6 +356,7 @@ export OCAMLINCDIR=$(OCAMLLIB)
 util_make : 
 #	cd util && $(MAKE) -f Makefile minisat-ocaml-profile
 	cd util && $(MAKE) -f Makefile minisat-ocaml
+	cd ocamlgraph && ./configure && make
 #	cd util && $(MAKE) -f Makefile minisat-ocaml-debug
 
 
