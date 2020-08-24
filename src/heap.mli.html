@@ -1,0 +1,123 @@
+(*----------------------------------------------------------------------(C)-*)
+(* Copyright (C) 2006-2016 Konstantin Korovin and The University of Manchester. 
+   This file is part of iProver - a theorem prover for first-order logic.
+
+   iProver is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or 
+   (at your option) any later version.
+   iProver is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   See the GNU General Public License for more details.
+   You should have received a copy of the GNU General Public License
+   along with iProver.  If not, see <http://www.gnu.org/licenses/>.         *)
+(*----------------------------------------------------------------------[C]-*)
+
+
+
+
+
+
+
+<html><body>
+<pre><font color="990000">(*</font>
+<font color="990000"> * Heap: heaps implemented both functionally and imperatively</font>
+<font color="990000"> * Copyright (C) 2003 Jean-Christophe FILLIATRE</font>
+<font color="990000"> * </font>
+<font color="990000"> * This software is free software; you can redistribute it and/or</font>
+<font color="990000"> * modify it under the terms of the GNU Library General Public</font>
+<font color="990000"> * License version 2, as published by the Free Software Foundation.</font>
+<font color="990000"> * </font>
+<font color="990000"> * This software is distributed in the hope that it will be useful,</font>
+<font color="990000"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</font>
+<font color="990000"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</font>
+<font color="990000"> * </font>
+<font color="990000"> * See the GNU Library General Public License version 2 for more details</font>
+<font color="990000"> * (enclosed in the file LGPL).</font>
+<font color="990000"> *)</font>
+
+<font color="990000">(* Heaps *)</font>
+
+<font color="green">module</font> <font color="green">type</font> <font color="0033cc">Ordered</font> = <font color="990099">sig</font>
+  <font color="green">type</font> t
+  <font color="green">val</font> compare : t -> t -> int
+<font color="990099">end</font>
+
+<font color="green">exception</font> <font color="0033cc">EmptyHeap</font>
+
+<font color="990000">(*S Imperative implementation. *)</font>
+
+<font color="green">module</font> <font color="0033cc">Imperative</font>(<font color="0033cc">X</font>: <font color="0033cc">Ordered</font>) : <font color="990099">sig</font>
+
+  <font color="990000">(* Type of imperative heaps.</font>
+<font color="990000">     (In the following [n] refers to the number of elements in the heap) *)</font>
+
+  <font color="green">type</font> t 
+
+  <font color="990000">(* [create c] creates a new heap, with initial capacity of [c] *)</font>
+  <font color="green">val</font> create : int -> t
+
+  <font color="990000">(* [is_empty h] checks the emptiness of [h] *)</font>
+  <font color="green">val</font> is_empty : t -> bool
+
+  <font color="990000">(* [add x h] adds a new element [x] in heap [h]; size of [h] is doubled</font>
+<font color="990000">     when maximum capacity is reached; complexity $O(log(n))$ *)</font>
+  <font color="green">val</font> add : t -> <font color="0033cc">X</font>.t -> unit
+
+  <font color="990000">(* [maximum h] returns the maximum element of [h]; raises [EmptyHeap]</font>
+<font color="990000">     when [h] is empty; complexity $O(1)$ *)</font>
+  <font color="green">val</font> maximum : t -> <font color="0033cc">X</font>.t
+
+  <font color="990000">(* [remove h] removes the maximum element of [h]; raises [EmptyHeap]</font>
+<font color="990000">     when [h] is empty; complexity $O(log(n))$ *)</font>
+  <font color="green">val</font> remove : t -> unit
+
+  <font color="990000">(* [pop_maximum h] removes the maximum element of [h] and returns it;</font>
+<font color="990000">     raises [EmptyHeap] when [h] is empty; complexity $O(log(n))$ *)</font>
+  <font color="green">val</font> pop_maximum : t -> <font color="0033cc">X</font>.t
+
+  <font color="990000">(* usual iterators and combinators; elements are presented in</font>
+<font color="990000">     arbitrary order *)</font>
+  <font color="green">val</font> iter : (<font color="0033cc">X</font>.t -> unit) -> t -> unit
+
+  <font color="green">val</font> fold : (<font color="0033cc">X</font>.t -> 'a -> 'a) -> t -> 'a -> 'a
+
+<font color="990099">end</font>
+
+<font color="990000">(*S Functional implementation. *)</font>
+
+<font color="green">module</font> <font color="green">type</font> <font color="0033cc">FunctionalSig</font> = <font color="990099">sig</font>
+
+  <font color="990000">(* heap elements *)</font>
+  <font color="green">type</font> elt
+
+  <font color="990000">(* Type of functional heaps *)</font>
+  <font color="green">type</font> t
+
+  <font color="990000">(* The empty heap *)</font>
+  <font color="green">val</font> empty : t
+
+  <font color="990000">(* [add x h] returns a new heap containing the elements of [h], plus [x];</font>
+<font color="990000">     complexity $O(log(n))$ *)</font>
+  <font color="green">val</font> add : elt -> t -> t
+
+  <font color="990000">(* [maximum h] returns the maximum element of [h]; raises [EmptyHeap]</font>
+<font color="990000">     when [h] is empty; complexity $O(1)$ *)</font>
+  <font color="green">val</font> maximum : t -> elt
+
+  <font color="990000">(* [remove h] returns a new heap containing the elements of [h], except</font>
+<font color="990000">     the maximum of [h]; raises [EmptyHeap] when [h] is empty; </font>
+<font color="990000">     complexity $O(log(n))$ *)</font> 
+  <font color="green">val</font> remove : t -> t
+
+  <font color="990000">(* usual iterators and combinators; elements are presented in</font>
+<font color="990000">     arbitrary order *)</font>
+  <font color="green">val</font> iter : (elt -> unit) -> t -> unit
+
+  <font color="green">val</font> fold : (elt -> 'a -> 'a) -> t -> 'a -> 'a
+
+<font color="990099">end</font>
+
+<font color="green">module</font> <font color="0033cc">Functional</font>(<font color="0033cc">X</font>: <font color="0033cc">Ordered</font>) : <font color="0033cc">FunctionalSig</font> <font color="77aaaa">with</font> <font color="green">type</font> elt = <font color="0033cc">X</font>.t
+</pre></body></html>

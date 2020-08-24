@@ -1,0 +1,211 @@
+(*----------------------------------------------------------------------(C)-*)
+(* Copyright (C) 2018 Konstantin Korovin and The University of Manchester. 
+   This file is part of iProver - a theorem prover for first-order logic.
+
+   iProver is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or 
+   (at your option) any later version.
+   iProver is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   See the GNU General Public License for more details.
+   You should have received a copy of the GNU General Public License
+   along with iProver.  If not, see <http://www.gnu.org/licenses/>.         *)
+(*----------------------------------------------------------------------[C]-*)
+
+open Lib
+
+(* An option set from different sources *)
+type 'a override =
+
+    (* Option has the default value *)
+  | ValueDefault of 'a
+
+	(* Default has been overridden by file argument *)
+  | ValueFile of 'a
+
+	(* Default has been overridden by command-line argument *)
+  | ValueCmd of 'a
+
+(* Get current value of option *)
+let val_of_override = function
+  | ValueDefault v -> v
+  | ValueFile v -> v
+  | ValueCmd v -> v
+
+(* Override value with a new default value *)
+let override_default v' = function
+
+    (* Override previous default value *)
+  | ValueDefault _ -> ValueDefault v'
+
+	(* Do not override file or command line values *)
+  | _ as v -> v
+
+(* Override value with a new default value *)
+let override_file v' = function
+
+    (* Override previous default or file value *)
+  | ValueDefault _
+  | ValueFile _ -> ValueFile v'
+
+	(* Do not override command line value *)
+  | _ as v -> v
+
+(* Override value with a new command-line value *)
+let override_cmd v' = function
+
+    (* Override previous default, file or command-line value  *)
+  | ValueDefault _
+  | ValueFile _
+  | ValueCmd _ -> ValueCmd v'
+
+(* Override one value with another *)
+let override = function
+  | ValueDefault v -> override_default v
+  | ValueFile v -> override_file v
+  | ValueCmd v -> override_cmd v
+
+(* Change the value keeping its status *)
+let override_value = function
+  | ValueDefault _ -> (function v -> ValueDefault v)
+  | ValueFile _ -> (function v -> ValueFile v)
+  | ValueCmd _ -> (function v -> ValueCmd v)
+
+(*--prase list options----*)
+exception Parse_list_fail
+
+let parse_list_opt str =
+  let str_ln = String.length str in
+  if (str.[0] = '[') && (str.[(str_ln -1)] = ']')
+  then
+    let new_str = String.sub str 1 (str_ln -2) in
+    let str_list = Str.split (Str.regexp "[|;|]") new_str in
+    str_list
+  else
+    (
+     (* dbg D_trace (lazy ("Parse_list_fail: "^str));*)
+    raise Parse_list_fail
+    )
+
+let parse_list_list_opt str =
+  let str_ln = String.length str in
+  if (str.[0] = '[') && (str.[(str_ln -1)] = ']')
+  then
+    (* get rid of ALL starting/finishing brackets *)
+    let new_str = String.sub str 2 (str_ln -4) in
+    let str_list = Str.split (Str.regexp "\\];\\[") new_str in
+    (* put the outer brackets back *)
+    let parse_opts str = parse_list_opt ("["^str^"]") in
+    List.map parse_opts str_list
+  else
+    raise Parse_list_fail
+
+
+(*-----All options-----*)
+
+type options = {
+    mutable tptp_safe_out : bool;
+  }
+
+
+let default_options () = {
+  tptp_safe_out = false;
+}
+
+(*---------*)
+let current_options = ref (default_options ())
+
+(*---------*)
+let args_error_msg opt_name str =
+  ("Input Options: "^opt_name^" unsupported value \'"^str^"\'")
+
+(*---------------------Preparing for Args:---------------*)
+(* 1. option name  ---*)
+(* 2. functions for assigning options------*)
+(* 3. description  ---*)
+(*-------------------------------*)
+let bool_str = "<bool>"
+let string_str = "<string>"
+let int_str = "<int>"
+let float_str = "<float>"
+let inf_pref = "\n    "
+let example_str = inf_pref^"Example: "
+
+(* no default args *)
+let default_arg_fun str = failwith ("there should be no anonymous arguments: "^str)
+
+(*--------*)
+let tptp_safe_out_str = "--tptp_safe_out"
+
+let tptp_safe_out_fun b =
+  tptp_safe_out_ref:= b;
+  !current_options.tptp_safe_out <- b
+
+let tptp_safe_out_inf =
+  bool_str^"output all info strings as tptp comments"
+
+
+let spec_list =
+  [
+      (tptp_safe_out_str, Arg.Bool(tptp_safe_out_fun), tptp_safe_out_inf);
+ ]
+
+(*--------Options output-----------------*)
+
+type opt_val_type = string * string
+
+let val_distance = 40
+
+let opt_val_to_str opt_val =
+  let (opt_name, val_str') = opt_val in
+  let tptp_safe_opt_name = tptp_safe_str opt_name in
+  let val_str =
+    if val_str' = "" then "\"\"" else val_str' in
+  (space_padding_str val_distance tptp_safe_opt_name)^val_str
+
+let opt_val_list_to_str l =
+  String.concat "\n" (List.map opt_val_to_str l)
+
+let input_options_str_list opt =
+  [
+     (tptp_safe_out_str, (string_of_bool opt.tptp_safe_out));
+ ]
+
+
+
+(*------------ read options --------------*)
+
+let usage_msg = "rand_gen_fof [options]\n\n"
+    (* ugly hack, redo via format later *)
+  ^(dash_str "Input Options")^"\n"
+
+let help_msg = "--help  Display list of options\n"
+
+let read_args() =
+  let args = Sys.argv in
+  (* let iprover_name = args.(0) in
+     let current = Arg.current in *)
+  try
+    Arg.parse_argv args spec_list default_arg_fun usage_msg
+  with
+
+  | Arg.Bad s -> (
+      let str_list = Str.split (Str.regexp "\n") s in
+      out_str ((List.hd str_list)^"\n\n"
+	       ^"Usage: "^usage_msg^"\n"^help_msg);
+      (*
+	out_str (s^ipr_name^": "^"unknown option "
+	^"`"^(args.(!current))^"'"^"\n \n"
+	^usage_msg^"\n"^help_msg);
+       *)
+      exit (1))
+
+  | Arg.Help s -> (out_str (s); exit (0))
+
+let check_options_consistency () = () (* TODO *)
+
+
+let () = read_args();
+  check_options_consistency ()

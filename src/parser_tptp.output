@@ -1,0 +1,3365 @@
+   0  $accept : %entry% $end
+
+   1  main :
+   2       | main unit
+   3       | EOF
+
+   4  unit : annotated_formula
+   5       | include_file
+   6       | comment
+   7       | annotation
+
+   8  include_file : Include LeftParen file_name formula_selection RightParen Dot
+
+   9  file_name : single_quoted
+
+  10  formula_selection :
+  11                    | Comma name_list
+
+  12  name_list : name
+  13            | name_list Comma name
+
+  14  comment : CommentPercent
+  15          | CommentStar
+  16          | CommentEprover
+
+  17  annotation : AnnotationPercent
+  18             | AnnotationStar
+
+  19  annotated_formula : CNF LeftParen name Comma formula_role Comma cnf_formula formula_annotations RightParen Dot
+  20                    | FOF
+  21                    | THF
+  22                    | TFF LeftParen name Comma Type Comma tff_typed_atom RightParen Dot
+  23                    | TFF LeftParen name Comma formula_role Comma tff_cnf_formula formula_annotations RightParen Dot
+
+  24  tff_cnf_formula : cnf_formula
+  25                  | tff_quantified_formula
+
+  26  tff_quantified_formula : tff_fol_quantifier LBrace tff_variable_list RBrace Column tff_unitary_formula
+
+  27  tff_fol_quantifier : ForAll
+  28                     | Exists
+
+  29  tff_variable_list : tff_variable
+  30                    | tff_variable Comma tff_variable_list
+
+  31  tff_variable : tff_typed_variable
+  32               | tff_default_type_variable
+
+  33  tff_typed_variable : variable_name Column tff_atomic_type
+
+  34  tff_default_type_variable : variable_name
+
+  35  variable_name : UpperWord
+
+  36  tff_unitary_formula : cnf_formula
+
+  37  tff_typed_atom : tff_untyped_atom Column tff_top_level_type
+  38                 | tff_untyped_atom Column tff_top_level_type Or attr_list
+  39                 | LeftParen tff_typed_atom RightParen
+
+  40  attr_list : attr
+  41            | attr_list Or attr
+
+  42  attr : defined_functor LeftParen attr_name Comma attr_args RightParen
+
+  43  attr_name : functor_name
+  44            | defined_functor
+  45            | system_functor
+
+  46  attr_args : unsigned_integer
+  47            | attr_list_arg
+  48            | attr_str_arg
+
+  49  attr_list_arg : LBrace attr_ilist_arg_list RBrace
+  50                | LBrace attr_slist_arg_list RBrace
+
+  51  attr_ilist_arg_list : unsigned_integer
+  52                      | unsigned_integer Comma attr_ilist_arg_list
+
+  53  attr_slist_arg_list : attr_str_arg
+  54                      | attr_str_arg Comma attr_slist_arg_list
+
+  55  tff_untyped_atom : functor_name
+  56                   | defined_functor
+  57                   | system_functor
+
+  58  attr_str_arg : functor_name
+  59               | defined_functor
+
+  60  tff_top_level_type : tff_atomic_type
+  61                     | tff_mapping_type
+  62                     | LeftParen tff_mapping_type RightParen
+
+  63  tff_atomic_type : atomic_word
+  64                  | defined_type
+
+  65  defined_type : DollarWord
+  66               | DollarDollarWord
+
+  67  tff_unitary_type : tff_atomic_type
+  68                   | tff_xprod_type
+
+  69  tff_mapping_type : tff_unitary_type Arrow tff_atomic_type
+  70                   | LeftParen tff_unitary_type RightParen Arrow tff_atomic_type
+
+  71  tff_xprod_type : tff_atomic_type Star tff_atomic_type
+  72                 | tff_xprod_type Star tff_atomic_type
+
+  73  formula_annotations :
+  74                      | Comma
+  75                      | Comma source optional_info
+
+  76  optional_info :
+  77                | Comma source
+
+  78  source : plain_term
+  79         | plain_term_list
+
+  80  plain_term_list : LBrace RBrace
+  81                  | LBrace arguments RBrace
+
+  82  cnf_formula : LeftParen disjunction RightParen
+  83              | disjunction
+
+  84  disjunction : literal
+  85              | disjunction Or literal
+
+  86  literal : atomic_formula
+  87          | fol_infix_unary
+  88          | Negation atomic_formula
+  89          | Negation LeftParen atomic_formula RightParen
+
+  90  fol_infix_unary : term NegEquality term
+
+  91  atomic_formula : plain_atomic_formula
+  92                 | defined_atomic_formula
+  93                 | system_atomic_formula
+
+  94  plain_atomic_formula : functor_name
+  95                       | functor_name LeftParen arguments RightParen
+
+  96  plain_term : functor_name
+  97             | functor_name LeftParen arguments RightParen
+
+  98  functor_name : atomic_word
+
+  99  arguments : arguments_rev
+
+ 100  arguments_rev : term
+ 101                | arguments_rev Comma term
+
+ 102  term : function_term
+ 103       | variable
+
+ 104  variable : UpperWord
+
+ 105  function_term : plain_term
+ 106                | defined_term
+ 107                | system_term
+
+ 108  defined_term : defined_atom
+ 109               | defined_atomic_term
+
+ 110  defined_atom : number
+
+ 111  defined_atomic_term : defined_plain_term
+
+ 112  defined_plain_term : defined_functor
+ 113                     | defined_functor LeftParen arguments RightParen
+
+ 114  system_term : system_functor
+ 115              | system_functor LeftParen arguments RightParen
+
+ 116  defined_functor : Equality
+ 117                  | DollarWord
+
+ 118  system_functor : DollarDollarWord
+
+ 119  defined_atomic_formula : defined_plain_formula
+ 120                         | defined_infix_formula
+
+ 121  system_atomic_formula : system_plain_formula
+
+ 122  defined_plain_formula : defined_functor
+ 123                        | defined_functor LeftParen arguments RightParen
+
+ 124  system_plain_formula : system_functor
+ 125                       | system_functor LeftParen arguments RightParen
+
+ 126  defined_infix_formula : term defined_infix_pred term
+
+ 127  defined_infix_pred : infix_equality
+
+ 128  infix_equality : Equality
+
+ 129  formula_role : LowerWord
+
+ 130  number : integer
+ 131         | rational
+ 132         | real
+
+ 133  rational : signed_rational
+ 134           | unsigned_rational
+
+ 135  signed_rational : Plus unsigned_rational
+ 136                  | Minus unsigned_rational
+
+ 137  unsigned_rational : Decimal Slash Decimal
+
+ 138  real : signed_real
+ 139       | unsigned_real
+
+ 140  signed_real : Plus unsigned_real
+ 141              | Minus unsigned_real
+
+ 142  unsigned_real : decimal_fraction
+ 143                | decimal_exponent
+
+ 144  decimal_fraction : Decimal_fraction
+
+ 145  decimal_exponent : Decimal Exponent integer
+ 146                   | Decimal_fraction Exponent integer
+
+ 147  integer : signed_integer
+ 148          | unsigned_integer
+
+ 149  signed_integer : Plus unsigned_integer
+ 150                 | Minus unsigned_integer
+
+ 151  unsigned_integer : Decimal
+
+ 152  name : atomic_word
+ 153       | integer_string
+
+ 154  atomic_word : LowerWord
+ 155              | single_quoted
+ 156              | key_word
+
+ 157  key_word : CNF
+ 158           | FOF
+ 159           | TFF
+ 160           | THF
+ 161           | Include
+ 162           | Type
+
+ 163  single_quoted : QuotedStr
+
+ 164  integer_string : Decimal
+ 165                 | Plus Decimal
+ 166                 | Minus Decimal
+
+ 167  %entry% : '\001' main
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . main  (167)
+	main : .  (1)
+
+	EOF  shift 3
+	$end  reduce 1
+	CNF  reduce 1
+	FOF  reduce 1
+	TFF  reduce 1
+	THF  reduce 1
+	Include  reduce 1
+	CommentPercent  reduce 1
+	CommentEprover  reduce 1
+	CommentStar  reduce 1
+	AnnotationPercent  reduce 1
+	AnnotationStar  reduce 1
+
+	main  goto 4
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	main : EOF .  (3)
+
+	.  reduce 3
+
+
+state 4
+	main : main . unit  (2)
+	%entry% : '\001' main .  (167)
+
+	CNF  shift 5
+	FOF  shift 6
+	TFF  shift 7
+	THF  shift 8
+	Include  shift 9
+	CommentPercent  shift 10
+	CommentEprover  shift 11
+	CommentStar  shift 12
+	AnnotationPercent  shift 13
+	AnnotationStar  shift 14
+	$end  reduce 167
+
+	unit  goto 15
+	annotated_formula  goto 16
+	include_file  goto 17
+	comment  goto 18
+	annotation  goto 19
+
+
+state 5
+	annotated_formula : CNF . LeftParen name Comma formula_role Comma cnf_formula formula_annotations RightParen Dot  (19)
+
+	LeftParen  shift 20
+	.  error
+
+
+state 6
+	annotated_formula : FOF .  (20)
+
+	.  reduce 20
+
+
+state 7
+	annotated_formula : TFF . LeftParen name Comma Type Comma tff_typed_atom RightParen Dot  (22)
+	annotated_formula : TFF . LeftParen name Comma formula_role Comma tff_cnf_formula formula_annotations RightParen Dot  (23)
+
+	LeftParen  shift 21
+	.  error
+
+
+state 8
+	annotated_formula : THF .  (21)
+
+	.  reduce 21
+
+
+state 9
+	include_file : Include . LeftParen file_name formula_selection RightParen Dot  (8)
+
+	LeftParen  shift 22
+	.  error
+
+
+state 10
+	comment : CommentPercent .  (14)
+
+	.  reduce 14
+
+
+state 11
+	comment : CommentEprover .  (16)
+
+	.  reduce 16
+
+
+state 12
+	comment : CommentStar .  (15)
+
+	.  reduce 15
+
+
+state 13
+	annotation : AnnotationPercent .  (17)
+
+	.  reduce 17
+
+
+state 14
+	annotation : AnnotationStar .  (18)
+
+	.  reduce 18
+
+
+state 15
+	main : main unit .  (2)
+
+	.  reduce 2
+
+
+state 16
+	unit : annotated_formula .  (4)
+
+	.  reduce 4
+
+
+state 17
+	unit : include_file .  (5)
+
+	.  reduce 5
+
+
+state 18
+	unit : comment .  (6)
+
+	.  reduce 6
+
+
+state 19
+	unit : annotation .  (7)
+
+	.  reduce 7
+
+
+state 20
+	annotated_formula : CNF LeftParen . name Comma formula_role Comma cnf_formula formula_annotations RightParen Dot  (19)
+
+	Decimal  shift 23
+	Plus  shift 24
+	Minus  shift 25
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	name  goto 35
+	atomic_word  goto 36
+	integer_string  goto 37
+	key_word  goto 38
+
+
+state 21
+	annotated_formula : TFF LeftParen . name Comma Type Comma tff_typed_atom RightParen Dot  (22)
+	annotated_formula : TFF LeftParen . name Comma formula_role Comma tff_cnf_formula formula_annotations RightParen Dot  (23)
+
+	Decimal  shift 23
+	Plus  shift 24
+	Minus  shift 25
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	name  goto 39
+	atomic_word  goto 36
+	integer_string  goto 37
+	key_word  goto 38
+
+
+state 22
+	include_file : Include LeftParen . file_name formula_selection RightParen Dot  (8)
+
+	QuotedStr  shift 33
+	.  error
+
+	file_name  goto 40
+	single_quoted  goto 41
+
+
+state 23
+	integer_string : Decimal .  (164)
+
+	.  reduce 164
+
+
+state 24
+	integer_string : Plus . Decimal  (165)
+
+	Decimal  shift 42
+	.  error
+
+
+state 25
+	integer_string : Minus . Decimal  (166)
+
+	Decimal  shift 43
+	.  error
+
+
+state 26
+	key_word : CNF .  (157)
+
+	.  reduce 157
+
+
+state 27
+	key_word : FOF .  (158)
+
+	.  reduce 158
+
+
+state 28
+	key_word : TFF .  (159)
+
+	.  reduce 159
+
+
+state 29
+	key_word : THF .  (160)
+
+	.  reduce 160
+
+
+state 30
+	key_word : Include .  (161)
+
+	.  reduce 161
+
+
+state 31
+	key_word : Type .  (162)
+
+	.  reduce 162
+
+
+state 32
+	atomic_word : LowerWord .  (154)
+
+	.  reduce 154
+
+
+state 33
+	single_quoted : QuotedStr .  (163)
+
+	.  reduce 163
+
+
+state 34
+	atomic_word : single_quoted .  (155)
+
+	.  reduce 155
+
+
+state 35
+	annotated_formula : CNF LeftParen name . Comma formula_role Comma cnf_formula formula_annotations RightParen Dot  (19)
+
+	Comma  shift 44
+	.  error
+
+
+state 36
+	name : atomic_word .  (152)
+
+	.  reduce 152
+
+
+state 37
+	name : integer_string .  (153)
+
+	.  reduce 153
+
+
+state 38
+	atomic_word : key_word .  (156)
+
+	.  reduce 156
+
+
+state 39
+	annotated_formula : TFF LeftParen name . Comma Type Comma tff_typed_atom RightParen Dot  (22)
+	annotated_formula : TFF LeftParen name . Comma formula_role Comma tff_cnf_formula formula_annotations RightParen Dot  (23)
+
+	Comma  shift 45
+	.  error
+
+
+state 40
+	include_file : Include LeftParen file_name . formula_selection RightParen Dot  (8)
+	formula_selection : .  (10)
+
+	Comma  shift 46
+	RightParen  reduce 10
+
+	formula_selection  goto 47
+
+
+state 41
+	file_name : single_quoted .  (9)
+
+	.  reduce 9
+
+
+state 42
+	integer_string : Plus Decimal .  (165)
+
+	.  reduce 165
+
+
+state 43
+	integer_string : Minus Decimal .  (166)
+
+	.  reduce 166
+
+
+state 44
+	annotated_formula : CNF LeftParen name Comma . formula_role Comma cnf_formula formula_annotations RightParen Dot  (19)
+
+	LowerWord  shift 48
+	.  error
+
+	formula_role  goto 49
+
+
+state 45
+	annotated_formula : TFF LeftParen name Comma . Type Comma tff_typed_atom RightParen Dot  (22)
+	annotated_formula : TFF LeftParen name Comma . formula_role Comma tff_cnf_formula formula_annotations RightParen Dot  (23)
+
+	Type  shift 50
+	LowerWord  shift 48
+	.  error
+
+	formula_role  goto 51
+
+
+state 46
+	formula_selection : Comma . name_list  (11)
+
+	Decimal  shift 23
+	Plus  shift 24
+	Minus  shift 25
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	name_list  goto 52
+	name  goto 53
+	atomic_word  goto 36
+	integer_string  goto 37
+	key_word  goto 38
+
+
+state 47
+	include_file : Include LeftParen file_name formula_selection . RightParen Dot  (8)
+
+	RightParen  shift 54
+	.  error
+
+
+state 48
+	formula_role : LowerWord .  (129)
+
+	.  reduce 129
+
+
+state 49
+	annotated_formula : CNF LeftParen name Comma formula_role . Comma cnf_formula formula_annotations RightParen Dot  (19)
+
+	Comma  shift 55
+	.  error
+
+
+state 50
+	annotated_formula : TFF LeftParen name Comma Type . Comma tff_typed_atom RightParen Dot  (22)
+
+	Comma  shift 56
+	.  error
+
+
+state 51
+	annotated_formula : TFF LeftParen name Comma formula_role . Comma tff_cnf_formula formula_annotations RightParen Dot  (23)
+
+	Comma  shift 57
+	.  error
+
+
+state 52
+	formula_selection : Comma name_list .  (11)
+	name_list : name_list . Comma name  (13)
+
+	Comma  shift 58
+	RightParen  reduce 11
+
+
+state 53
+	name_list : name .  (12)
+
+	.  reduce 12
+
+
+state 54
+	include_file : Include LeftParen file_name formula_selection RightParen . Dot  (8)
+
+	Dot  shift 59
+	.  error
+
+
+state 55
+	annotated_formula : CNF LeftParen name Comma formula_role Comma . cnf_formula formula_annotations RightParen Dot  (19)
+
+	Equality  shift 60
+	LeftParen  shift 61
+	Negation  shift 62
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	cnf_formula  goto 70
+	defined_functor  goto 71
+	functor_name  goto 72
+	system_functor  goto 73
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	disjunction  goto 77
+	literal  goto 78
+	atomic_formula  goto 79
+	fol_infix_unary  goto 80
+	term  goto 81
+	plain_atomic_formula  goto 82
+	defined_atomic_formula  goto 83
+	system_atomic_formula  goto 84
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	defined_plain_formula  goto 93
+	defined_infix_formula  goto 94
+	system_plain_formula  goto 95
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 56
+	annotated_formula : TFF LeftParen name Comma Type Comma . tff_typed_atom RightParen Dot  (22)
+
+	Equality  shift 60
+	LeftParen  shift 106
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_typed_atom  goto 107
+	tff_untyped_atom  goto 108
+	defined_functor  goto 109
+	functor_name  goto 110
+	system_functor  goto 111
+	atomic_word  goto 75
+	key_word  goto 38
+
+
+state 57
+	annotated_formula : TFF LeftParen name Comma formula_role Comma . tff_cnf_formula formula_annotations RightParen Dot  (23)
+
+	Equality  shift 60
+	LeftParen  shift 61
+	ForAll  shift 112
+	Exists  shift 113
+	Negation  shift 62
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	cnf_formula  goto 114
+	tff_cnf_formula  goto 115
+	tff_quantified_formula  goto 116
+	tff_fol_quantifier  goto 117
+	defined_functor  goto 71
+	functor_name  goto 72
+	system_functor  goto 73
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	disjunction  goto 77
+	literal  goto 78
+	atomic_formula  goto 79
+	fol_infix_unary  goto 80
+	term  goto 81
+	plain_atomic_formula  goto 82
+	defined_atomic_formula  goto 83
+	system_atomic_formula  goto 84
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	defined_plain_formula  goto 93
+	defined_infix_formula  goto 94
+	system_plain_formula  goto 95
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 58
+	name_list : name_list Comma . name  (13)
+
+	Decimal  shift 23
+	Plus  shift 24
+	Minus  shift 25
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	name  goto 118
+	atomic_word  goto 36
+	integer_string  goto 37
+	key_word  goto 38
+
+
+state 59
+	include_file : Include LeftParen file_name formula_selection RightParen Dot .  (8)
+
+	.  reduce 8
+
+
+state 60
+	defined_functor : Equality .  (116)
+
+	.  reduce 116
+
+
+state 61
+	cnf_formula : LeftParen . disjunction RightParen  (82)
+
+	Equality  shift 60
+	Negation  shift 62
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 71
+	functor_name  goto 72
+	system_functor  goto 73
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	disjunction  goto 119
+	literal  goto 78
+	atomic_formula  goto 79
+	fol_infix_unary  goto 80
+	term  goto 81
+	plain_atomic_formula  goto 82
+	defined_atomic_formula  goto 83
+	system_atomic_formula  goto 84
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	defined_plain_formula  goto 93
+	defined_infix_formula  goto 94
+	system_plain_formula  goto 95
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 62
+	literal : Negation . atomic_formula  (88)
+	literal : Negation . LeftParen atomic_formula RightParen  (89)
+
+	Equality  shift 60
+	LeftParen  shift 120
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 71
+	functor_name  goto 72
+	system_functor  goto 73
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	atomic_formula  goto 121
+	term  goto 122
+	plain_atomic_formula  goto 82
+	defined_atomic_formula  goto 83
+	system_atomic_formula  goto 84
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	defined_plain_formula  goto 93
+	defined_infix_formula  goto 94
+	system_plain_formula  goto 95
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 63
+	unsigned_rational : Decimal . Slash Decimal  (137)
+	decimal_exponent : Decimal . Exponent integer  (145)
+	unsigned_integer : Decimal .  (151)
+
+	Slash  shift 123
+	Exponent  shift 124
+	Equality  reduce 151
+	NegEquality  reduce 151
+	Comma  reduce 151
+	RightParen  reduce 151
+	RBrace  reduce 151
+	Or  reduce 151
+
+
+state 64
+	decimal_fraction : Decimal_fraction .  (144)
+	decimal_exponent : Decimal_fraction . Exponent integer  (146)
+
+	Exponent  shift 125
+	Equality  reduce 144
+	NegEquality  reduce 144
+	Comma  reduce 144
+	RightParen  reduce 144
+	RBrace  reduce 144
+	Or  reduce 144
+
+
+state 65
+	signed_rational : Plus . unsigned_rational  (135)
+	signed_real : Plus . unsigned_real  (140)
+	signed_integer : Plus . unsigned_integer  (149)
+
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	.  error
+
+	unsigned_integer  goto 126
+	unsigned_rational  goto 127
+	unsigned_real  goto 128
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+
+
+state 66
+	signed_rational : Minus . unsigned_rational  (136)
+	signed_real : Minus . unsigned_real  (141)
+	signed_integer : Minus . unsigned_integer  (150)
+
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	.  error
+
+	unsigned_integer  goto 129
+	unsigned_rational  goto 130
+	unsigned_real  goto 131
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+
+
+state 67
+	variable : UpperWord .  (104)
+
+	.  reduce 104
+
+
+state 68
+	defined_functor : DollarWord .  (117)
+
+	.  reduce 117
+
+
+state 69
+	system_functor : DollarDollarWord .  (118)
+
+	.  reduce 118
+
+
+state 70
+	annotated_formula : CNF LeftParen name Comma formula_role Comma cnf_formula . formula_annotations RightParen Dot  (19)
+	formula_annotations : .  (73)
+
+	Comma  shift 132
+	RightParen  reduce 73
+
+	formula_annotations  goto 133
+
+
+state 71
+	defined_plain_term : defined_functor .  (112)
+	defined_plain_term : defined_functor . LeftParen arguments RightParen  (113)
+	defined_plain_formula : defined_functor .  (122)
+	defined_plain_formula : defined_functor . LeftParen arguments RightParen  (123)
+
+	LeftParen  shift 134
+	Equality  reduce 112
+	NegEquality  reduce 112
+	Comma  reduce 122
+	RightParen  reduce 122
+	Or  reduce 122
+
+
+state 72
+	plain_atomic_formula : functor_name .  (94)
+	plain_atomic_formula : functor_name . LeftParen arguments RightParen  (95)
+	plain_term : functor_name .  (96)
+	plain_term : functor_name . LeftParen arguments RightParen  (97)
+
+	LeftParen  shift 135
+	Equality  reduce 96
+	NegEquality  reduce 96
+	Comma  reduce 94
+	RightParen  reduce 94
+	Or  reduce 94
+
+
+state 73
+	system_term : system_functor .  (114)
+	system_term : system_functor . LeftParen arguments RightParen  (115)
+	system_plain_formula : system_functor .  (124)
+	system_plain_formula : system_functor . LeftParen arguments RightParen  (125)
+
+	LeftParen  shift 136
+	Equality  reduce 114
+	NegEquality  reduce 114
+	Comma  reduce 124
+	RightParen  reduce 124
+	Or  reduce 124
+
+
+state 74
+	integer : unsigned_integer .  (148)
+
+	.  reduce 148
+
+
+state 75
+	functor_name : atomic_word .  (98)
+
+	.  reduce 98
+
+
+state 76
+	function_term : plain_term .  (105)
+
+	.  reduce 105
+
+
+state 77
+	cnf_formula : disjunction .  (83)
+	disjunction : disjunction . Or literal  (85)
+
+	Or  shift 137
+	Comma  reduce 83
+	RightParen  reduce 83
+
+
+state 78
+	disjunction : literal .  (84)
+
+	.  reduce 84
+
+
+state 79
+	literal : atomic_formula .  (86)
+
+	.  reduce 86
+
+
+state 80
+	literal : fol_infix_unary .  (87)
+
+	.  reduce 87
+
+
+state 81
+	fol_infix_unary : term . NegEquality term  (90)
+	defined_infix_formula : term . defined_infix_pred term  (126)
+
+	Equality  shift 138
+	NegEquality  shift 139
+	.  error
+
+	defined_infix_pred  goto 140
+	infix_equality  goto 141
+
+
+state 82
+	atomic_formula : plain_atomic_formula .  (91)
+
+	.  reduce 91
+
+
+state 83
+	atomic_formula : defined_atomic_formula .  (92)
+
+	.  reduce 92
+
+
+state 84
+	atomic_formula : system_atomic_formula .  (93)
+
+	.  reduce 93
+
+
+state 85
+	term : function_term .  (102)
+
+	.  reduce 102
+
+
+state 86
+	term : variable .  (103)
+
+	.  reduce 103
+
+
+state 87
+	function_term : defined_term .  (106)
+
+	.  reduce 106
+
+
+state 88
+	function_term : system_term .  (107)
+
+	.  reduce 107
+
+
+state 89
+	defined_term : defined_atom .  (108)
+
+	.  reduce 108
+
+
+state 90
+	defined_term : defined_atomic_term .  (109)
+
+	.  reduce 109
+
+
+state 91
+	defined_atom : number .  (110)
+
+	.  reduce 110
+
+
+state 92
+	defined_atomic_term : defined_plain_term .  (111)
+
+	.  reduce 111
+
+
+state 93
+	defined_atomic_formula : defined_plain_formula .  (119)
+
+	.  reduce 119
+
+
+state 94
+	defined_atomic_formula : defined_infix_formula .  (120)
+
+	.  reduce 120
+
+
+state 95
+	system_atomic_formula : system_plain_formula .  (121)
+
+	.  reduce 121
+
+
+state 96
+	number : integer .  (130)
+
+	.  reduce 130
+
+
+state 97
+	number : rational .  (131)
+
+	.  reduce 131
+
+
+state 98
+	number : real .  (132)
+
+	.  reduce 132
+
+
+state 99
+	rational : signed_rational .  (133)
+
+	.  reduce 133
+
+
+state 100
+	rational : unsigned_rational .  (134)
+
+	.  reduce 134
+
+
+state 101
+	real : signed_real .  (138)
+
+	.  reduce 138
+
+
+state 102
+	real : unsigned_real .  (139)
+
+	.  reduce 139
+
+
+state 103
+	unsigned_real : decimal_fraction .  (142)
+
+	.  reduce 142
+
+
+state 104
+	unsigned_real : decimal_exponent .  (143)
+
+	.  reduce 143
+
+
+state 105
+	integer : signed_integer .  (147)
+
+	.  reduce 147
+
+
+state 106
+	tff_typed_atom : LeftParen . tff_typed_atom RightParen  (39)
+
+	Equality  shift 60
+	LeftParen  shift 106
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_typed_atom  goto 142
+	tff_untyped_atom  goto 108
+	defined_functor  goto 109
+	functor_name  goto 110
+	system_functor  goto 111
+	atomic_word  goto 75
+	key_word  goto 38
+
+
+state 107
+	annotated_formula : TFF LeftParen name Comma Type Comma tff_typed_atom . RightParen Dot  (22)
+
+	RightParen  shift 143
+	.  error
+
+
+state 108
+	tff_typed_atom : tff_untyped_atom . Column tff_top_level_type  (37)
+	tff_typed_atom : tff_untyped_atom . Column tff_top_level_type Or attr_list  (38)
+
+	Column  shift 144
+	.  error
+
+
+state 109
+	tff_untyped_atom : defined_functor .  (56)
+
+	.  reduce 56
+
+
+state 110
+	tff_untyped_atom : functor_name .  (55)
+
+	.  reduce 55
+
+
+state 111
+	tff_untyped_atom : system_functor .  (57)
+
+	.  reduce 57
+
+
+state 112
+	tff_fol_quantifier : ForAll .  (27)
+
+	.  reduce 27
+
+
+state 113
+	tff_fol_quantifier : Exists .  (28)
+
+	.  reduce 28
+
+
+state 114
+	tff_cnf_formula : cnf_formula .  (24)
+
+	.  reduce 24
+
+
+state 115
+	annotated_formula : TFF LeftParen name Comma formula_role Comma tff_cnf_formula . formula_annotations RightParen Dot  (23)
+	formula_annotations : .  (73)
+
+	Comma  shift 132
+	RightParen  reduce 73
+
+	formula_annotations  goto 145
+
+
+state 116
+	tff_cnf_formula : tff_quantified_formula .  (25)
+
+	.  reduce 25
+
+
+state 117
+	tff_quantified_formula : tff_fol_quantifier . LBrace tff_variable_list RBrace Column tff_unitary_formula  (26)
+
+	LBrace  shift 146
+	.  error
+
+
+state 118
+	name_list : name_list Comma name .  (13)
+
+	.  reduce 13
+
+
+state 119
+	cnf_formula : LeftParen disjunction . RightParen  (82)
+	disjunction : disjunction . Or literal  (85)
+
+	RightParen  shift 147
+	Or  shift 137
+	.  error
+
+
+state 120
+	literal : Negation LeftParen . atomic_formula RightParen  (89)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 71
+	functor_name  goto 72
+	system_functor  goto 73
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	atomic_formula  goto 148
+	term  goto 122
+	plain_atomic_formula  goto 82
+	defined_atomic_formula  goto 83
+	system_atomic_formula  goto 84
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	defined_plain_formula  goto 93
+	defined_infix_formula  goto 94
+	system_plain_formula  goto 95
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 121
+	literal : Negation atomic_formula .  (88)
+
+	.  reduce 88
+
+
+state 122
+	defined_infix_formula : term . defined_infix_pred term  (126)
+
+	Equality  shift 138
+	.  error
+
+	defined_infix_pred  goto 140
+	infix_equality  goto 141
+
+
+state 123
+	unsigned_rational : Decimal Slash . Decimal  (137)
+
+	Decimal  shift 149
+	.  error
+
+
+state 124
+	decimal_exponent : Decimal Exponent . integer  (145)
+
+	Decimal  shift 150
+	Plus  shift 151
+	Minus  shift 152
+	.  error
+
+	unsigned_integer  goto 74
+	integer  goto 153
+	signed_integer  goto 105
+
+
+state 125
+	decimal_exponent : Decimal_fraction Exponent . integer  (146)
+
+	Decimal  shift 150
+	Plus  shift 151
+	Minus  shift 152
+	.  error
+
+	unsigned_integer  goto 74
+	integer  goto 154
+	signed_integer  goto 105
+
+
+state 126
+	signed_integer : Plus unsigned_integer .  (149)
+
+	.  reduce 149
+
+
+state 127
+	signed_rational : Plus unsigned_rational .  (135)
+
+	.  reduce 135
+
+
+state 128
+	signed_real : Plus unsigned_real .  (140)
+
+	.  reduce 140
+
+
+state 129
+	signed_integer : Minus unsigned_integer .  (150)
+
+	.  reduce 150
+
+
+state 130
+	signed_rational : Minus unsigned_rational .  (136)
+
+	.  reduce 136
+
+
+state 131
+	signed_real : Minus unsigned_real .  (141)
+
+	.  reduce 141
+
+
+state 132
+	formula_annotations : Comma .  (74)
+	formula_annotations : Comma . source optional_info  (75)
+
+	LBrace  shift 155
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	QuotedStr  shift 33
+	RightParen  reduce 74
+
+	single_quoted  goto 34
+	functor_name  goto 156
+	atomic_word  goto 75
+	source  goto 157
+	plain_term  goto 158
+	plain_term_list  goto 159
+	key_word  goto 38
+
+
+state 133
+	annotated_formula : CNF LeftParen name Comma formula_role Comma cnf_formula formula_annotations . RightParen Dot  (19)
+
+	RightParen  shift 160
+	.  error
+
+
+state 134
+	defined_plain_term : defined_functor LeftParen . arguments RightParen  (113)
+	defined_plain_formula : defined_functor LeftParen . arguments RightParen  (123)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	arguments  goto 163
+	term  goto 164
+	arguments_rev  goto 165
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 135
+	plain_atomic_formula : functor_name LeftParen . arguments RightParen  (95)
+	plain_term : functor_name LeftParen . arguments RightParen  (97)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	arguments  goto 166
+	term  goto 164
+	arguments_rev  goto 165
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 136
+	system_term : system_functor LeftParen . arguments RightParen  (115)
+	system_plain_formula : system_functor LeftParen . arguments RightParen  (125)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	arguments  goto 167
+	term  goto 164
+	arguments_rev  goto 165
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 137
+	disjunction : disjunction Or . literal  (85)
+
+	Equality  shift 60
+	Negation  shift 62
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 71
+	functor_name  goto 72
+	system_functor  goto 73
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	literal  goto 168
+	atomic_formula  goto 79
+	fol_infix_unary  goto 80
+	term  goto 81
+	plain_atomic_formula  goto 82
+	defined_atomic_formula  goto 83
+	system_atomic_formula  goto 84
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	defined_plain_formula  goto 93
+	defined_infix_formula  goto 94
+	system_plain_formula  goto 95
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 138
+	infix_equality : Equality .  (128)
+
+	.  reduce 128
+
+
+state 139
+	fol_infix_unary : term NegEquality . term  (90)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	term  goto 169
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 140
+	defined_infix_formula : term defined_infix_pred . term  (126)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	term  goto 170
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 141
+	defined_infix_pred : infix_equality .  (127)
+
+	.  reduce 127
+
+
+state 142
+	tff_typed_atom : LeftParen tff_typed_atom . RightParen  (39)
+
+	RightParen  shift 171
+	.  error
+
+
+state 143
+	annotated_formula : TFF LeftParen name Comma Type Comma tff_typed_atom RightParen . Dot  (22)
+
+	Dot  shift 172
+	.  error
+
+
+state 144
+	tff_typed_atom : tff_untyped_atom Column . tff_top_level_type  (37)
+	tff_typed_atom : tff_untyped_atom Column . tff_top_level_type Or attr_list  (38)
+
+	LeftParen  shift 173
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 174
+	DollarDollarWord  shift 175
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_atomic_type  goto 176
+	tff_top_level_type  goto 177
+	tff_mapping_type  goto 178
+	atomic_word  goto 179
+	defined_type  goto 180
+	tff_unitary_type  goto 181
+	tff_xprod_type  goto 182
+	key_word  goto 38
+
+
+state 145
+	annotated_formula : TFF LeftParen name Comma formula_role Comma tff_cnf_formula formula_annotations . RightParen Dot  (23)
+
+	RightParen  shift 183
+	.  error
+
+
+state 146
+	tff_quantified_formula : tff_fol_quantifier LBrace . tff_variable_list RBrace Column tff_unitary_formula  (26)
+
+	UpperWord  shift 184
+	.  error
+
+	tff_variable_list  goto 185
+	tff_variable  goto 186
+	tff_typed_variable  goto 187
+	tff_default_type_variable  goto 188
+	variable_name  goto 189
+
+
+state 147
+	cnf_formula : LeftParen disjunction RightParen .  (82)
+
+	.  reduce 82
+
+
+state 148
+	literal : Negation LeftParen atomic_formula . RightParen  (89)
+
+	RightParen  shift 190
+	.  error
+
+
+state 149
+	unsigned_rational : Decimal Slash Decimal .  (137)
+
+	.  reduce 137
+
+
+state 150
+	unsigned_integer : Decimal .  (151)
+
+	.  reduce 151
+
+
+state 151
+	signed_integer : Plus . unsigned_integer  (149)
+
+	Decimal  shift 150
+	.  error
+
+	unsigned_integer  goto 126
+
+
+state 152
+	signed_integer : Minus . unsigned_integer  (150)
+
+	Decimal  shift 150
+	.  error
+
+	unsigned_integer  goto 129
+
+
+state 153
+	decimal_exponent : Decimal Exponent integer .  (145)
+
+	.  reduce 145
+
+
+state 154
+	decimal_exponent : Decimal_fraction Exponent integer .  (146)
+
+	.  reduce 146
+
+
+state 155
+	plain_term_list : LBrace . RBrace  (80)
+	plain_term_list : LBrace . arguments RBrace  (81)
+
+	Equality  shift 60
+	RBrace  shift 191
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	arguments  goto 192
+	term  goto 164
+	arguments_rev  goto 165
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 156
+	plain_term : functor_name .  (96)
+	plain_term : functor_name . LeftParen arguments RightParen  (97)
+
+	LeftParen  shift 193
+	Comma  reduce 96
+	RightParen  reduce 96
+	RBrace  reduce 96
+	Or  reduce 96
+
+
+state 157
+	formula_annotations : Comma source . optional_info  (75)
+	optional_info : .  (76)
+
+	Comma  shift 194
+	RightParen  reduce 76
+
+	optional_info  goto 195
+
+
+state 158
+	source : plain_term .  (78)
+
+	.  reduce 78
+
+
+state 159
+	source : plain_term_list .  (79)
+
+	.  reduce 79
+
+
+state 160
+	annotated_formula : CNF LeftParen name Comma formula_role Comma cnf_formula formula_annotations RightParen . Dot  (19)
+
+	Dot  shift 196
+	.  error
+
+
+state 161
+	defined_plain_term : defined_functor .  (112)
+	defined_plain_term : defined_functor . LeftParen arguments RightParen  (113)
+
+	LeftParen  shift 197
+	Comma  reduce 112
+	RightParen  reduce 112
+	RBrace  reduce 112
+	Or  reduce 112
+
+
+state 162
+	system_term : system_functor .  (114)
+	system_term : system_functor . LeftParen arguments RightParen  (115)
+
+	LeftParen  shift 198
+	Comma  reduce 114
+	RightParen  reduce 114
+	RBrace  reduce 114
+	Or  reduce 114
+
+
+state 163
+	defined_plain_term : defined_functor LeftParen arguments . RightParen  (113)
+	defined_plain_formula : defined_functor LeftParen arguments . RightParen  (123)
+
+	RightParen  shift 199
+	.  error
+
+
+state 164
+	arguments_rev : term .  (100)
+
+	.  reduce 100
+
+
+state 165
+	arguments : arguments_rev .  (99)
+	arguments_rev : arguments_rev . Comma term  (101)
+
+	Comma  shift 200
+	RightParen  reduce 99
+	RBrace  reduce 99
+
+
+state 166
+	plain_atomic_formula : functor_name LeftParen arguments . RightParen  (95)
+	plain_term : functor_name LeftParen arguments . RightParen  (97)
+
+	RightParen  shift 201
+	.  error
+
+
+state 167
+	system_term : system_functor LeftParen arguments . RightParen  (115)
+	system_plain_formula : system_functor LeftParen arguments . RightParen  (125)
+
+	RightParen  shift 202
+	.  error
+
+
+state 168
+	disjunction : disjunction Or literal .  (85)
+
+	.  reduce 85
+
+
+state 169
+	fol_infix_unary : term NegEquality term .  (90)
+
+	.  reduce 90
+
+
+state 170
+	defined_infix_formula : term defined_infix_pred term .  (126)
+
+	.  reduce 126
+
+
+state 171
+	tff_typed_atom : LeftParen tff_typed_atom RightParen .  (39)
+
+	.  reduce 39
+
+
+state 172
+	annotated_formula : TFF LeftParen name Comma Type Comma tff_typed_atom RightParen Dot .  (22)
+
+	.  reduce 22
+
+
+state 173
+	tff_top_level_type : LeftParen . tff_mapping_type RightParen  (62)
+	tff_mapping_type : LeftParen . tff_unitary_type RightParen Arrow tff_atomic_type  (70)
+
+	LeftParen  shift 203
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 174
+	DollarDollarWord  shift 175
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_atomic_type  goto 204
+	tff_mapping_type  goto 205
+	atomic_word  goto 179
+	defined_type  goto 180
+	tff_unitary_type  goto 206
+	tff_xprod_type  goto 182
+	key_word  goto 38
+
+
+state 174
+	defined_type : DollarWord .  (65)
+
+	.  reduce 65
+
+
+state 175
+	defined_type : DollarDollarWord .  (66)
+
+	.  reduce 66
+
+
+state 176
+	tff_top_level_type : tff_atomic_type .  (60)
+	tff_unitary_type : tff_atomic_type .  (67)
+	tff_xprod_type : tff_atomic_type . Star tff_atomic_type  (71)
+
+	Star  shift 207
+	RightParen  reduce 60
+	Or  reduce 60
+	Arrow  reduce 67
+
+
+state 177
+	tff_typed_atom : tff_untyped_atom Column tff_top_level_type .  (37)
+	tff_typed_atom : tff_untyped_atom Column tff_top_level_type . Or attr_list  (38)
+
+	Or  shift 208
+	RightParen  reduce 37
+
+
+state 178
+	tff_top_level_type : tff_mapping_type .  (61)
+
+	.  reduce 61
+
+
+state 179
+	tff_atomic_type : atomic_word .  (63)
+
+	.  reduce 63
+
+
+state 180
+	tff_atomic_type : defined_type .  (64)
+
+	.  reduce 64
+
+
+state 181
+	tff_mapping_type : tff_unitary_type . Arrow tff_atomic_type  (69)
+
+	Arrow  shift 209
+	.  error
+
+
+state 182
+	tff_unitary_type : tff_xprod_type .  (68)
+	tff_xprod_type : tff_xprod_type . Star tff_atomic_type  (72)
+
+	Star  shift 210
+	RightParen  reduce 68
+	Arrow  reduce 68
+
+
+state 183
+	annotated_formula : TFF LeftParen name Comma formula_role Comma tff_cnf_formula formula_annotations RightParen . Dot  (23)
+
+	Dot  shift 211
+	.  error
+
+
+state 184
+	variable_name : UpperWord .  (35)
+
+	.  reduce 35
+
+
+state 185
+	tff_quantified_formula : tff_fol_quantifier LBrace tff_variable_list . RBrace Column tff_unitary_formula  (26)
+
+	RBrace  shift 212
+	.  error
+
+
+state 186
+	tff_variable_list : tff_variable .  (29)
+	tff_variable_list : tff_variable . Comma tff_variable_list  (30)
+
+	Comma  shift 213
+	RBrace  reduce 29
+
+
+state 187
+	tff_variable : tff_typed_variable .  (31)
+
+	.  reduce 31
+
+
+state 188
+	tff_variable : tff_default_type_variable .  (32)
+
+	.  reduce 32
+
+
+state 189
+	tff_typed_variable : variable_name . Column tff_atomic_type  (33)
+	tff_default_type_variable : variable_name .  (34)
+
+	Column  shift 214
+	Comma  reduce 34
+	RBrace  reduce 34
+
+
+state 190
+	literal : Negation LeftParen atomic_formula RightParen .  (89)
+
+	.  reduce 89
+
+
+state 191
+	plain_term_list : LBrace RBrace .  (80)
+
+	.  reduce 80
+
+
+state 192
+	plain_term_list : LBrace arguments . RBrace  (81)
+
+	RBrace  shift 215
+	.  error
+
+
+state 193
+	plain_term : functor_name LeftParen . arguments RightParen  (97)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	arguments  goto 216
+	term  goto 164
+	arguments_rev  goto 165
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 194
+	optional_info : Comma . source  (77)
+
+	LBrace  shift 155
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	functor_name  goto 156
+	atomic_word  goto 75
+	source  goto 217
+	plain_term  goto 158
+	plain_term_list  goto 159
+	key_word  goto 38
+
+
+state 195
+	formula_annotations : Comma source optional_info .  (75)
+
+	.  reduce 75
+
+
+state 196
+	annotated_formula : CNF LeftParen name Comma formula_role Comma cnf_formula formula_annotations RightParen Dot .  (19)
+
+	.  reduce 19
+
+
+state 197
+	defined_plain_term : defined_functor LeftParen . arguments RightParen  (113)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	arguments  goto 218
+	term  goto 164
+	arguments_rev  goto 165
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 198
+	system_term : system_functor LeftParen . arguments RightParen  (115)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	arguments  goto 219
+	term  goto 164
+	arguments_rev  goto 165
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 199
+	defined_plain_term : defined_functor LeftParen arguments RightParen .  (113)
+	defined_plain_formula : defined_functor LeftParen arguments RightParen .  (123)
+
+	Equality  reduce 113
+	NegEquality  reduce 113
+	Comma  reduce 123
+	RightParen  reduce 123
+	Or  reduce 123
+
+
+state 200
+	arguments_rev : arguments_rev Comma . term  (101)
+
+	Equality  shift 60
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 161
+	functor_name  goto 156
+	system_functor  goto 162
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	term  goto 220
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 201
+	plain_atomic_formula : functor_name LeftParen arguments RightParen .  (95)
+	plain_term : functor_name LeftParen arguments RightParen .  (97)
+
+	Equality  reduce 97
+	NegEquality  reduce 97
+	Comma  reduce 95
+	RightParen  reduce 95
+	Or  reduce 95
+
+
+state 202
+	system_term : system_functor LeftParen arguments RightParen .  (115)
+	system_plain_formula : system_functor LeftParen arguments RightParen .  (125)
+
+	Equality  reduce 115
+	NegEquality  reduce 115
+	Comma  reduce 125
+	RightParen  reduce 125
+	Or  reduce 125
+
+
+state 203
+	tff_mapping_type : LeftParen . tff_unitary_type RightParen Arrow tff_atomic_type  (70)
+
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 174
+	DollarDollarWord  shift 175
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_atomic_type  goto 204
+	atomic_word  goto 179
+	defined_type  goto 180
+	tff_unitary_type  goto 221
+	tff_xprod_type  goto 182
+	key_word  goto 38
+
+
+state 204
+	tff_unitary_type : tff_atomic_type .  (67)
+	tff_xprod_type : tff_atomic_type . Star tff_atomic_type  (71)
+
+	Star  shift 207
+	RightParen  reduce 67
+	Arrow  reduce 67
+
+
+state 205
+	tff_top_level_type : LeftParen tff_mapping_type . RightParen  (62)
+
+	RightParen  shift 222
+	.  error
+
+
+state 206
+	tff_mapping_type : tff_unitary_type . Arrow tff_atomic_type  (69)
+	tff_mapping_type : LeftParen tff_unitary_type . RightParen Arrow tff_atomic_type  (70)
+
+	RightParen  shift 223
+	Arrow  shift 209
+	.  error
+
+
+state 207
+	tff_xprod_type : tff_atomic_type Star . tff_atomic_type  (71)
+
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 174
+	DollarDollarWord  shift 175
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_atomic_type  goto 224
+	atomic_word  goto 179
+	defined_type  goto 180
+	key_word  goto 38
+
+
+state 208
+	tff_typed_atom : tff_untyped_atom Column tff_top_level_type Or . attr_list  (38)
+
+	Equality  shift 60
+	DollarWord  shift 68
+	.  error
+
+	attr_list  goto 225
+	attr  goto 226
+	defined_functor  goto 227
+
+
+state 209
+	tff_mapping_type : tff_unitary_type Arrow . tff_atomic_type  (69)
+
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 174
+	DollarDollarWord  shift 175
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_atomic_type  goto 228
+	atomic_word  goto 179
+	defined_type  goto 180
+	key_word  goto 38
+
+
+state 210
+	tff_xprod_type : tff_xprod_type Star . tff_atomic_type  (72)
+
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 174
+	DollarDollarWord  shift 175
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_atomic_type  goto 229
+	atomic_word  goto 179
+	defined_type  goto 180
+	key_word  goto 38
+
+
+state 211
+	annotated_formula : TFF LeftParen name Comma formula_role Comma tff_cnf_formula formula_annotations RightParen Dot .  (23)
+
+	.  reduce 23
+
+
+state 212
+	tff_quantified_formula : tff_fol_quantifier LBrace tff_variable_list RBrace . Column tff_unitary_formula  (26)
+
+	Column  shift 230
+	.  error
+
+
+state 213
+	tff_variable_list : tff_variable Comma . tff_variable_list  (30)
+
+	UpperWord  shift 184
+	.  error
+
+	tff_variable_list  goto 231
+	tff_variable  goto 186
+	tff_typed_variable  goto 187
+	tff_default_type_variable  goto 188
+	variable_name  goto 189
+
+
+state 214
+	tff_typed_variable : variable_name Column . tff_atomic_type  (33)
+
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 174
+	DollarDollarWord  shift 175
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_atomic_type  goto 232
+	atomic_word  goto 179
+	defined_type  goto 180
+	key_word  goto 38
+
+
+state 215
+	plain_term_list : LBrace arguments RBrace .  (81)
+
+	.  reduce 81
+
+
+state 216
+	plain_term : functor_name LeftParen arguments . RightParen  (97)
+
+	RightParen  shift 233
+	.  error
+
+
+state 217
+	optional_info : Comma source .  (77)
+
+	.  reduce 77
+
+
+state 218
+	defined_plain_term : defined_functor LeftParen arguments . RightParen  (113)
+
+	RightParen  shift 234
+	.  error
+
+
+state 219
+	system_term : system_functor LeftParen arguments . RightParen  (115)
+
+	RightParen  shift 235
+	.  error
+
+
+state 220
+	arguments_rev : arguments_rev Comma term .  (101)
+
+	.  reduce 101
+
+
+state 221
+	tff_mapping_type : LeftParen tff_unitary_type . RightParen Arrow tff_atomic_type  (70)
+
+	RightParen  shift 223
+	.  error
+
+
+state 222
+	tff_top_level_type : LeftParen tff_mapping_type RightParen .  (62)
+
+	.  reduce 62
+
+
+state 223
+	tff_mapping_type : LeftParen tff_unitary_type RightParen . Arrow tff_atomic_type  (70)
+
+	Arrow  shift 236
+	.  error
+
+
+state 224
+	tff_xprod_type : tff_atomic_type Star tff_atomic_type .  (71)
+
+	.  reduce 71
+
+
+state 225
+	tff_typed_atom : tff_untyped_atom Column tff_top_level_type Or attr_list .  (38)
+	attr_list : attr_list . Or attr  (41)
+
+	Or  shift 237
+	RightParen  reduce 38
+
+
+state 226
+	attr_list : attr .  (40)
+
+	.  reduce 40
+
+
+state 227
+	attr : defined_functor . LeftParen attr_name Comma attr_args RightParen  (42)
+
+	LeftParen  shift 238
+	.  error
+
+
+state 228
+	tff_mapping_type : tff_unitary_type Arrow tff_atomic_type .  (69)
+
+	.  reduce 69
+
+
+state 229
+	tff_xprod_type : tff_xprod_type Star tff_atomic_type .  (72)
+
+	.  reduce 72
+
+
+state 230
+	tff_quantified_formula : tff_fol_quantifier LBrace tff_variable_list RBrace Column . tff_unitary_formula  (26)
+
+	Equality  shift 60
+	LeftParen  shift 61
+	Negation  shift 62
+	Decimal  shift 63
+	Decimal_fraction  shift 64
+	Plus  shift 65
+	Minus  shift 66
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	UpperWord  shift 67
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	cnf_formula  goto 239
+	tff_unitary_formula  goto 240
+	defined_functor  goto 71
+	functor_name  goto 72
+	system_functor  goto 73
+	unsigned_integer  goto 74
+	atomic_word  goto 75
+	plain_term  goto 76
+	disjunction  goto 77
+	literal  goto 78
+	atomic_formula  goto 79
+	fol_infix_unary  goto 80
+	term  goto 81
+	plain_atomic_formula  goto 82
+	defined_atomic_formula  goto 83
+	system_atomic_formula  goto 84
+	function_term  goto 85
+	variable  goto 86
+	defined_term  goto 87
+	system_term  goto 88
+	defined_atom  goto 89
+	defined_atomic_term  goto 90
+	number  goto 91
+	defined_plain_term  goto 92
+	defined_plain_formula  goto 93
+	defined_infix_formula  goto 94
+	system_plain_formula  goto 95
+	integer  goto 96
+	rational  goto 97
+	real  goto 98
+	signed_rational  goto 99
+	unsigned_rational  goto 100
+	signed_real  goto 101
+	unsigned_real  goto 102
+	decimal_fraction  goto 103
+	decimal_exponent  goto 104
+	signed_integer  goto 105
+	key_word  goto 38
+
+
+state 231
+	tff_variable_list : tff_variable Comma tff_variable_list .  (30)
+
+	.  reduce 30
+
+
+state 232
+	tff_typed_variable : variable_name Column tff_atomic_type .  (33)
+
+	.  reduce 33
+
+
+state 233
+	plain_term : functor_name LeftParen arguments RightParen .  (97)
+
+	.  reduce 97
+
+
+state 234
+	defined_plain_term : defined_functor LeftParen arguments RightParen .  (113)
+
+	.  reduce 113
+
+
+state 235
+	system_term : system_functor LeftParen arguments RightParen .  (115)
+
+	.  reduce 115
+
+
+state 236
+	tff_mapping_type : LeftParen tff_unitary_type RightParen Arrow . tff_atomic_type  (70)
+
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 174
+	DollarDollarWord  shift 175
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	tff_atomic_type  goto 241
+	atomic_word  goto 179
+	defined_type  goto 180
+	key_word  goto 38
+
+
+state 237
+	attr_list : attr_list Or . attr  (41)
+
+	Equality  shift 60
+	DollarWord  shift 68
+	.  error
+
+	attr  goto 242
+	defined_functor  goto 227
+
+
+state 238
+	attr : defined_functor LeftParen . attr_name Comma attr_args RightParen  (42)
+
+	Equality  shift 60
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 68
+	DollarDollarWord  shift 69
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 243
+	attr_name  goto 244
+	functor_name  goto 245
+	system_functor  goto 246
+	atomic_word  goto 75
+	key_word  goto 38
+
+
+state 239
+	tff_unitary_formula : cnf_formula .  (36)
+
+	.  reduce 36
+
+
+state 240
+	tff_quantified_formula : tff_fol_quantifier LBrace tff_variable_list RBrace Column tff_unitary_formula .  (26)
+
+	.  reduce 26
+
+
+state 241
+	tff_mapping_type : LeftParen tff_unitary_type RightParen Arrow tff_atomic_type .  (70)
+
+	.  reduce 70
+
+
+state 242
+	attr_list : attr_list Or attr .  (41)
+
+	.  reduce 41
+
+
+state 243
+	attr_name : defined_functor .  (44)
+
+	.  reduce 44
+
+
+state 244
+	attr : defined_functor LeftParen attr_name . Comma attr_args RightParen  (42)
+
+	Comma  shift 247
+	.  error
+
+
+state 245
+	attr_name : functor_name .  (43)
+
+	.  reduce 43
+
+
+state 246
+	attr_name : system_functor .  (45)
+
+	.  reduce 45
+
+
+state 247
+	attr : defined_functor LeftParen attr_name Comma . attr_args RightParen  (42)
+
+	Equality  shift 60
+	LBrace  shift 248
+	Decimal  shift 150
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 68
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 249
+	attr_args  goto 250
+	functor_name  goto 251
+	unsigned_integer  goto 252
+	attr_list_arg  goto 253
+	attr_str_arg  goto 254
+	atomic_word  goto 75
+	key_word  goto 38
+
+
+state 248
+	attr_list_arg : LBrace . attr_ilist_arg_list RBrace  (49)
+	attr_list_arg : LBrace . attr_slist_arg_list RBrace  (50)
+
+	Equality  shift 60
+	Decimal  shift 150
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 68
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 249
+	functor_name  goto 251
+	unsigned_integer  goto 255
+	attr_str_arg  goto 256
+	attr_ilist_arg_list  goto 257
+	attr_slist_arg_list  goto 258
+	atomic_word  goto 75
+	key_word  goto 38
+
+
+state 249
+	attr_str_arg : defined_functor .  (59)
+
+	.  reduce 59
+
+
+state 250
+	attr : defined_functor LeftParen attr_name Comma attr_args . RightParen  (42)
+
+	RightParen  shift 259
+	.  error
+
+
+state 251
+	attr_str_arg : functor_name .  (58)
+
+	.  reduce 58
+
+
+state 252
+	attr_args : unsigned_integer .  (46)
+
+	.  reduce 46
+
+
+state 253
+	attr_args : attr_list_arg .  (47)
+
+	.  reduce 47
+
+
+state 254
+	attr_args : attr_str_arg .  (48)
+
+	.  reduce 48
+
+
+state 255
+	attr_ilist_arg_list : unsigned_integer .  (51)
+	attr_ilist_arg_list : unsigned_integer . Comma attr_ilist_arg_list  (52)
+
+	Comma  shift 260
+	RBrace  reduce 51
+
+
+state 256
+	attr_slist_arg_list : attr_str_arg .  (53)
+	attr_slist_arg_list : attr_str_arg . Comma attr_slist_arg_list  (54)
+
+	Comma  shift 261
+	RBrace  reduce 53
+
+
+state 257
+	attr_list_arg : LBrace attr_ilist_arg_list . RBrace  (49)
+
+	RBrace  shift 262
+	.  error
+
+
+state 258
+	attr_list_arg : LBrace attr_slist_arg_list . RBrace  (50)
+
+	RBrace  shift 263
+	.  error
+
+
+state 259
+	attr : defined_functor LeftParen attr_name Comma attr_args RightParen .  (42)
+
+	.  reduce 42
+
+
+state 260
+	attr_ilist_arg_list : unsigned_integer Comma . attr_ilist_arg_list  (52)
+
+	Decimal  shift 150
+	.  error
+
+	unsigned_integer  goto 255
+	attr_ilist_arg_list  goto 264
+
+
+state 261
+	attr_slist_arg_list : attr_str_arg Comma . attr_slist_arg_list  (54)
+
+	Equality  shift 60
+	CNF  shift 26
+	FOF  shift 27
+	TFF  shift 28
+	THF  shift 29
+	Include  shift 30
+	Type  shift 31
+	LowerWord  shift 32
+	DollarWord  shift 68
+	QuotedStr  shift 33
+	.  error
+
+	single_quoted  goto 34
+	defined_functor  goto 249
+	functor_name  goto 251
+	attr_str_arg  goto 256
+	attr_slist_arg_list  goto 265
+	atomic_word  goto 75
+	key_word  goto 38
+
+
+state 262
+	attr_list_arg : LBrace attr_ilist_arg_list RBrace .  (49)
+
+	.  reduce 49
+
+
+state 263
+	attr_list_arg : LBrace attr_slist_arg_list RBrace .  (50)
+
+	.  reduce 50
+
+
+state 264
+	attr_ilist_arg_list : unsigned_integer Comma attr_ilist_arg_list .  (52)
+
+	.  reduce 52
+
+
+state 265
+	attr_slist_arg_list : attr_str_arg Comma attr_slist_arg_list .  (54)
+
+	.  reduce 54
+
+
+55 terminals, 85 nonterminals
+168 grammar rules, 266 states

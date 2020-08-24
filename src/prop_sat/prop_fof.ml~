@@ -1,0 +1,33 @@
+open Lib
+open Logic_interface 
+
+(*----- debug modifiable part -----*)
+
+let dbg_flag = false
+
+type dbg_gr = 
+  | D_trace
+
+
+let dbg_gr_to_str = function 
+  | D_trace -> "trace"
+
+let dbg_groups =
+  [
+   D_trace;  
+ ]
+
+let module_name = "prop_fof"
+
+(*----- debug fixed part --------*)
+
+let () = Lib.dbg_flag_msg dbg_flag module_name
+
+let dbg group str_lazy =
+  Lib.dbg_out_pref dbg_flag dbg_groups group dbg_gr_to_str module_name str_lazy
+
+let dbg_env group f =
+  Lib.dbg_env_set dbg_flag dbg_groups group f
+
+(*----- debug -----*)
+

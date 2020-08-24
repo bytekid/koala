@@ -1,0 +1,1105 @@
+ Decision Level: 0
+Decision_var: Var:69 assignment:false is_flipped:false decision_level:0 decision_status:Decision
+
+
+ Decision Level: 1
+Decision_var: Var:88 assignment:false is_flipped:false decision_level:1 decision_status:Decision
+
+
+
+ Unit Pr: [ Var:88 assignment:false is_flipped:false decision_level:1 decision_status:Decision
+,- Var:89 assignment:Undef is_flipped:false decision_level:1 decision_status:Implied
+]
+
+On Lit:- Var:89 assignment:Undef is_flipped:false decision_level:1 decision_status:Implied
+
+
+ Decision Level: 2
+Decision_var: Var:82 assignment:false is_flipped:false decision_level:2 decision_status:Decision
+
+
+
+ Unit Pr: [ Var:82 assignment:false is_flipped:false decision_level:2 decision_status:Decision
+,- Var:83 assignment:Undef is_flipped:false decision_level:2 decision_status:Implied
+]
+
+On Lit:- Var:83 assignment:Undef is_flipped:false decision_level:2 decision_status:Implied
+
+
+ Decision Level: 3
+Decision_var: Var:76 assignment:false is_flipped:false decision_level:3 decision_status:Decision
+
+
+
+ Unit Pr: [ Var:76 assignment:false is_flipped:false decision_level:3 decision_status:Decision
+,- Var:77 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:77 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:58 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:69 assignment:false is_flipped:false decision_level:0 decision_status:Decision
+, Var:76 assignment:false is_flipped:false decision_level:3 decision_status:Decision
+, Var:82 assignment:false is_flipped:false decision_level:2 decision_status:Decision
+, Var:88 assignment:false is_flipped:false decision_level:1 decision_status:Decision
+]
+
+On Lit: Var:58 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:58 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:94 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:94 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:58 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:95 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:95 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:58 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:96 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:96 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:58 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:97 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:97 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:58 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:53 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:53 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:52 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:53 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:52 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:32 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:52 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:32 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:32 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:34 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:34 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:76 assignment:false is_flipped:false decision_level:3 decision_status:Decision
+, Var:34 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:79 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:79 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:37 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:52 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:37 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:37 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:41 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:41 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:82 assignment:false is_flipped:false decision_level:2 decision_status:Decision
+,- Var:41 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:87 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:87 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:111 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:87 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:111 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:111 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:107 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:107 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:107 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:102 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:102 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:110 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:102 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:110 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:110 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:78 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:78 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:76 assignment:false is_flipped:false decision_level:3 decision_status:Decision
+,- Var:33 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:78 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:33 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:32 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:5 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:33 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:5 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:4 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:5 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:4 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:4 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:14 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:14 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:14 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:19 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:19 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:23 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:19 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:23 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:23 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:29 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:29 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:69 assignment:false is_flipped:false decision_level:0 decision_status:Decision
+, Var:29 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:73 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:73 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:4 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:15 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:15 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:4 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:16 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:16 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:4 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:8 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:8 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:8 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:10 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:10 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:9 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:10 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:9 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:10 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:11 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:11 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:4 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:13 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:13 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:12 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:13 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:14 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:15 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:16 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:12 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:12 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:17 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:17 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:4 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:1 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:1 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:1 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:18 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:18 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:110 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:80 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:80 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:76 assignment:false is_flipped:false decision_level:3 decision_status:Decision
+,- Var:35 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:80 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:35 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:32 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:6 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:35 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:6 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:4 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:2 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:6 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:2 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:2 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:20 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:20 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:1 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:2 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:3 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:3 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:4 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:3 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:7 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:7 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:32 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:7 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:36 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:36 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:76 assignment:false is_flipped:false decision_level:3 decision_status:Decision
+,- Var:36 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:81 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:81 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:107 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:91 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:91 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:88 assignment:false is_flipped:false decision_level:1 decision_status:Decision
+, Var:44 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:91 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:44 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:42 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:9 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:44 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:42 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:42 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:48 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:44 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:48 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:76 assignment:true is_flipped:true decision_level:3 decision_status:Undef
+,- Var:99 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:99 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:76 assignment:true is_flipped:true decision_level:3 decision_status:Undef
+, Var:55 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:55 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:22 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:55 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:22 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:22 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:28 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:28 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:69 assignment:false is_flipped:false decision_level:0 decision_status:Decision
+, Var:28 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:72 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:72 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:22 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:39 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:39 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:82 assignment:false is_flipped:false decision_level:2 decision_status:Decision
+, Var:39 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:85 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:85 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:44 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:55 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:44 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:88 assignment:false is_flipped:false decision_level:1 decision_status:Decision
+, Var:44 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:91 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:91 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:112 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:91 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:112 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:112 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:106 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:106 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:106 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:101 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:101 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:94 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:101 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:94 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:109 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:101 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:109 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:109 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:71 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:71 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:69 assignment:false is_flipped:false decision_level:0 decision_status:Decision
+,- Var:27 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:71 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:27 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:26 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:27 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:26 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:26 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:48 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:48 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:48 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:18 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:55 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:18 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:1 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:18 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:1 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:1 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:9 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:9 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:26 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:49 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:49 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:26 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:50 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:50 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:26 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:51 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:51 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:26 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:17 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:17 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:12 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:17 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:12 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:8 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:12 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:8 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:8 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:10 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:10 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:10 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:11 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:11 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:10 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:19 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:19 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:14 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:19 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:14 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:37 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:19 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:37 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:37 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:41 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:41 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:82 assignment:false is_flipped:false decision_level:2 decision_status:Decision
+,- Var:41 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:87 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:87 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:111 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:87 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:111 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:111 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:107 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:107 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:107 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:102 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:102 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:95 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:102 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:95 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:61 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:55 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:102 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:61 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:70 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:61 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:70 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:70 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:77 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:77 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:59 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:61 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:59 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:59 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:54 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:101 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:54 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:47 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:54 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:47 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:52 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:47 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:48 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:49 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:50 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:51 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:52 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:52 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:53 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:53 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:70 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:53 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:100 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:100 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:32 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:52 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:32 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:32 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:34 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:34 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:76 assignment:true is_flipped:true decision_level:3 decision_status:Undef
+,- Var:96 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:34 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:96 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:42 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:52 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:42 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:42 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:10 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:45 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:45 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:88 assignment:false is_flipped:false decision_level:1 decision_status:Decision
+,- Var:45 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:92 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:92 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:86 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:92 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:86 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:82 assignment:false is_flipped:false decision_level:2 decision_status:Decision
+,- Var:40 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:86 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:40 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:111 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:114 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:86 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:114 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:114 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+, Var:104 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit: Var:104 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:65 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:104 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:65 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:65 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:66 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:66 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:74 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:104 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:74 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:69 assignment:false is_flipped:false decision_level:0 decision_status:Decision
+,- Var:30 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:74 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:30 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:26 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:24 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:30 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:24 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:80 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:104 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:80 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:64 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:92 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:64 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:73 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:92 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:73 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:69 assignment:false is_flipped:false decision_level:0 decision_status:Decision
+,- Var:29 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:73 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:29 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:26 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:23 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:29 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:23 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:79 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:92 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:79 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:76 assignment:true is_flipped:true decision_level:3 decision_status:Undef
+,- Var:63 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:79 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:63 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:90 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+,- Var:92 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:90 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:88 assignment:false is_flipped:false decision_level:1 decision_status:Decision
+,- Var:43 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:90 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:43 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:92 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:93 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:93 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:88 assignment:false is_flipped:false decision_level:1 decision_status:Decision
+,- Var:46 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:93 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:46 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:112 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:115 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:93 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:115 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [- Var:92 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+,- Var:103 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:103 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+
+ Unit Pr: [ Var:63 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:56 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+, Var:103 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+]
+
+On Lit:- Var:56 assignment:Undef is_flipped:false decision_level:3 decision_status:Implied
+
+
+Decision Level: 3
+Var_conflict: - Var:42 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+,- Var:52 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+
+State_conflict: - Var:111 assignment:true is_flipped:false decision_level:3 decision_status:Implied
+, Var:103 assignment:false is_flipped:false decision_level:3 decision_status:Implied
+
+
+Unsatisfiable

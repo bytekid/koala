@@ -1,0 +1,14 @@
+
+type v   (* var *)
+type l   (* lit *)
+val var_to_lit : bool -> v -> l (* pol. as bool *)
+val lit_to_var : l -> bool * v 
+val is_pos_lit : l -> bool
+val compl_lit : l -> l
+val is_compl : l -> l -> bool
+val make_var : int -> v (* pos int *)
+val make_lit : int -> l (* +- v *)	
+val get_lit_id : l -> int (* do not mix var and lit ids *)
+val get_var_id : v -> int 
+val var_to_string : v -> string
+val lit_to_string : l -> string

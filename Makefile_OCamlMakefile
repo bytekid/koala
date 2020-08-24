@@ -1,0 +1,56 @@
+OCAMLMAKEFILE = OCamlMakefile
+
+#uncomment for c++ version of MiniSat
+#CPP=true
+
+CXX=g++
+CC=gcc
+
+#CPP version does work: OCamMakefile does not recognise cpp files 
+
+ifeq ($(CPP),true)
+ SOLVERSOURCES=src/Solver_cpp.cpp src/minisat_c_wrapper.cpp src/minisat_ocaml_wrapper.cpp
+else
+ SOLVERSOURCES=src/solver.c src/solver_interface.c
+endif
+
+#src/Solver_cpp.c src/minisat_c_wrapper_cpp.c src/minisat_ocaml_wrapper_cpp.c
+SOURCES = $(SOLVERSOURCES) \
+         src/lib.ml                  \
+         src/parser_types.ml src/parser_tptp.mly src/lexer_tptp.mll      \
+         src/options.ml src/statistics.ml src/bit_vec.ml                 \
+         src/tableArray.ml src/heap.ml src/priority_queues.ml            \
+         src/tree.ml src/trie.ml src/trie_func.ml src/vectorIndex.ml     \
+         src/abstDB.ml src/abstAssignDB.ml src/symbol.ml src/symbolDB.ml \
+         src/var.ml src/term.ml src/termDB.ml src/orderings.ml           \
+         src/subst.ml src/substBound.ml src/dismatching.ml               \
+         src/clause.ml src/selection.ml src/clauseAssignDB.ml            \
+         src/clauseDB.ml src/parsed_input_to_db.ml src/parseFiles.ml     \
+         src/splitting.ml src/unif.ml src/unifIndex.ml src/discrTree.ml  \
+         src/subsetSubsume.ml src/subsumptionIndex.ml src/eq_axioms.ml   \
+         src/propSolver.ml src/prop_solver_exchange.ml                   \
+         src/inference_rules.ml src/finite_models.ml src/preprocess.ml   \
+         src/large_theories.ml  src/discount.ml src/instantiation.ml     \
+         src/iprover.ml 
+
+
+RESULT  = iproveropt
+LIBS = str unix
+
+#for static compilation (glibc still will be dynamic) uncomment below
+#LDFLAGS=--Wl,-Bstatic,
+
+
+all: native-code
+
+.PHONY: archive archive_with_e
+ 
+archive:
+	add=$$(date +%-d%-b%-kh_%Y); new_dir="iprover_$${add}"; name_tar="$${new_dir}.tar.gz"; mkdir $${new_dir}; mkdir "$${new_dir}/obj"; cp -r ./src ./LICENSE ./README  ./Makefile ./Makefile.extras ./OCamlMakefile ./configure "$${new_dir}"; pwd; tar -czvf "$${name_tar}" "$${new_dir}"; rm -rf $${new_dir}; if [ -d "Archive" ]; then mv "$${name_tar}" "Archive/"; fi;
+
+archive_with_e:
+	add=$$(date +%-d%-b%-kh_%Y); new_dir="iprover_e_bundle_$${add}"; name_tar="$${new_dir}.tar.gz"; mkdir $${new_dir}; mkdir "$${new_dir}/obj"; cp -r ./src ./LICENSE ./README  ./Makefile ./Makefile.extras ./OCamlMakefile ./configure ./E_Prover "$${new_dir}"; pwd; tar -czvf "$${name_tar}" "$${new_dir}"; rm -rf $${new_dir}; if [ -d "Archive" ]; then mv "$${name_tar}" "Archive/"; fi;
+
+
+
+include $(OCAMLMAKEFILE)

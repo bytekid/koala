@@ -1,0 +1,34 @@
+#Make file using ocamlbuild
+
+
+CC=
+OCAMLBUILDFLAGS= -I src -lflag str.cmxa -lflag unix.cmxa -Lflag obj
+
+ifeq ($(CPP),true)      
+  CC = g++
+  PROP_SOLVER_NAMES=Solver minisat_c_wrapper minisat_ocaml_wrapper
+  IPROVERFLAGS= -cc g++ -ccopt -L$(OCAMLLIB)  -I $(OCAMLLIB)
+ # CFLAGS = -I$(OCAMLLIB)        
+else
+  CC=gcc
+  PROP_SOLVER_NAMES= solver solver_interface 
+  IPROVERFLAGS=-cc gcc  -ccopt -L$(OCAMLLIB) -I $(OCAMLLIB)
+#  CFLAGS = -I$(OCAMLLIB)
+endif
+
+EXTRAOBJS=$(PROP_SOLVER_NAMES:%=obj/%.o)
+
+iproveropt: src/* $(EXTRAOBJS)
+	ocamlbuild $(OCAMLBUILDFLAGS) iproveropt.native
+	cp -L iproveropt.native $@
+	rm iproveropt.native
+
+#implicit rules for c, c++
+obj/%.o : src/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+obj/%.o : src/%.C
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+obj/%.o : src/%.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<

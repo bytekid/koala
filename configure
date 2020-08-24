@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# should work under linux
+# for bundeled versions under mac you need insatll gnu gcc and
+# change vars MAC_CC and MAC_CXX accordingly
+
+set -x 
+
+MAC_CC=gcc-5.3.0
+MAC_CXX=g++-5.3.0
+
+make clean_all
+
+#SYS = "Linux" under linux and "Darwin" under Mac 
+SYS=$(uname -s)
+
+
+if [ -d E_Prover ]; then
+   if [ "$SYS" = "Darwin" ]; 
+   then 
+       CC=$MAC_CC
+   else
+       CC=gcc
+   fi
+   cd E_Prover 
+   ./configure
+   make CC="$CC" 
+   cp PROVER/eprover ./
+   cd ../
+fi
+
+if [ -d VClausifier ]; then
+    cd VClausifier
+    if [ "$SYS" = "Darwin" ]; 
+    then 
+	CXX=$MAC_CXX
+    else
+	CXX=g++
+    fi    
+    make CXX="$CXX" vclausify_rel
+    cd ../
+fi
+
+if [ -d LTB ]; then
+   cd  LTB
+   make
+   cd ../
+fi
+
+OCAMLLIBSTR="OCAMLLIB=$(ocamlc -where)"
+echo "$OCAMLLIBSTR" > Makefile.extras
+
+make depend
+
+#ocamlgraph
+
+CURRENTDIR=$(pwd)
+cd ocamlgraph/
+./configure
+cd $CURRENTDIR
+
+# objsize
+
+# build objsize stub
+cd util/objsize-stub
+make clean
+make lib
+cd $CURRENTDIR
+
+#---- uncomment for object size 
+# build objsize proper
+# OSV=0.16
+# cd util/objsize-$OSV
+# make clean
+# make lib
+# cd $CURRENTDIR
+

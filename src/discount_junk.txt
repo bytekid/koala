@@ -1,0 +1,223 @@
+(*--------------------------Commented---------------------*)
+
+(*
+
+(*-----------------------Subsumption feature index see Schulz-----------*)
+module Feature = 
+  struct  
+    type t = int 
+    let  compare = compare
+  end
+
+(*returns pair of (max size positive,max size neg) used to get a feature *)
+let rec get_max_size_of_literal list = 
+    List.fold_left 
+      (fun (max_pos_tl,max_neg_tl) lit ->
+	let lit_size = Term.get_num_of_symb lit in
+
+	if (Term.is_neg_lit lit) then 
+	  if  (lit_size > max_neg_tl)
+	  then (max_pos_tl,lit_size)
+	  else (max_pos_tl,max_neg_tl)
+	else 
+	  if  (lit_size > max_pos_tl)
+	  then (lit_size,max_neg_tl)
+	  else (max_pos_tl,max_neg_tl)
+      ) (0,0) list
+
+(*  |h::tl -> 
+      let h_size = Term.get_num_of_symb h in
+      let (max_pos_tl,max_neg_tl) = get_max_size_of_literal tl in
+      ( match h with 
+      | Term.Fun(sym,_,_) -> 
+	  if sym == neg_symb 
+	  then
+	    if  h_size > max_neg_tl
+	    then (max_pos_tl,h_size)
+	    else (max_pos_tl,max_neg_tl) 
+	  else 
+	    if h_size > max_pos_tl 
+	    then (h_size,max_neg_tl)
+	    else (max_pos_tl,max_neg_tl) 
+      |_-> failwith "discount get_max_size_of_literal"
+       )
+  |[] -> (0,0) 
+*)
+
+let rec num_of_neg list = 
+    List.fold_left 
+      (fun rest lit -> 
+	if (Term.is_neg_lit lit) then rest+1 else rest) 0 list
+(*
+  |h::tl -> 
+     ( match h with 
+     | Term.Fun(sym,_,_) -> 
+	  if  sym == neg_symb
+	  then 1+(num_of_neg tl)
+	  else (num_of_neg tl)
+      |_-> failwith "discount num_of_neg"
+      )
+  |[]-> 0 
+*)
+
+
+let get_sym_group_compressed_features shift clause= 
+(* occureneces of symbols in pos and neg clauses neg is  even pos is odd*)
+(*  out_str ("num_of_groups: "^(string_of_int num_of_groups)^"\n");*)
+
+ 
+  let group_hierarchy_num_bits = bit_k_ones group_hierarchy_depth in 
+
+(*  out_str ("group_hierarchy_num_bits: "^(string_of_int group_hierarchy_num_bits));*)
+(* gh finishes at group_hierarchy_num_bits-1 then symbol groups start*)
+
+ (* let sym_groups_start = group_hierarchy_num_bits in
+  let group_array_size = group_hierarchy_num_bits + 4*num_of_groups in  *)
+(*  out_str (" group_array_size: "^(string_of_int group_array_size)^"\n");*)
+(*  let group_array = Array.make group_array_size 0 in*)
+  clear_group_array ();
+(*  out_str ("sym_groups_start: "^(string_of_int sym_groups_start)^"\n");*)
+(*  current_stamp := neg !current_stamp;*)
+  let lits = Clause.get_literals clause in
+  let f_t lit =   
+    let is_neg = ref false in
+    (if (Term.is_neg_lit lit) 
+    then is_neg:=true 
+    else is_neg:=false);      
+    let f_sym depth sym = 
+      if (Symbol.symb_neg == sym) || (Symbol.symb_equality == sym)
+      then () (* do not take into account equality or neg symbol *)
+      else 
+	(let sym_group = Symbol.get_group sym in
+(*first fill group hierarchy*)	
+	  for i = 1 to group_hierarchy_depth 
+	 do
+(*	 try *)
+	   let i_ones = bit_high_mask_array.(i-1) in
+ 	    let i_plus_one_ones = bit_high_mask_array.(i) in
+	   let shift = i_ones - 1 in
+	   let index =  shift+(get_first_n_bits i_ones sym_group) in
+(*	   out_str ("Index: "^(string_of_int index)^"\n");*)
+	   group_array.(index)<-1
+	(*     (out_str ("sym_groups_start: "^(string_of_int sym_groups_start)
+		       ^" i: "^(string_of_int i)
+		       ^" shift: "^(string_of_int shift)
+		       ^" index: "^(string_of_int index))
+	       )*)
+(*	 with Invalid_argument _ -> failwith "Here\n"*)
+	 done;
+       (*now fill sym groups values*)
+(*	 let sym_group_base = sym_group lsl 1 in
+	 let sym_group_index_0 = sym_groups_start+sym_group_base in 
+	 let sym_group_index_2  = sym_group_index_0+1 in *)
+
+
+	 let sym_group_base = sym_group lsl 2 in
+	 let sym_group_index_0 = sym_groups_start+sym_group_base in 
+	 let sym_group_index_1  = sym_group_index_0+1 in 
+	 let sym_group_index_2  = sym_group_index_0+2 in 
+	 let sym_group_index_3  = sym_group_index_0+3 in 
+(* number of occurrences of sym in pos and neg lits *)
+(*       out_str ("sym_group: "^(string_of_int sym_group)^"\n");*)
+	 (if !is_neg then
+	   (group_array.(sym_group_index_0) <- 
+	     (group_array.(sym_group_index_0) +1);
+(* max depth of sym occurence *) 
+	    if  depth > group_array.(sym_group_index_1) then 
+	      ( (group_array.(sym_group_index_1) <- depth))
+	    else ()
+	   )
+	 else
+	   (group_array.(sym_group_index_2) <- 
+	     (group_array.(sym_group_index_2) +1);
+(* max depth of sym occurence *) 
+	  if  depth > group_array.(sym_group_index_3) then 
+	    (group_array.(sym_group_index_3) <- depth) else ()	
+	   )
+	 )
+	   
+	)
+    in
+    Term.iter_sym_depth f_sym  lit     
+  in
+  List.iter f_t lits;
+  group_array_to_list shift
+  
+(*--------------End commented--------------------------------*)
+*)
+
+  
+(*
+let get_feature_uncompressed_list (clause:clause) = 
+  let sym_group_feature_list = 
+    get_sym_group_features (SymbolDB.get_num_of_sym_groups !symbol_db_ref) clause in
+
+
+(*end debug*)
+
+ (* out_str ("Clause: "^(Clause.to_string clause)^"\n"
+	   ^"Symb Gr: "^(Lib.list_to_string string_of_int sym_group_feature_list ",")
+	   ^"\n");*)
+(* feature1 should always be length of clause for unit subsumption to work correctly  *)
+(* this restriction is a hack... *)
+  let feature1 = Clause.length clause in
+  let feature2 = Clause.num_of_symb clause in
+  let (feature3,feature4) = get_max_size_of_literal (Clause.get_literals clause) in
+  let feature5 = num_of_neg  (Clause.get_literals clause) in
+
+(* in order to be able to extened the signature we have to put *)
+(* symbol group information at the end of the feature list *)
+(* and it should be grouped together so that if we add a new symbol *)
+(* all new information is indexed after the old one *)
+
+
+  (*out_str_debug 
+    ("Clause: "^(Clause.to_string clause)
+     ^"Feature list: ["
+     ^(list_to_string string_of_int sym_group_feature_list ",")^"]\n");*)
+  sym_group_feature_list
+(*  feature1::feature5::sym_group_feature_list*)
+(* original *)
+(*  [feature1;feature2;feature3;feature4;feature5]@sym_group_feature_list*)
+
+(* [feature1;feature2]*)
+
+*)
+
+(* uncomment later, compress subs. test *) 
+let _= out_str "\n !!!!!!!!Uncomment unit_subs in discount!!!!!!!!\n"
+(*
+let get_feature_uncompressed_for_unit_subs clause = 
+  let feature = get_feature_uncompressed_list clause in
+  match feature with 
+  |_::rest -> 1::rest
+  |_ -> failwith "Discount: get_feature_for_unit_subs "
+*)
+
+(*----input is uncompressed and output is a compressed list---*)
+(* see vectorIndex compressed version *)
+
+(*
+let rec compress_feature_list' rest pos feature_list = 
+  match feature_list with 
+  | h::tl -> 
+      if h = 0 
+      then 
+	compress_feature_list' rest (pos+1) tl
+      else 
+	if h > 0
+	then 
+	    compress_feature_list' ((pos,h)::rest) (pos+1) tl
+	else failwith "features must be positive"
+  | [] -> rest
+
+let compress_feature_list feature_list = 
+  List.rev (compress_feature_list' [] 0 feature_list)
+
+*)
+
+(*
+let get_feature_list (clause:clause) = 
+ let unc_feat =  get_feature_uncompressed_list clause in 
+   compress_feature_list unc_feat
+*)
