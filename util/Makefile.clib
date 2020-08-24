@@ -39,7 +39,7 @@ clean-$(CLIBNAME)-ocaml:
 
 # C object file for stub code 
 lib/$(CLIBNAME)_stubs.o: src/$(CLIBNAME)_stubs.cpp
-	$(CXX) -c -O3 -o $@ -I$(OCAMLINCDIR) -I$(CLIBINCDIR) $<
+	$(CXX) -c -O3 -o $@ -I minisat -I$(OCAMLINCDIR) -I$(CLIBINCDIR) $<
 #	$(CXX) -c -O3 -pg -g -o $@ -I$(OCAMLINCDIR) -I$(CLIBINCDIR) $<
 
 # Compiled interface for OCaml
