@@ -232,25 +232,13 @@ obj/%.cmi : src/%.mli
 obj/%.cmx : src/%.ml 
 	$(OCAMLOPT) $(OCAMLFLAGS) -o $@ -c $<
 
-obj/%.cmi : $(DPLL_SRC_DIR)/%.mli 
-	$(OCAMLOPT) $(OCAMLFLAGS) -o $@ -c $< 
-
-obj/%.cmx : $(DPLL_SRC_DIR)/%.ml
-	$(OCAMLOPT) $(OCAMLFLAGS) -o $@ -c $<
-
-obj/%.cmi : $(QBF_SRC_DIR)/%.mli 
-	$(OCAMLOPT) $(OCAMLFLAGS) -o $@ -c $< 
-
-obj/%.cmx : $(QBF_SRC_DIR)/%.ml
-	$(OCAMLOPT) $(OCAMLFLAGS) -o $@ -c $<
-
 .PHONY : clean clean-util archive docs
 
 docs: $(INTERFACE)
 	ocamldoc -dot -I obj/ -I util/lib -d docs $(BASE_NAMES_WITHOUT_LEXER:%=src/%.mli) $(BASE_NAMES_WITHOUT_LEXER:%=src/%.ml) src/$(IPROVER_BASE_NAME).ml
 
 clean: clean-util
-	rm -f $(IPROVER_NAME) $(IPROVER_NAME)_cpp $(IPROVER_BASE_NAME)prof $(IPROVER_NAME)_cpp $(DPLL_EXEC) $(LEXER:%=src/%.ml) src/$(PARSER).ml src/$(PARSER).mli obj/*.cmo obj/*.cmx obj/*.cmi obj/*.o
+	rm -f $(IPROVER_NAME) $(IPROVER_NAME)_cpp $(IPROVER_BASE_NAME)prof $(IPROVER_NAME)_cpp $(LEXER:%=src/%.ml) src/$(PARSER).ml src/$(PARSER).mli obj/*.cmo obj/*.cmx obj/*.cmi obj/*.o
 	cd $(OBJSIZE_DIR) && make clean
 
 
@@ -326,7 +314,7 @@ else
 endif 
 
 # do not add src/lexer_tptp.mli src/lexer_tptp.ml; they are regenerated during .depend which will cause a loop
-ML_SRC_dep = src/lexer_fof.mll src/lexer_tptp.mll src/parser_tptp.mly $(BASE_NAMES_BEFORE_LEXER:%=src/%.ml) $(BASE_NAMES_AFTER_LEXER:%=src/%.ml) $(BASE_NAMES_BEFORE_LEXER:%=src/%.mli) $(BASE_NAMES_AFTER_LEXER:%=src/%.mli) $(IPROVER_BASE_NAME:%=src/%.ml) $(DPLL_SRC) $(QBF_SRC) 
+ML_SRC_dep = src/lexer_fof.mll src/lexer_tptp.mll src/parser_tptp.mly $(BASE_NAMES_BEFORE_LEXER:%=src/%.ml) $(BASE_NAMES_AFTER_LEXER:%=src/%.ml) $(BASE_NAMES_BEFORE_LEXER:%=src/%.mli) $(BASE_NAMES_AFTER_LEXER:%=src/%.mli) $(IPROVER_BASE_NAME:%=src/%.ml) 
 
 
 ML_SRC_ocamldep = src/lexer_tptp.ml src/lexer_tptp.mli src/lexer_fof.ml src/lexer_fof.mli  src/parser_tptp.ml src/parser_tptp.mli $(ML_SRC_dep)
