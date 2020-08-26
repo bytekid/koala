@@ -340,9 +340,7 @@ CPP_SRC=src/*.cpp src/*.hpp
 .depend: $(ML_SRC_dep) $(C_SRC)
 	@rm -f .depend
 	@touch .depend
-	@ocamldep -native -I src -I $(DPLL_SRC_DIR) -I $(QBF_SRC_DIR)  $(ML_SRC_ocamldep) > deps.tmp
-	@sed 's/src\/prop_sat\//obj\//g' deps.tmp > deps1.tmp
-	@sed 's/src\/qbf_eval\//obj\//g' deps1.tmp > deps2.tmp
+	@ocamldep -native -I src $(ML_SRC_ocamldep) > deps.tmp
 	@sed 's/src\//obj\//g' deps2.tmp > deps3.tmp
 	@cat deps3.tmp >> .depend
 	@gcc -MM $(CFLAGS) $(C_SRC) > deps.tmp

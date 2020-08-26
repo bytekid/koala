@@ -1,7 +1,0 @@
-  ~($$iProver_qbf_prop_35)<->(~($$iProver_qbf_prop_27)&$$iProver_qbf_prop_33&~($$iProver_qbf_prop_30))
-~($$iProver_qbf_prop_35)<->(~($$iProver_qbf_prop_31)&~($$iProver_qbf_prop_34))
-qbf_preprocess:def_discovery: old dep: 35: 1 2 3 7 8 9 14 15 16 21 28 32
-
-~($$iProver_qbf_prop_27)<->(~($$iProver_qbf_prop_13)&$$iProver_qbf_prop_25&~($$iProver_qbf_prop_19))
-~($$iProver_qbf_prop_27)<->(~($$iProver_qbf_prop_20)&~($$iProver_qbf_prop_26))
-qbf_preprocess:def_discovery: old dep: 27: 1 2 3 7 8 9 14 15 16 21
