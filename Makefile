@@ -12,10 +12,6 @@
 
 # 'make OBJSIZE=true' to use OBJSIZE library to determine OCaml object sizes
 
-# time koalaopt_lgl --inst_out_proof false --prep_sem_filter none --schedule verification_epr --bmc1_incremental true --bmc1_add_unsat_core none --bmc1_max_bound 10 /M/Intel_Examples/ijcar-paper-cnf/scdpd_miter_full-range.cnf
-
-
-
 OCAML=ocaml
 OCAMLC=ocamlc
 OCAMLOPT=ocamlopt

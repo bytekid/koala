@@ -1,5 +1,0 @@
-type prop_fof_env
-
-val pf_env_create : unit -> prop_fof_env
-
- 
