@@ -4,10 +4,11 @@
 
 Koala is a prototype theorem prover for first-order logic.
 
-It implements Semenatically Guided Goal-Sensitive Reasoning (SGGS).
+It implements the Semantically Guided Goal-Sensitive Reasoning (SGGS) method
+by Maria Paola Bonacina and David A. Plaisted.
 The code is based on that of iProver:
 http://www.cs.man.ac.uk/~korovink/iprover/
-which is kindly made available by Konstantian Korovin under GPL.
+which is kindly made available by Konstantin Korovin under GPL.
 However, we obviously take responsibility for all potential errors in Koala.
 
 Just like iProver, Koala is implemented in OCaml and licensed under GNU GPL.
