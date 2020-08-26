@@ -1,39 +1,13 @@
-(*----------------------------------------------------------------------(C)-*)
-(* Copyright (C) 2006-2017 Konstantin Korovin and The University of Manchester. 
-   This file is part of iProver - a theorem prover for first-order logic.
-
-   iProver is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 2 of the License, or 
-   (at your option) any later version.
-   iProver is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-   See the GNU General Public License for more details.
-   You should have received a copy of the GNU General Public License
-   along with iProver.  If not, see <http://www.gnu.org/licenses/>.         *)
-(*----------------------------------------------------------------------[C]-*)
-
-
-
 open Lib
 open Git_info
 open Options
 open Statistics
 open Printf
-open Bmc1InitTarget
 
 open Logic_interface
 open Problem_properties
 
 open Instantiation_env
-open Resolution_loop
-open Proof_search_schedule
-
-
-(* record backtrace for debugging          *)
-(* compile with -g option to get the trace *)
-
 
 
 (*----- debug modifiable part-----*)
@@ -111,7 +85,7 @@ exception Time_out_virtual = Signals.Time_out_virtual
 (*------------Out source info -----------------------------*)
 let source_info_str = 
   let git_pref = tptp_safe_str "git:" in
-  "\n"^(s_pref_str())^" iProver source info "^"\n\n"^
+  "\n"^(s_pref_str())^" koala source info "^"\n\n"^
   git_pref^(" date: "^(git_info.git_date))^"\n"^ 
   git_pref^(" sha1: "^(git_info.git_sha1))^"\n"^
   git_pref^" non_committed_changes: "^(string_of_bool git_info.git_non_committed_changes)^"\n"^
@@ -123,57 +97,6 @@ let out_source_info () =
 
 (*-----------------------------------------*)
 
-(* print witness for the AIG mode verification *)
-let bmc1_out_witness result =
-  if (val_of_override !current_options.bmc1_incremental) && !current_options.aig_mode && !current_options.bmc1_aig_witness_out
-  then
-    match result with
-    (* SAT results in a witness *)
-    | PS_result_resolution_sat (res_model, filtered_out_clauses_pre_inst_model)
-      ->  failwith "bmc1_out_witness: resoltion sat is not supported "
-
-    | PS_result_instantiation_sat (inst_pre_model, filtered_out_clauses_inst_pre_model)
-
-      -> Bmc1Witness.print_witness ~inst_pre_model ~inst_pre_model_filtered_out:filtered_out_clauses_inst_pre_model (get_val_stat bmc1_current_bound)
-    (* UNSAT results in an unsat inform *)
-    | PS_result_empty_clause _
-    | PS_result_prop_solver_unsat
-    | PS_result_prop_solver_unsat_na
-    | PS_result_unsat_multiple_cores _
-      -> Bmc1Witness.print_unsat ()
-
-let result_handler_prep result =
-
-  (if (val_of_override !current_options.bmc1_incremental)
-  then
-    (* note that in the case of bmc1 here only preprocess results are handled; *)
-    (* results during bmc1 search are handled in bmc1_loop  *)
-    Bmc1_loop.result_handler_bmc1_preprocess result
-  else
-    result_handler_basic result
-  );
-  (if 
-    ((not (val_of_override !current_options.bmc1_incremental)) 
-   || (val_of_override !current_options.bmc1_out_stat <> BMC1_Out_Stat_None))
-  then 
-    out_stat ()
-  )
-    
-
-let result_handler result =
-
-  result_handler_basic result;
-  (if  (val_of_override !current_options.bmc1_incremental)
-  then
-      bmc1_out_witness result;
-  );
-  (if 
-    ((not (val_of_override !current_options.bmc1_incremental)) 
-   || (val_of_override !current_options.bmc1_out_stat <> BMC1_Out_Stat_None))
-  then 
-    out_stat ()
-  )
-    
 (*-------------------------------------------------*)
 (* elapsed time code *)
 (*-------------------------------------------------*)
@@ -201,16 +124,12 @@ let elapsed_ts status = last_timestamp := (elapsed_helper status)
 
 (*----------------Top Function--------------------*)
 
-(*-- run_iprover: initialises, ----------------*)
+(*-- run_koala: initialises, ----------------*)
 (*-- parses and then runs main on the preprocessed clauses------*)
 
-let run_iprover () =
+let run_koala () =
 
   (*-------------------*)
-  (*out_source_info ();
-  out_str(options_to_str !current_options);*)
-  
-  let filtered_out_inst_pre_model_ref = ref BCMap.empty in 
   
   try
 
@@ -310,11 +229,7 @@ let run_iprover () =
          out_str (Clause.clause_list_to_string !current_clauses);
          out_str "";
         (*--- some dbg on clauses after parsing----*)
-         
-         let def_map = Def_discovery.get_def_map !current_clauses in 
-         dbg D_after_parsing_exit (lazy "Definiton discovery:");
-         Def_discovery.out_def_map def_map;
-         dbg D_after_parsing_exit (lazy "done; exiting");
+         (* SW kill definition discovery *)
          exit 0;
       );
 
@@ -337,7 +252,7 @@ let run_iprover () =
       out_str (pref_str^"Proving...");
       (*-------------------------------------------------*)
 
-      dbg D_trace (lazy ("In run_iprover: input size = "^(string_of_int(List.length !current_clauses))^"\n"));
+      dbg D_trace (lazy ("In run_koala: input size = "^(string_of_int(List.length !current_clauses))^"\n"));
 
       dbg_env D_trace
         (fun () -> 
@@ -371,6 +286,6 @@ let run_iprover () =
   
 ;;
 
-let _ = run_iprover ()
+let _ = run_koala ()
 
 (*---------------------------Commented----------------------------*)

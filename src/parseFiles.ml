@@ -570,17 +570,7 @@ let parse () =
 
     if !current_options.aig_mode
     then 
-      begin
-        input_problem_type:= Some(AIG);
-        (if ((List.length !current_options.problem_files) > 1) 
-        then 
-          out_warning ("AIG processing only first file; the rest are ignored");
-        );
-        let aiger = AigLoader.load_aig (List.hd !current_options.problem_files) in
-        AigOptimiser.optimise_aig aiger;
-        AigClausifier.clausify_aig aiger;
-        AigOptimiser.clear_aig_structures ()
-      end
+      failwith "Aiger input is not supported"
     else 
       if !current_options.qbf_mode
       then 

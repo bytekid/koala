@@ -18,7 +18,6 @@
 
 open Lib
 open Options
-(*open Logic_interface *)
 
 
 (*----- debug modifiable part-----*)

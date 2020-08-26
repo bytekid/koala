@@ -42,19 +42,3 @@ val get_active_range_axioms : domain -> clause list
 (* get_domain_assumptions domain -> (assumptions_list, adjoint_assumptions_list) *)
 
 val get_domain_assumptions : domain -> (lit list * lit list)
-
-(* assign_fp_range domain new_range_bound fp *)
-
-val assign_fp_range : domain -> int -> symbol -> unit
-
-val assign_all_fp_ranges : domain -> int -> unit
-
-(* let incr_fp_ranges domain fp_switch_pred_list =  *)  
-
-val incr_fp_ranges : ?incr:int -> domain -> symbol list -> int (* returns number of changed ranges*)
-
-val incr_domain_unsat_core : domain -> clause list -> unit
-
-(*-----------*)
-val add_lemmas : fm_state -> clause list -> unit 
-val get_lemmas : fm_state -> clause list 

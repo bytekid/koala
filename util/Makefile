@@ -4,16 +4,6 @@
 ########################################################################
 # Configuration
 
-# export OCAMLLIBDIR=$(OCAMLLIB)
-# export OCAMLINCDIR=$(OCAMLLIB)
-# export OCAMLLIBDIR=/usr/lib/ocaml
-# export OCAMLINCDIR=/usr/lib/ocaml
-# export OCAMLLIBDIR=/home/chris/lib/ocaml
-# export OCAMLINCDIR=/home/chris/lib/ocaml
-# export OCAMLLIBDIR=/shareddata/homes/sticksec/lib/ocaml
-# export OCAMLINCDIR=/shareddata/homes/sticksec/lib/ocaml
-
-MINISATDIR=$(CURDIR)/minisat
 HHLMUCDIR=$(CURDIR)/Haifa-HLMUC
 FIVERDIR=$(CURDIR)/Fiver
 
@@ -33,7 +23,7 @@ all: minisat-ocaml fiver-ocaml # hhlmuc-ocaml
 
 .PHONY : clean
 
-clean: clean-minisat-ocaml clean-fiver-ocaml # clean-hhlmuc-ocaml
+clean: clean-fiver-ocaml # clean-hhlmuc-ocaml
 
 
 ########################################################################
@@ -62,66 +52,6 @@ fiver-test:
 # Clean interface 
 clean-fiver-ocaml: 
 	$(MAKE) -f Makefile.clib clean-fiver-ocaml
-
-
-########################################################################
-# Make MiniSat using generic Makefile.minisat
-
-# Set variable $(MINISATDIR)
-# minisat-lib-standard \
-# minisat-lib-profile \
-# minisat-lib-debug \
-# minisat-lib-release \
-# minisat-exec-standard \
-# minisat-exec-profile \
-# minisat-exec-debug \
-# minisat-exec-release \
-# minisat-exec-static \
-# clean-minisat-lib: export MINISATDIR:=$(MINISATDIR)
-export MINISATDIR:=$(MINISATDIR)
-
-# Set variable $(MINISAT)
-# minisat-lib-standard \
-# minisat-lib-profile \
-# minisat-lib-debug \
-# minisat-lib-release \
-# minisat-exec-standard \
-# minisat-exec-profile \
-# minisat-exec-debug \
-# minisat-exec-release \
-# minisat-exec-static \
-# clean-minisat-lib: export MINISAT=minisat
-export MINISAT=minisat
-
-minisat-lib-standard:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-lib-standard
-
-minisat-lib-profile:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-lib-profile
-
-minisat-lib-debug:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-lib-debug
-
-minisat-lib-release:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-lib-release
-
-minisat-exec-standard:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-exec-standard
-
-minisat-exec-profile:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-exec-profile
-
-minisat-exec-debug:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-exec-debug
-
-minisat-exec-release:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-exec-release
-
-minisat-exec-static:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat minisat-exec-static
-
-clean-minisat-lib:
-	$(MAKE) -f $(CURDIR)/Makefile.minisat clean-minisat
 
 
 # ########################################################################
