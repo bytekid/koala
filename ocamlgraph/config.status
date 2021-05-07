@@ -427,7 +427,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/swinkler/koala/ocamlgraph'
+ac_pwd='/home/bytekid/tools/koala/ocamlgraph'
 srcdir='.'
 test -n "$AWK" || AWK=awk
 # The default lists apply if the user does not specify any file.
@@ -591,8 +591,8 @@ S["EXE"]=""
 S["OCAMLWIN32"]="no"
 S["LABLGNOMECANVAS"]="no"
 S["LABLGTK2"]="no"
-S["OCAMLLIB"]="/usr/lib/ocaml"
-S["OCAMLVERSION"]="4.02.3"
+S["OCAMLLIB"]="/home/bytekid/.opam/4.07.1/lib/ocaml"
+S["OCAMLVERSION"]="4.07.1"
 S["OCAMLBEST"]="opt"
 S["OCAMLFIND"]="ocamlfind"
 S["OCAMLWEB"]="true"
