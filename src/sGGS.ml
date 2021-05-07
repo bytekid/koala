@@ -1285,7 +1285,8 @@ let shares_dependency state dep_pos pos =
   assert (L.exists (fun l -> cc.selected == l) ls);
   let lcp = (ccd.selected, ccd.constr,dep_pos) in
   let depends_only l = depends_only_on state lcp (l, cc.constr) in
-  L.find_opt (fun l -> not (l == cc.selected) && depends_only l) ls
+  try Some (L.find (fun l -> not (l == cc.selected) && depends_only l) ls)
+  with _ -> None
 ;;
 
 let factorizable state dep_pos pos =
@@ -1389,9 +1390,8 @@ let rec factor_split state p1 p2 =
 let rec complete_split state cc = 
   let cl = (cc.selected, cc.constr) in
   let cinter cl' = cl <> cl' && at_gnd_instance_inter cl cl' in
-  match L.find_opt (fun c -> cinter (CC.to_clit c)) state.trail with
-  | None -> state
-  | Some by_cc ->
+  try
+    let by_cc = L.find (fun c -> cinter (CC.to_clit c)) state.trail in
     try 
       let cc_pos = get_trail_pos state cc in
       let split_state, _, diff = sggs_split Right state cc_pos by_cc in
@@ -1399,6 +1399,7 @@ let rec complete_split state cc =
       Format.printf "complete_split finished\n%!";
       r
     with Clause_is_not_in_trail _ -> state (* cc may have been disposed *)
+  with Not_found -> state
 ;;
 
 (***************************** MAIN SGGS LOOP *********************************)

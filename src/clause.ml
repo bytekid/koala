@@ -665,7 +665,7 @@ let get_lits_clause_list clause_list =
 
 let get_atoms_clause_list clause_list = 
   let lits = get_lits_clause_list clause_list in
-  TSet.map Term.get_atom lits
+  TSet.fold (fun l s -> TSet.add (Term.get_atom l) s) lits TSet.empty
 
 (*
   let compare_lits c1 c2 =

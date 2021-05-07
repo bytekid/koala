@@ -1200,7 +1200,7 @@ let to_string_full =
 
 let lower_first_char_string str = 
   let bytes = Bytes.of_string str in 
-  Bytes.set bytes 0 (Char.lowercase_ascii str.[0]);
+  Bytes.set bytes 0 (Char.lowercase str.[0]);
   Bytes.to_string bytes
    
 
