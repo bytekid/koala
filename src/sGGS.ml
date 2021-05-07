@@ -27,6 +27,8 @@ let compl_lit l = add_term (Term.compl_lit l)
 
 let pcmp = Pervasives.compare
 
+let start_time = ref 0.0
+
 (* utilities *)
 let index ?(from=0) l =
   snd (L.fold_left (fun (i, xs) y -> (i + 1, xs @ [y,i])) (from,[]) l)
@@ -104,8 +106,7 @@ let mgu_list eqs = unify_aux (S.create ()) eqs
 let mgu ?(away=[]) l r = 
   let away = if away = [] then variables r else away in
   let l = add_term (L.hd (snd (rename_term_list term_db_ref away [l]))) in
-  let theta = mgu_list [(l, r)] in
-  theta
+  mgu_list [(l, r)]
 ;;
 
 let pp_lits ppf lits =
@@ -180,6 +181,17 @@ let all_ground_terms sort funs =
     LL.concat (LL.of_function (fun i -> Some (LL.of_list (sized sort (i + 1)))))
 ;;
 
+let rec fresh_vars away_var_list x n =
+  let rec vars away_var_list x n =
+    if n = 0 then []
+    else
+      let fresh_vars_env = Var.init_fresh_vars_env_away away_var_list in
+      let y = Var.get_next_fresh_var fresh_vars_env (Var.get_type x) in 
+      y :: (vars (y :: away_var_list) y (n-1))
+  in
+  vars away_var_list x n
+;;
+
 module Constraint = struct
 
   exception Is_unsat
@@ -240,6 +252,16 @@ module Constraint = struct
   ;;
 
   let substitute theta =
+    let rec diff x t acc = match t with
+    | T.Var (z, _) -> cons (DiffVars(x, z)) acc
+    | T.Fun (f, ts, _) ->
+      if L.for_all T.is_var ts then cons (DiffTop(x, f)) acc
+      else
+        let subst_vars = Subst.fold (fun x t acc -> x :: (T.get_vars t) @ acc) theta [] in
+        let vs_used = x :: (T.get_vars t) @ subst_vars in
+        let vs_new = fresh_vars vs_used x (L.length ts) in
+        cons (DiffTop(x, f)) (L.fold_right2 diff vs_new ts acc)
+    in
     let subst acc = function
     | DiffVars (x, y) ->
       let tx = try (SubstM.find x theta) with _ -> T.create_var_term x in
@@ -249,7 +271,8 @@ module Constraint = struct
       | T.Fun (f, ts, _), T.Var (x,_)
       | T.Var (x,_), T.Fun (f, ts, _) -> 
         if L.for_all T.is_var ts then cons (DiffTop(x, f)) acc
-        else failwith "Complex constraint substitution" (* FIXME: needed? *)
+        else (*failwith "Complex constraint substitution"  FIXME: needed? *)
+          diff x ty acc
       | T.Fun (f,_, _), T.Fun (g,_, _) -> assert(f <> g); acc)
     | DiffTop (x, f) ->
       match (try (SubstM.find x theta) with _ -> T.create_var_term x) with
@@ -419,20 +442,17 @@ let pp_clause ppf cc = pp_lits ppf (C.get_lits cc)
 
 let pp_clauses ppf ccs = L.iter (fun l -> F.fprintf ppf "%a\n" pp_clause l) ccs
 
+let subst_str sub =
+  let add x t l = 
+    let k,v = x in
+    (string_of_int k) ^ (Var.to_string v) ^ " -> " ^ (Term.to_string t) ^ l
+  in
+  SubstBound.SubstM.fold add sub ""
+;;
+
 let unifies t u =
   try let _ =  Unif.unify_bterms (1, t) (2, u) in true
   with Unif.Unification_failed -> false
-;;
-
-let rec fresh_vars away_var_list x n =
-  let rec vars away_var_list x n =
-    if n = 0 then []
-    else
-      let fresh_vars_env = Var.init_fresh_vars_env_away away_var_list in
-      let y = Var.get_next_fresh_var fresh_vars_env (Var.get_type x) in 
-      y :: (vars (y :: away_var_list) y (n-1))
-  in
-  vars away_var_list x n
 ;;
 
 let unify clauselit traillit =
@@ -442,12 +462,13 @@ let unify clauselit traillit =
   sigma
 ;;
 
-let unify_var_disj clauselit traillit =
-  let mgu = Unif.unify_bterms (1, clauselit) (2, traillit) in
+(* Unif.unify_bterms is wrong *)
+let unify_var_disj clauselit traillit = mgu_list [(clauselit, traillit)]
+(*)  let mgu = Unif.unify_bterms (1, clauselit) (2, traillit) in
   let add x t l = Subst.add (snd x) (snd t) l in
   let sigma = SubstBound.SubstM.fold add mgu (Subst.create ()) in
-  sigma
-;;
+  sigma, mgu
+;;*)
 
 let rename_term vars t = 
   let rho, ts = rename_term_list term_db_ref vars [t] in
@@ -465,6 +486,7 @@ let diff cc by_cc sigma =
 
   let rec diff acc i cc =
     let (s, constr_s, clause_s) = CC.selected cc, CC.constr cc, CC.clause cc in
+    Format.printf "ensure pattern %a matched by %a\n" T.pp_term s T.pp_term r;
     (* DiffSim *)
     let sigma = ensure_match s r in
     let vars_s = T.get_vars s in
@@ -558,8 +580,8 @@ let split_clauses ?(rep=None) syms cc by_cc =
     if not (Ct.substituted_satisfiable constr sigma) then raise Split_undefined
     else
       (* compute the representative, if not given *)
-      let cc' = { cc with CC.constr = Ct.substitute sigma constr } in 
-      let rep = match rep with Some r -> r | None -> CC.substitute sigma  cc' in
+      let cc' = { cc with CC.constr = Ct.substitute sigma constr } in (* FIXME: needed? *)
+      let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
       if !O.current_options.dbg_backtrace then (
@@ -666,7 +688,11 @@ end
 exception No_dependence of constr_literal
 
 type state = {
+  conflicts: int ref;
+  deleted_clauses: int ref;
+  generated_clauses: int ref;
   initial: initial_interpretation;
+  max_trail_len: int ref;
   trail: Trail.t;
   trail_idx: CC.constr_clause DiscTree.t;
   steps: int ref;
@@ -680,7 +706,11 @@ let mk_initial_state init gp syms =
   let funas = L.map (fun f -> (f,Sym.get_arity f)) (L.filter Sym.is_fun syms) in
   let epr = L.for_all (fun (_,a) -> a = 0) funas in
   {
+  conflicts = ref 0;
+  deleted_clauses = ref 0;
+  generated_clauses = ref 0;
   initial = init;
+  max_trail_len = ref 0;
   trail = [];
   trail_idx = DiscTree.create ();
   steps = ref 0;
@@ -703,12 +733,24 @@ let pp_trail ppf state =
 
 let log_step state step_name =
   if !O.current_options.dbg_backtrace then (
-  F.printf "\nGamma_%d: (%s)\n%a" !(state.steps) step_name pp_trail state;
-  F.printf "\n%!";
-  state.steps := !(state.steps) + 1)
+    F.printf "\nGamma_%d: (%s)\n%a" !(state.steps) step_name pp_trail state;
+    F.printf "\n%!");
+  state.steps := !(state.steps) + 1;
+  state.max_trail_len := max !(state.max_trail_len) (L.length state.trail)
+;;
+
+let print_stats state =
+  F.printf "\n# steps:             %d\n" !(state.steps);
+  F.printf "# conflicts:         %d\n" !(state.conflicts);
+  F.printf "# generated clauses: %d\n" !(state.generated_clauses);
+  F.printf "# deleted clauses:   %d\n" !(state.deleted_clauses);
+  F.printf "max trail length:    %d\n" !(state.max_trail_len);
+  F.printf "time:                %.2f\n" (Unix.gettimeofday () -. !start_time)
 ;;
 
 let log_step_if b state step_name = if b then log_step state step_name else ()
+
+let inc_clauses state = state.generated_clauses := !(state.generated_clauses) +1
 
 let insert x ys pos = 
   let l = until pos ys @ [x] @ (from pos ys) in
@@ -788,6 +830,7 @@ let remove_assigned_to (l, lcnstr, pos) state is_split =
       if not (assigned_to_l lc c) then c :: (remove lc cs)
       else (
         ignore (delete_idx state.trail_idx c.selected c);
+        state.deleted_clauses := !(state.deleted_clauses) + 1;
         (*Format.printf "  delete assigned %a\n%!" pp_clause c.clause;*)
         remove lc (remove (CC.to_clit c) cs))
   in remove (l, lcnstr) aft
@@ -803,7 +846,10 @@ let has_dependence state (l,constr) =
 let is_conflicting state cc =
   let compl_cc = (compl_lit cc.selected, cc.constr) in
   let inter c = gnd_instance_inter compl_cc (CC.to_clit c) && c <> cc in
-  L.exists inter state.trail
+  let is_conf = L.exists inter state.trail in 
+  if is_conf then
+    state.conflicts := !(state.conflicts) + 1;
+  is_conf
 ;;
 
 let check_invariants state =
@@ -1352,11 +1398,15 @@ let rec sggs_no_conflict state clauses =
     (*F.printf "%s\n%!" (if computed then "computed" else "reused");*)
     match findext clausesx with
     | None, _ ->
-      if computed then (F.printf "model:\n%a\n" pp_trail state; Satisfiable)
-      else sggs_no_conflict (empty_cache state) clauses
+      if computed then (
+        F.printf "model:\n%a\n" pp_trail state; 
+        state, Satisfiable
+      ) else 
+        sggs_no_conflict (empty_cache state) clauses
     | Some ((c, constr), conflict, select), rest ->
       assert (not state.ground_preserving || C.is_ground (c));
       let cc = mk_cclause c select constr in
+      inc_clauses state;
       let state' = {state with extension_queue = Some rest} in
       sggs_extend state' clauses cc conflict (L.length state.trail)
 
@@ -1452,14 +1502,17 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
 
   if resolvent = [] then (
     let cc = mk_cclause res_clause left_lit right_constr in (* dummy select *)
-    log_step { state with trail = bef @ [cc] @ aft'} "resolve";
-    Unsatisfiable)
+    inc_clauses state;
+    let state' = { state with trail = bef @ [cc] @ aft'} in
+    log_step state' "resolve";
+    state', Unsatisfiable)
   else (
     let state' = empty_cache { state with trail = bef @ aft'} in
     try 
       let constr = Ct.project (C.get_var_list res_clause) right_constr in
       let conf,sel = find_selected (state', right_pos) (res_clause, constr) in
       let cc = mk_cclause res_clause sel constr in
+      inc_clauses state;
       (* FIXME use add_to_trail *)
       DiscTree.add_elem_to_lit state'.trail_idx sel cc;
       log_step { state with trail = bef @ [cc] @ aft'} "resolve";
@@ -1585,8 +1638,9 @@ let fix_signature clauses fms =
 ;;
 
 let do_something_smart clauses =
+  start_time := Unix.gettimeofday ();
   L.iter (fun c -> L.iter (fun l -> ignore (add_term l)) (C.get_lits c)) clauses;
-  let clauses = Type_inf.sub_type_inf clauses in
+  (*let clauses = Type_inf.sub_type_inf clauses in*)
   let fms = FM.init_fm_state clauses in
   if !O.current_options.dbg_backtrace then (
     F.printf "%d input clauses\n" (L.length clauses);
@@ -1606,7 +1660,9 @@ let do_something_smart clauses =
   let syms = fix_signature clauses fms in
   let state = mk_initial_state initial gnd_preserving syms in
   try
-    sggs_no_conflict state clauses
+    let state, res = sggs_no_conflict state clauses in
+    print_stats state;
+    res
   with e -> 
     let msg = Printexc.to_string e in
     let stack = Printexc.get_backtrace () in
