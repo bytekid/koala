@@ -1,6 +1,6 @@
 # Koala
 
-Koala is a prototype theorem prover for first-order logic.
+Koala is a prototype theorem prover for first-order logic developed by Sarah Winkler.
 
 It implements the Semantically Guided Goal-Sensitive Reasoning (SGGS) method
 by Maria Paola Bonacina and David A. Plaisted.
