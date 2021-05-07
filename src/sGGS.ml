@@ -98,12 +98,14 @@ let rec unify_aux subst = function
     unify_aux (add_compose x t subst) eqs'
   | (T.Fun (f, ss, _), T.Fun (g, ts, _)) :: eqs when f = g ->
     unify_aux subst ((L.combine ss ts) @ eqs)
-  | _ -> raise Unif.Unification_failed
+  | (s,t) :: _ -> raise Unif.Unification_failed
 ;;
 
 let mgu_list eqs = unify_aux (S.create ()) eqs
 
-let mgu ?(away=[]) l r = 
+let mgu_exists s t = try let _ = mgu_list [(s, t)] in true with _ -> false
+
+let mgu ?(away=[]) l r =
   let away = if away = [] then variables r else away in
   let l = add_term (L.hd (snd (rename_term_list term_db_ref away [l]))) in
   mgu_list [(l, r)]
@@ -1282,7 +1284,8 @@ let shares_dependency state dep_pos pos =
 
 let factorizable state dep_pos pos =
   match shares_dependency state dep_pos pos with
-  | Some l when unifies l (L.nth state.trail pos).selected -> Some l
+  (* unification check is done without renaming: ok? *)
+  | Some l when mgu_exists l (L.nth state.trail pos).selected -> Some l
   | _ -> None
 ;;
 
@@ -1357,6 +1360,7 @@ let rec factor_split state p1 p2 =
   match factorizable state p1 p2 with
   | Some l when is_I_true ->
     assert (unifies l cc.selected);
+    Format.printf "factor split\n%!";
     let sigma = mgu_list [l,cc.selected] in
     let factor = CC.substitute sigma cc in
     (*F.printf "factor before move\nto factor %a\nfactor is %a\n%a%!"
@@ -1653,7 +1657,7 @@ let fix_signature clauses fms =
 let do_something_smart clauses =
   start_time := Unix.gettimeofday ();
   L.iter (fun c -> L.iter (fun l -> ignore (add_term l)) (C.get_lits c)) clauses;
-  (*let clauses = Type_inf.sub_type_inf clauses in*)
+  let clauses = Type_inf.sub_type_inf clauses in
   let fms = FM.init_fm_state clauses in
   if !O.current_options.dbg_backtrace then (
     F.printf "%d input clauses\n" (L.length clauses);
