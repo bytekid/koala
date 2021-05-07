@@ -328,10 +328,13 @@ module Constraint = struct
 
   let implies c c_gen = L.for_all (fun a -> L.exists (atomic_equal a) c) c_gen
 
-  let negate cs =
+  let negate away_vars cs =
     let neg = function
     | DiffVars (x, y) -> Subst.singleton x (T.create_var_term y)
-    | DiffTop (x,f) -> Subst.singleton x (T.create_fun_term f [])
+    | DiffTop (x,f) ->
+      let a = Sym.get_arity f in
+      let xs = L.map T.create_var_term (fresh_vars away_vars x a) in
+      Subst.singleton x (T.create_fun_term f xs)
     in
     L.map neg cs
   ;;
@@ -386,6 +389,13 @@ module ConstrainedClause = struct
   let clause c = c.clause
   let selected c = c.selected
   let constr c = c.constr
+
+  let get_vars c =
+    let lits = C.get_lits c.clause in
+    let vs1 = L.fold_left (fun vs l -> T.get_vars l @ vs) [] lits in
+    let vs2 = Ct.vars c.constr in
+    unique (vs1 @ vs2)
+  ;;
 
   let make c sel constr = { clause = c; selected = sel; constr = constr }
 
@@ -464,7 +474,7 @@ let unify clauselit traillit =
 
 (* Unif.unify_bterms is wrong *)
 let unify_var_disj clauselit traillit = mgu_list [(clauselit, traillit)]
-(*)  let mgu = Unif.unify_bterms (1, clauselit) (2, traillit) in
+(*  let mgu = Unif.unify_bterms (1, clauselit) (2, traillit) in
   let add x t l = Subst.add (snd x) (snd t) l in
   let sigma = SubstBound.SubstM.fold add mgu (Subst.create ()) in
   sigma, mgu
@@ -486,7 +496,6 @@ let diff cc by_cc sigma =
 
   let rec diff acc i cc =
     let (s, constr_s, clause_s) = CC.selected cc, CC.constr cc, CC.clause cc in
-    Format.printf "ensure pattern %a matched by %a\n" T.pp_term s T.pp_term r;
     (* DiffSim *)
     let sigma = ensure_match s r in
     let vars_s = T.get_vars s in
@@ -526,13 +535,13 @@ let diff cc by_cc sigma =
         no variable in vars_s is mapped to a functional term and no two 
         variables in vars_s are mapped to the same term, (s, constr_s, clause_s)
         must be a variant of (r, constr_r, clause_r) *)
-        if i > 50 then failwith "looping split";
+        if i > 50 then failwith "FIXME: looping split";
         let cc_sigma = CC.substitute sigma cc in
         (* DiffElim *)
         if CC.equal cc cc_sigma then
           if s = r && not (Ct.implies constr_s constr_r) then (
             let cs = L.fold_right (remove Ct.cmp_atomic) constr_s constr_r in
-            let subs = Ct.negate cs in
+            let subs = Ct.negate (CC.get_vars cc) cs in
             let subs' = L.filter (Ct.substituted_satisfiable constr_s) subs in
             let ccs = L.map (fun sigma -> CC.substitute sigma cc) subs' @ acc in
             ccs

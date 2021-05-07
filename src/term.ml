@@ -1224,7 +1224,7 @@ let arg_fold_left2 f a l1 l2 =
   try List.fold_left2 f a l1 l2
   with
     Invalid_argument(_) ->
-      failwith "term: fold_left2: argumets are of different length"
+      failwith "term: fold_left2: arguments are of different length"
 
 let arg_for_all2 = List.for_all2
 
@@ -1234,14 +1234,14 @@ let arg_iter2 f l1 l2 =
     List.iter2 f l1 l2
   with
     Invalid_argument(_) ->
-      failwith "term: iter2: argumets are of different length"
+      failwith "term: iter2: arguments are of different length"
 
 let arg_map2 f l1 l2 =
   try
     List.map2 f l1 l2
   with
     Invalid_argument(_) ->
-      failwith "term: map2: argumets are of different length"
+      failwith "term: map2: arguments are of different length"
 
 let arg_find = List.find
 
