@@ -241,7 +241,7 @@ module Constraint = struct
         let tx = try Some (SubstM.find x theta) with _ -> None in
         let ty = try Some (SubstM.find y theta) with _ -> None in
         match tx, ty with
-          | Some tx, Some ty -> tx <> ty
+          | Some tx, Some ty -> Format.printf "%a vs %a\n%!" T.pp_term tx T.pp_term ty; tx <> ty
           | None, Some u -> (try x <> T.get_var u with _ -> true)
           | Some u, None -> (try y <> T.get_var u with _ -> true)
           | _ -> x <> y)
@@ -266,14 +266,18 @@ module Constraint = struct
     | DiffVars (x, y) ->
       let tx = try (SubstM.find x theta) with _ -> T.create_var_term x in
       let ty = try (SubstM.find y theta) with _ -> T.create_var_term y in (
-      match tx, ty with
-      | T.Var (z,_), T.Var (w,_) -> assert (w <> z); cons (DiffVars(z, w)) acc
-      | T.Fun (f, ts, _), T.Var (x,_)
-      | T.Var (x,_), T.Fun (f, ts, _) -> 
-        if L.for_all T.is_var ts then cons (DiffTop(x, f)) acc
-        else (*failwith "Complex constraint substitution"  FIXME: needed? *)
-          diff x ty acc
-      | T.Fun (f,_, _), T.Fun (g,_, _) -> assert(f <> g); acc)
+      let rec mk_terms_diff acc = function (* constrain two terms different *)
+        | T.Var (z,_), T.Var (w,_) -> assert (w <> z); cons (DiffVars(z, w)) acc
+        | T.Fun (f, ts, _), T.Var (x,_)
+        | T.Var (x,_), T.Fun (f, ts, _) -> 
+          if L.for_all T.is_var ts then cons (DiffTop(x, f)) acc
+          else (*failwith "Complex constraint substitution"  FIXME: needed? *)
+            diff x ty acc
+        | T.Fun (f, ss, _), T.Fun (g, ts, _) -> 
+          if f <> g then acc
+          else List.fold_left2 (fun a s t -> mk_terms_diff a (s, t)) acc ss ts
+      in mk_terms_diff acc (tx, ty)
+      )
     | DiffTop (x, f) ->
       match (try (SubstM.find x theta) with _ -> T.create_var_term x) with
       | T.Var (z,_) -> cons (DiffTop(z, f)) acc
@@ -615,8 +619,12 @@ let split_clauses ?(rep=None) syms cc by_cc =
 let gnd_instance_subset (t, constr_t) (p, constr_p) =
   let constr_t = Ct.project (T.get_vars t) constr_t in
   let constr_p = Ct.project (T.get_vars p) constr_p in
+  F.printf "gnd_instance_subset:\n%!";
+  Format.printf " %a |> %a\n%!" Ct.pp_constraint constr_t T.pp_term t;
+  Format.printf " %a |> %a\n%!" Ct.pp_constraint constr_p T.pp_term p;
   try 
     let theta = Unif.matches p t in
+    Format.printf "theta %s\n%!" (Subst.to_string theta);
     if not (Ct.substituted_satisfiable constr_p theta) then false
     else Ct.implies constr_t (Ct.substitute theta constr_p)
   with Unif.Matching_failed -> false
@@ -956,17 +964,21 @@ let update_selection_from from_opt (state, from_pos) =
 ;;
   
   let add_clause_to_trail cc state pos =
+    F.printf " add %a\n%!" CC.pp_cclause cc;
     let bef, aft = until pos state.trail, from pos state.trail in
+    F.printf "disp check\n%!";
     if is_disposable cc {state with trail = bef} then state, false
-    else
+    else (
+      F.printf "bef cover\n%!";
       let covered lt = covers (CC.to_clit cc) (lt.selected, lt.constr) in
+      F.printf "after cover\n%!";
       let aft', del = L.partition (fun c -> not (covered c)) aft in
       let idx = state.trail_idx in
       L.iter (fun cc' -> ignore (delete_idx idx cc'.selected cc')) del;
       let state = if del <> [] then empty_cache state else state in
       DiscTree.add_elem_to_lit idx cc.selected cc;
       let state' = { state with trail = bef @ [cc] @ aft'; trail_idx = idx } in
-      update_selection_from None (state', pos + 1), true
+      update_selection_from None (state', pos + 1), true)
   ;;
   
   let remove_from_trail state pos =
@@ -1302,27 +1314,32 @@ let location_str = function Left -> "left" | _ -> "right"
 let sggs_split ?(rep=None) where state pos by_cc =
   let cc = L.nth state.trail pos in
   let partition, rep, diff = split_clauses ~rep:rep state.signature cc by_cc in
+  F.printf "after split clauses\n%!";
   let bef, aft = until pos state.trail, from (pos + 1) state.trail in
   let state = empty_cache { state with trail =  bef @ aft } in
+  F.printf "after empty cache\n%!";
 
   ignore (delete_idx state.trail_idx cc.selected cc);
+  F.printf "after delete\n%!";
   let add (state, i) cc =
     let state', added = add_clause_to_trail cc state (pos + i) in
     state', if added then i + 1 else i
   in
   let state', num_added = L.fold_left add (state,0) partition in
+  F.printf "after adding\n%!";
   let state'' = (* left splitting may require selection update to rightmost *)
     if where = Right then state'
     else update_selection_from (Some (CC.to_clit cc)) (state', pos + num_added)
   in
-  (*F.printf "after selection update \n%a\n%!" pp_trail state'';*)
 
   let split_lit = (cc.selected, cc.constr, pos + num_added) in
   let aft' = remove_assigned_to split_lit state'' true in
+  F.printf "after remove_assigned_to\n%!";
   let until_part = until (pos + num_added) state''.trail in
   let state = { state with trail = until_part @ aft' } in
 
   log_step state (location_str where ^ "-split");
+  Format.printf "sggs split finished\n%!";
   state, rep, diff
 ;;
 
@@ -1378,7 +1395,9 @@ let rec complete_split state cc =
     try 
       let cc_pos = get_trail_pos state cc in
       let split_state, _, diff = sggs_split Right state cc_pos by_cc in
-      L.fold_left complete_split split_state diff
+      let r = L.fold_left complete_split split_state diff in
+      Format.printf "complete_split finished\n%!";
+      r
     with Clause_is_not_in_trail _ -> state (* cc may have been disposed *)
 ;;
 
