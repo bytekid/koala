@@ -1277,13 +1277,15 @@ let shares_dependency state dep_pos pos =
   let ccd = state.trail <!> dep_pos in (* dependee *)
   let cc = state.trail <!> pos in (* dependent *)
   let atd, at = T.get_atom ccd.selected, T.get_atom cc.selected in
-  assert (covers (atd, ccd.constr) (at, cc.constr));
-  let ls = C.get_lits cc.clause in
-  assert (L.exists (fun l -> cc.selected == l) ls);
-  let lcp = (ccd.selected, ccd.constr,dep_pos) in
-  let depends_only l = depends_only_on state lcp (l, cc.constr) in
-  try Some (L.find (fun l -> not (l == cc.selected) && depends_only l) ls)
-  with _ -> None
+  if not (covers (atd, ccd.constr) (at, cc.constr)) then None
+  else (
+    let ls = C.get_lits cc.clause in
+    assert (L.exists (fun l -> cc.selected == l) ls);
+    let lcp = (ccd.selected, ccd.constr,dep_pos) in
+    let depends_only l = depends_only_on state lcp (l, cc.constr) in
+    try Some (L.find (fun l -> not (l == cc.selected) && depends_only l) ls)
+    with _ -> None
+  )
 ;;
 
 let factorizable state dep_pos pos =
@@ -1347,7 +1349,6 @@ let rec dependence_share_split state p1 p2 =
   match shares_dependency state p1 p2 with
   | Some l when not (mgu_exists l (state.trail <!> p2).selected) -> (
     let ccr = state.trail <!> p2 in
-    F.printf "split at %d by %a left before move\n%!" p1 CC.pp_cclause ccr;
     let state, _, _ = sggs_split Left state p1 ccr in
     (* find split-by clause in trail: selection may have changed *)
     try
