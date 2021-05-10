@@ -15,8 +15,8 @@ type git_info =
 
 let git_info = 
     {
-     git_sha1 = "d9b2f6b6ea1979a923216fe86ae2cb411d534d2a";
-     git_date = "2021-05-10 11:18:43 +0200"; 
+     git_sha1 = "486b42ab050cb0433cb79a0c2fa80d4545334db5";
+     git_date = "2021-05-10 11:54:33 +0200"; 
      git_non_committed_changes =true;
    }
 

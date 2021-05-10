@@ -396,13 +396,7 @@ module ConstrainedClause = struct
   let selected c = c.selected
   let constr c = c.constr
 
-  let get_clause_vars c =
-    let lits = C.get_lits c.clause in
-    let vs1 = L.fold_left (fun vs l -> T.get_vars l @ vs) [] lits in
-    vs1
-  ;;
-
-  let get_vars c = unique (get_clause_vars c @ (Ct.vars c.constr))
+  let get_vars c = unique (C.get_var_list c.clause @ (Ct.vars c.constr))
 
   let make c sel constr = { clause = c; selected = sel; constr = constr }
 
@@ -445,7 +439,7 @@ module ConstrainedClause = struct
     let _, rho = normalise_lit_list_renaming term_db_ref subst_lits in
     let c' = modify_clause clause subst_lits in
     let constr_subst = Ct.rename rho (Ct.substitute theta constr) in
-    let constr_proj = Ct.project (get_clause_vars cc) constr_subst in
+    let constr_proj = Ct.project (C.get_var_list cc.clause) constr_subst in
     let rho' = Subst.var_renaming_to_subst term_db_ref rho in
     make c' (apply rho' (apply theta lit)) constr_proj
   ;;
@@ -594,15 +588,15 @@ let split_clauses ?(rep=None) syms cc by_cc =
   (* If no representative is given: the representative of D in split(C,D) is 
   Aσ ∧ Bσ | C[L]σ, where σ is the mgu of at(L) and at(M) and (A∧B)σ is 
   satisfiable.*)
-  let rho, t' = rename_term (C.get_var_list clause_s) t in
-  if !O.current_options.dbg_backtrace then
+  let rho, t' = rename_term (CC.get_vars cc) t in
+  (*if !O.current_options.dbg_backtrace then
     Format.printf "SPLIT %a by %a, renamed %a\n" CC.pp_cclause cc Ct.pp_clit 
-      (by_lit, by_constr) T.pp_term t';
+      (by_lit, by_constr) T.pp_term t';*)
   try
     let sigma = unify_var_disj s t' in
     let constr = Ct.app (Ct.substitute rho by_constr) constr_s in
     if not (Ct.substituted_satisfiable constr sigma) then raise Split_undefined
-    else
+    else (
       (* compute the representative, if not given *)
       (* FIXME: following substitution needed? *)
       let cc' = { cc with CC.constr = Ct.substitute sigma constr } in 
@@ -611,7 +605,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
       let diff = diff cc rep sigma in
       (*if !O.current_options.dbg_backtrace then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
-        Format.printf "  difference:\n";*)
+        Format.printf "  difference:\n");*)
       let small_inst cc = smallest_gnd_instance syms (cc.selected, cc.constr) in
       (* add flag for representative *)
       let partition = rep :: diff in
@@ -622,7 +616,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
       L.iter (fun (cc, l) ->
         F.printf "  %a (for %a)\n%!" pp_cclause cc T.pp_term l
       ) partition;*)
-      L.map fst partition, rep, diff
+      L.map fst partition, rep, diff)
   with Unif.Unification_failed -> raise Split_undefined
 ;;
 
@@ -646,13 +640,11 @@ let gnd_instance_inter (t, constr_t) (s, constr_s) =
   let vars = unique (Ct.vars constr_s @ variables s) in
   let rho, t' = rename_term vars t in
   try 
-    F.printf "intersect: %a (is %a) vs %a\n%!" Ct.pp_clit (t, constr_t) T.pp_term t' Ct.pp_clit
-      (s, constr_s);
+    (*F.printf "intersect: %a (is %a) vs %a\n%!" Ct.pp_clit (t, constr_t) T.pp_term t' Ct.pp_clit
+      (s, constr_s);*)
     let theta = mgu_list [s,t'] in
     let constr = Ct.app (Ct.substitute rho constr_t) constr_s in
-    let r = Ct.substituted_satisfiable constr theta in
-    F.printf "  %s\n" (if r then "YES" else "NO");
-    r
+    Ct.substituted_satisfiable constr theta
   with Unif.Unification_failed -> false
 ;;
 
@@ -1391,7 +1383,6 @@ let rec factor_split state p1 p2 =
   inserted clause cc does not intersect with any other clause.
   Returns updated state. *)
 let rec complete_split state cc =
-  F.printf "complete split for %a\n%!" CC.pp_cclause cc;
   let cl = (cc.selected, cc.constr) in
   let intersects cl' = cl <> cl' && at_gnd_instance_inter cl cl' in
   try
