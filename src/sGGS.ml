@@ -19,6 +19,10 @@ module FM = Finite_models
 
 type result = Satisfiable | Unsatisfiable | Unknown
 
+let (<.>) f g x = f (g x)
+
+let (<!>) l k = L.nth l k
+
 let term_db_ref = SystemDBs.term_db_ref
 
 let add_term t = TermDB.add_ref t term_db_ref
@@ -428,6 +432,13 @@ module ConstrainedClause = struct
     let term_cmp = T.hash cc.selected = T.hash cc'.selected in
     let constr_cmp = Ct.equal cc.constr cc'.constr in
     cls_cmp cc.clause cc'.clause = 0 && term_cmp && constr_cmp
+  ;;
+
+  let eq_upto_select cc cc' =
+    if equal cc cc' then true
+    else 
+      let cls_cmp x y = pcmp (C.hash_bc x) (C.hash_bc y) in
+      cls_cmp cc.clause cc'.clause = 0 && Ct.equal cc.constr cc'.constr
   ;;
 
   let substitute theta cc =
@@ -1341,17 +1352,20 @@ let sggs_split ?(rep=None) where state pos by_cc =
   changed. Returns updated state and positions p1 < p2. *)
 let rec dependence_share_split state p1 p2 =
   match shares_dependency state p1 p2 with
-  | Some l when not (unifies l (L.nth state.trail p2).selected) -> 
+  | Some l when not (mgu_exists l (L.nth state.trail p2).selected) -> (
     let ccr = L.nth state.trail p2 in
-    (*F.printf "split %a left before move\n%a%!" CC.pp_cclause ccr pp_trail state;*)
+    F.printf "split at %d by %a left before move\n%!" p1 CC.pp_cclause ccr;
     let state, _, _ = sggs_split Left state p1 ccr in
-    (* selection in ccr may have changed, get modified ccr *)
-    let almost_ccr (cc,_) = cc.clause = ccr.clause && cc.constr = ccr.constr in
-    assert (L.exists almost_ccr (index state.trail));
-    let ccr', p2' = L.find almost_ccr (index state.trail) in
-    let _, _, p1' = find_last_dependence state (ccr'.clause, ccr'.constr) in
-    dependence_share_split state p1' p2'
-  | _ -> state, p1, p2
+    (* find split-by clause in trail: selection may have changed *)
+    try
+      let ccr', p2' = L.find (eq_upto_select ccr <.> fst) (index state.trail) in
+      let _, _, p1' = find_last_dependence state (ccr'.clause, ccr'.constr) in
+      dependence_share_split state p1' p2'
+    (* If the split-by clause had other literals assigned to split clause, it
+       was deleted. In this case, this conflict is no longer relevant. *)
+    with Not_found -> state, None
+  )
+  | _ -> state, Some (p1, p2)
 ;;
 
 let rec factor_split state p1 p2 =
@@ -1360,7 +1374,6 @@ let rec factor_split state p1 p2 =
   match factorizable state p1 p2 with
   | Some l when is_I_true ->
     assert (unifies l cc.selected);
-    Format.printf "factor split\n%!";
     let sigma = mgu_list [l,cc.selected] in
     let factor = CC.substitute sigma cc in
     (*F.printf "factor before move\nto factor %a\nfactor is %a\n%a%!"
@@ -1399,7 +1412,7 @@ input clauses.
 let rec sggs_no_conflict state clauses =
   try
     let ix_state = index state.trail in
-    let cc, pos = L.find (fun (c,_) -> is_conflicting state c) ix_state in
+    let cc, pos = L.find (is_conflicting state <.> fst) ix_state in
     if !O.current_options.dbg_backtrace then
       F.printf "resolve remaining conflict before extension\n%!";
     sggs_extend ~in_trail:true state clauses cc true pos
@@ -1448,7 +1461,6 @@ and sggs_extend ?(print=true) ?(in_trail=false) state clauses cc conflict pos =
     if conflict && has_dep then
       sggs_conflict print state' clauses cc pos
     else if conflict then (
-      (*F.printf "split before conflict\n%!";*)
       let compl_cc = (compl_lit cc.selected, cc.constr) in
       let inter c = gnd_instance_inter compl_cc (CC.to_clit c) && c <> cc in
       let cc' = L.find inter state'.trail in
@@ -1461,28 +1473,36 @@ and sggs_extend ?(print=true) ?(in_trail=false) state clauses cc conflict pos =
       
 (* 
 Handle conflict which emerges because conflict_clause was added to state at
-position pos, i.e., do resolve possibly preceded by move.
+position pos, i.e., do resolve possibly preceded by move possibly preceded by
+splitting/factoring.
 Precondition: cc depends on a clause in the trail.
 *)
-and sggs_conflict print statex clauses cc pos =
-  let conflict_clause, conf_lit, constr = cc.clause, cc.selected, cc.constr in
+and sggs_conflict do_print statex clauses cc pos =
+  let conf_lit, constr = cc.selected, cc.constr in
   let _,dep_lit,dep_pos = find_dependence statex.trail (conf_lit,constr) true in
   (*Format.printf "sggs_conflict: %a at %d %!" CC.pp_cclause cc pos;
   Format.printf "(depending on %d)\n%!" dep_pos;*)
   let trailx = statex.trail in
-  log_step_if print statex "extend-conflict";
-  (* get new trail, left and right resolution clauses and their positions *)
-  let state', left_res_cls, right_res_cls, left_pos, right_pos = 
-    (* move is necessary if conf_lit is I-true and to be inserted above *)
-    if (is_I_all_true statex conf_lit && pos >= dep_pos) || 
-      (is_I_all_true statex dep_lit && pos < dep_pos) then (
-      let left_pos, right_pos = min dep_pos pos, max dep_pos pos in
-      sggs_move statex right_pos left_pos)
-    else
-      if dep_pos < pos then statex, L.nth trailx dep_pos, cc, dep_pos, pos
-      else statex, cc, L.nth trailx dep_pos, pos, dep_pos
-  in
-  sggs_resolve state' clauses left_res_cls right_res_cls left_pos right_pos
+  log_step_if do_print statex "extend-conflict";
+  let lpos, rpos = min dep_pos pos, max dep_pos pos in
+  (* check if move is necessary: if conf_lit I-true and to be inserted above *)
+  if (is_I_all_true statex conf_lit && pos >= dep_pos) || 
+    (is_I_all_true statex dep_lit && pos < dep_pos) then (
+    (* prior to move, splitting the left (independent) clause is necessary if
+      in the right clause, apart from the selected literal there is another
+      literal that depends on the left clause.
+      If the two unify this is a factoring step, otherwise left split. *)
+    let statex1, lpos, rpos = factor_split statex lpos rpos in
+    let statex2, poss = dependence_share_split statex1 lpos rpos in
+    match poss with
+    | Some (lpos, rpos) ->
+      let statex3, lcls, rcls, lpos, rpos = sggs_move statex2 lpos rpos in
+      sggs_resolve statex3 clauses lcls rcls lpos rpos
+    (* This case happens after the split the right clause was deleted. The
+        conflict thus no longer needs to be considered. *)
+    | None -> sggs_no_conflict statex2 clauses
+  ) else (* no move *)
+    sggs_resolve statex clauses (trailx <!> lpos) (trailx <!> rpos) lpos rpos
 
 (* 
 Move cc in state from pos to below dep_pos.
@@ -1542,13 +1562,8 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
 (* 
 Move clause in state from p2 (on the right) to just before p1 (further left).
 *)
-and sggs_move state p2 p1 =
+and sggs_move state p1 p2 =
   assert (p2 >= p1);
-  let state, p1, p2 = factor_split state p1 p2 in
-  (* splitting the left (independent) clause is necessary if in right_cls, apart
-    from the selected literal there is another literal that depends on left_cls.
-    If the two unify  this is a factoring step, otherwise left split. *)
-  let state, p1, p2 = dependence_share_split state p1 p2 in
   let trail = state.trail in
   let to_be_moved = L.nth trail p2 in
   let bef, mid, aft = until p1 trail, from_to p1 p2 trail,from (p2 + 1) trail in  
