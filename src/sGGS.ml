@@ -23,6 +23,8 @@ let (<.>) f g x = f (g x)
 
 let (<!>) l k = L.nth l k
 
+let zip xs ys = L.fold_right2 (fun x y l -> (x,y) :: l) xs ys []
+
 let term_db_ref = SystemDBs.term_db_ref
 
 let add_term t = TermDB.add_ref t term_db_ref
@@ -258,36 +260,30 @@ module Constraint = struct
   ;;
 
   let substitute theta =
-    let rec diff x t acc = match t with
-    | T.Var (z, _) -> cons (DiffVars(x, z)) acc
-    | T.Fun (f, ts, _) ->
+    let rec mk_terms_diff acc = function (* constrain two terms different *)
+    | T.Var (z,_), T.Var (w,_) -> assert (w <> z); cons (DiffVars(z, w)) acc
+    | (T.Fun (f, ts, _) as t), T.Var (x, _)
+    | T.Var (x,_), (T.Fun (f, ts, _) as t) ->
       if L.for_all T.is_var ts then cons (DiffTop(x, f)) acc
       else
-        let subst_vars = Subst.fold (fun x t acc -> x :: (T.get_vars t) @ acc) theta [] in
-        let vs_used = x :: (T.get_vars t) @ subst_vars in
-        let vs_new = fresh_vars vs_used x (L.length ts) in
-        cons (DiffTop(x, f)) (L.fold_right2 diff vs_new ts acc)
+        let add_var x t acc = x :: (T.get_vars t) @ acc in
+        let used_vars = add_var x t (Subst.fold add_var theta []) in
+        let vs_new = fresh_vars used_vars x (L.length ts) in
+        let vs_new' = L.map T.create_var_term vs_new in
+        cons (DiffTop(x, f)) (L.fold_left mk_terms_diff acc (zip vs_new' ts))
+    | T.Fun (f, ss, _), T.Fun (g, ts, _) -> (
+      if f <> g then acc
+      else List.fold_left2 (fun a s t -> mk_terms_diff a (s, t)) acc ss ts)
     in
     let subst acc = function
     | DiffVars (x, y) ->
       let tx = try (SubstM.find x theta) with _ -> T.create_var_term x in
-      let ty = try (SubstM.find y theta) with _ -> T.create_var_term y in (
-      let rec mk_terms_diff acc = function (* constrain two terms different *)
-        | T.Var (z,_), T.Var (w,_) -> assert (w <> z); cons (DiffVars(z, w)) acc
-        | T.Fun (f, ts, _), T.Var (x,_)
-        | T.Var (x,_), T.Fun (f, ts, _) -> 
-          if L.for_all T.is_var ts then cons (DiffTop(x, f)) acc
-          else (*failwith "Complex constraint substitution"  FIXME: needed? *)
-            diff x ty acc
-        | T.Fun (f, ss, _), T.Fun (g, ts, _) -> 
-          if f <> g then acc
-          else List.fold_left2 (fun a s t -> mk_terms_diff a (s, t)) acc ss ts
-      in mk_terms_diff acc (tx, ty)
-      )
+      let ty = try (SubstM.find y theta) with _ -> T.create_var_term y in
+      mk_terms_diff acc (tx, ty)
     | DiffTop (x, f) ->
       match (try (SubstM.find x theta) with _ -> T.create_var_term x) with
-      | T.Var (z,_) -> cons (DiffTop(z, f)) acc
-      | T.Fun (g, _, _) -> assert(f <> g); acc
+      | T.Var (z, _) -> cons (DiffTop(z, f)) acc
+      | t -> mk_terms_diff acc (t, T.create_var_term x)
     in
     L.fold_left subst []
   ;;
@@ -986,7 +982,7 @@ let update_selection_from from_opt (state, from_pos) =
   ;;
   
   let remove_from_trail state pos =
-    let cc_old = L.nth state.trail pos in
+    let cc_old = state.trail <!> pos in
     let idx = state.trail_idx in
     DiscTree.elim_elem_from_lit idx cc_old.selected cc_old;
     let bef, aft = until pos state.trail, from (pos + 1) state.trail in
@@ -1140,12 +1136,12 @@ let rec pcgi_empty state (lit, constr) =
    (tlit, tlit_constr) is  Γ|_i. *)
 let at_gnd_instance_subset_pcgi (state, i) (lit, constr)  =
   let lit = T.get_atom lit in
-  let c = L.nth state.trail i in
+  let c = state.trail <!> i in
   let tlconstr = (T.get_atom c.selected, c.constr) in
   if not (covers tlconstr (lit, constr)) then false
   else
     let no_intersect j = 
-      let cc = L.nth state.trail j in
+      let cc = state.trail <!> j in
       (* assume that at_gnd_instance_subset_pcgi j state is checked separately.
       So either the ith clause does not intersect with the jth, or if it does,
       want that (lit,constr) does not, so that the relevant pcgis are produced*)
@@ -1156,12 +1152,12 @@ let at_gnd_instance_subset_pcgi (state, i) (lit, constr)  =
 ;;
 
 let gnd_instance_subset_pcgi (state, i) (lit, constr)  =
-  let c = L.nth state.trail i in
+  let c = state.trail <!> i in
   let tlconstr = (c.selected, c.constr) in
   if not (covers tlconstr (lit, constr)) then false
   else
     let no_intersect j = 
-      let cc = L.nth state.trail j in
+      let cc = state.trail <!> j in
       not (gnd_instance_inter tlconstr (T.get_atom cc.selected, cc.constr)) ||
       not (gnd_instance_inter tlconstr (lit, constr))
     in
@@ -1281,8 +1277,8 @@ let has_dependent state pos =
    checks whether there is another literal in the clause state[pos] which
    has the same dependency. Used to trigger factorization or left splitting. *)
 let shares_dependency state dep_pos pos =
-  let ccd = L.nth state.trail dep_pos in (* dependee *)
-  let cc = L.nth state.trail pos in (* dependent *)
+  let ccd = state.trail <!> dep_pos in (* dependee *)
+  let cc = state.trail <!> pos in (* dependent *)
   let atd, at = T.get_atom ccd.selected, T.get_atom cc.selected in
   assert (covers (atd, ccd.constr) (at, cc.constr));
   let ls = C.get_lits cc.clause in
@@ -1296,7 +1292,7 @@ let shares_dependency state dep_pos pos =
 let factorizable state dep_pos pos =
   match shares_dependency state dep_pos pos with
   (* unification check is done without renaming: ok? *)
-  | Some l when mgu_exists l (L.nth state.trail pos).selected -> Some l
+  | Some l when mgu_exists l (state.trail <!> pos).selected -> Some l
   | _ -> None
 ;;
 
@@ -1318,7 +1314,7 @@ let location_str = function Left -> "left" | _ -> "right"
 
 (* returns partition and representative; the latter can be given as argument *)
 let sggs_split ?(rep=None) where state pos by_cc =
-  let cc = L.nth state.trail pos in
+  let cc = state.trail <!> pos in
   let partition, rep, diff = split_clauses ~rep:rep state.signature cc by_cc in
   let bef, aft = until pos state.trail, from (pos + 1) state.trail in
   let state = empty_cache { state with trail =  bef @ aft } in
@@ -1352,8 +1348,8 @@ let sggs_split ?(rep=None) where state pos by_cc =
   changed. Returns updated state and positions p1 < p2. *)
 let rec dependence_share_split state p1 p2 =
   match shares_dependency state p1 p2 with
-  | Some l when not (mgu_exists l (L.nth state.trail p2).selected) -> (
-    let ccr = L.nth state.trail p2 in
+  | Some l when not (mgu_exists l (state.trail <!> p2).selected) -> (
+    let ccr = state.trail <!> p2 in
     F.printf "split at %d by %a left before move\n%!" p1 CC.pp_cclause ccr;
     let state, _, _ = sggs_split Left state p1 ccr in
     (* find split-by clause in trail: selection may have changed *)
@@ -1369,12 +1365,12 @@ let rec dependence_share_split state p1 p2 =
 ;;
 
 let rec factor_split state p1 p2 =
-  let cc = L.nth state.trail p2 in
+  let cc = state.trail <!> p2 in
   let is_I_true = is_I_all_true_clause state cc.clause in 
   match factorizable state p1 p2 with
   | Some l when is_I_true ->
     assert (unifies l cc.selected);
-    let sigma = mgu_list [l,cc.selected] in
+    let sigma = mgu_list [l, cc.selected] in
     let factor = CC.substitute sigma cc in
     (*F.printf "factor before move\nto factor %a\nfactor is %a\n%a%!"
       CC.pp_cclause cc CC.pp_cclause factor pp_trail state;*)
@@ -1524,7 +1520,7 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
       let state', rep, _ = sggs_split Right state right_pos left_res_cls in
       state', get_trail_pos state' rep)
   in
-  let right_res_cls = L.nth state.trail right_pos in
+  let right_res_cls = state.trail <!> right_pos in
   let right_lit, right_constr = right_res_cls.selected, right_res_cls.constr in
   let theta = ensure_match (compl_lit left_lit) right_lit in
   let apply_theta = Subst.apply_subst_term term_db_ref theta in
@@ -1565,13 +1561,12 @@ Move clause in state from p2 (on the right) to just before p1 (further left).
 and sggs_move state p1 p2 =
   assert (p2 >= p1);
   let trail = state.trail in
-  let to_be_moved = L.nth trail p2 in
   let bef, mid, aft = until p1 trail, from_to p1 p2 trail,from (p2 + 1) trail in  
-  let trail' = bef @ [to_be_moved] @ mid @ aft in
+  let trail' = bef @ [trail <!> p2] @ mid @ aft in
   (* index does not change because set of literals remains the same *)
   let state_moved = reorder_state state trail' in
   log_step state_moved "move";
-  let cleft, cright = L.nth trail' p1, L.nth trail' (p1 + 1) in
+  let cleft, cright = trail' <!> p1, trail' <!> (p1 + 1) in
   let state', cright = state_moved, cright (* FIXME: split? *) in
   state', cleft, cright, p1, p1 + 1
 ;;
