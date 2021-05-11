@@ -761,6 +761,7 @@ exception No_dependence of constr_literal
 type state = {
   conflicts: int ref;
   deleted_clauses: int ref;
+  extensions: int ref;
   generated_clauses: int ref;
   initial: initial_interpretation;
   max_trail_len: int ref;
@@ -779,6 +780,7 @@ let mk_initial_state init gp syms =
   {
   conflicts = ref 0;
   deleted_clauses = ref 0;
+  extensions = ref 0;
   generated_clauses = ref 0;
   initial = init;
   max_trail_len = ref 0;
@@ -812,6 +814,7 @@ let log_step state step_name =
 
 let print_stats state =
   F.printf "\n# steps:             %d\n" !(state.steps);
+  F.printf "# extensions:        %d\n" !(state.extensions);
   F.printf "# conflicts:         %d\n" !(state.conflicts);
   F.printf "# generated clauses: %d\n" !(state.generated_clauses);
   F.printf "# deleted clauses:   %d\n" !(state.deleted_clauses);
@@ -822,6 +825,11 @@ let print_stats state =
 let log_step_if b state step_name = if b then log_step state step_name else ()
 
 let inc_clauses state = state.generated_clauses := !(state.generated_clauses) +1
+
+let inc_clauses_and_extensions state =
+  state.extensions := !(state.extensions) + 1;
+  inc_clauses state
+;;
 
 let insert x ys pos = 
   let l = until pos ys @ [x] @ (from pos ys) in
@@ -1481,7 +1489,7 @@ let rec sggs_no_conflict state clauses =
     | Some ((c, constr), conflict, select), rest ->
       assert (not state.ground_preserving || C.is_ground (c));
       let cc = mk_cclause c select constr in
-      inc_clauses state;
+      inc_clauses_and_extensions state;
       let state' = {state with extension_queue = Some rest} in
       sggs_extend state' clauses cc conflict (L.length state.trail)
 
