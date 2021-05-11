@@ -655,9 +655,9 @@ let split_clauses ?(rep=None) syms cc by_cc =
       let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
-      if !O.current_options.dbg_backtrace then (
+      (*if !O.current_options.dbg_backtrace then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
-        Format.printf "  difference:\n");
+        Format.printf "  difference:\n");*)
       let small_inst cc = smallest_gnd_instance syms (cc.selected, cc.constr) in
       (* add flag for representative *)
       let partition = rep :: diff in
