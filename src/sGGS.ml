@@ -1746,4 +1746,11 @@ let do_something_smart clauses =
     Unknown
 ;;
 
+let print_empty_clause_result _ =
+  start_time := Unix.gettimeofday ();
+  Format.printf "\nSZS status Unsatisfiable\n%!";
+  let state = mk_initial_state AllNegative false [] in
+  print_stats state;
+;;
+
 let () = Printexc.record_backtrace true

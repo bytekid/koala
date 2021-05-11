@@ -152,7 +152,9 @@ let run_koala () =
 
     dbg D_trace_prep (lazy ("parsing start"));
     dbg_env D_elapsed (fun () -> timestamp ());
-    assign_float_stat (get_time_fun 3 ParseFiles.parse) parsing_time;
+    try
+      assign_float_stat (get_time_fun 3 ParseFiles.parse) parsing_time;
+    with Clause.Empty_clause _ ->  (SGGS.print_empty_clause_result (); exit(0));
     dbg_env D_elapsed (fun () -> (elapsed_ts "parsing and AIG"));
 
     !current_options.symbol_type_check <- input_symbol_type_check;
@@ -162,7 +164,6 @@ let run_koala () =
     dbg D_trace_prep (lazy ("change_conj_symb_input start"));
     Parser_types.change_conj_symb_input ();
     dbg_env D_elapsed (fun () -> (elapsed_ts "change_conj_symb_input"));
-
     
     (*-------------------------------*)
     let current_clauses = ref (Parser_types.get_clauses_without_extra_axioms ()) in
