@@ -63,12 +63,12 @@ let from_to i j l = until (j - i) (from i l)
 let rec range i j = if i >= j then [] else i :: (range (i+1) j) 
 
 (* remove first *)
-let rec remove cmp x = function
+let rec remove eq x = function
   | [] -> failwith "remove: failed"
-  | y :: ys -> if cmp x y == 0 then ys else y :: (remove cmp x ys)
+  | y :: ys -> if eq x y then ys else y :: (remove eq x ys)
 ;;
 
-let remove_term = remove T.compare_key
+let remove_term = remove (fun s t -> T.compare_key s t = 0)
 
 let rec unique ?(c = pcmp) = function
   | [] -> []
@@ -208,17 +208,30 @@ module Constraint = struct
     | DiffVars of Var.var * Var.var
     | DiffTop of Var.var * Symbol.symbol 
   
-  type t = atomic list
+  type t = atomic list list (* disjunction of conjunctions *)
 
-  let empty = []
+  let empty = [[]]
+
+  let atom a = [[a]]
 
   let pp_constraint ppf cs =
-    L.iter (fun (c, i) ->
+    let pp_atom (c, i) =
       if i > 0 then F.fprintf ppf " & ";
       match c with
-      | DiffVars (x, y) -> F.fprintf ppf "%a != %a" Var.pp_var x Var.pp_var y;
+      | DiffVars (x, y) -> F.fprintf ppf "%a != %a" Var.pp_var x Var.pp_var y
       | DiffTop (x, f) -> F.fprintf ppf "top(%a) != %a"
-        Var.pp_var x Symbol.pp_symbol f) (index cs)
+        Var.pp_var x Symbol.pp_symbol f
+    in
+    let pp_conj (c, i) =
+      if i > 0 then F.fprintf ppf " | ";
+      F.fprintf ppf "( ";
+      List.iter pp_atom (index c);
+      F.fprintf ppf " )"
+    in
+    match cs with
+    | [[]] -> ()
+    | [[a]] -> pp_atom (a, 0)
+    | _ -> List.iter pp_conj (index cs)
   ;;
 
   let pp_clit ppf (l, constr) =
@@ -237,13 +250,30 @@ module Constraint = struct
 
   let atomic_equal s t = cmp_atomic s t = 0
 
-  let equal c c' = L.for_all (fun a -> L.exists (atomic_equal a) c') c
+  let eq_conj c1 c2 =
+    let imp c c' = L.for_all (fun a -> L.exists (atomic_equal a) c') c in
+    imp c1 c2 && imp c2 c1
+  ;;
 
-  let cons c cs = if L.exists (atomic_equal c) cs then cs else c :: cs
+  let equal ct1 ct2 =
+    let conj_subset c c' = L.for_all (fun a-> L.exists (atomic_equal a) c') c in
+    let conj_equal c c' = conj_subset c c' && conj_subset c' c in
+    let disj_subset ct = L.for_all (fun c -> L.exists (conj_equal c) ct) in
+    disj_subset ct1 ct2 && disj_subset ct2 ct1
+  ;;
 
-  let app cs cs' = L.fold_right cons cs cs'
+  let cons a cs = if L.exists (atomic_equal a) cs then cs else a :: cs
 
-  let substituted_satisfiable c theta =
+  let conj1 c ct = List.map ((@) c) ct
+
+  let conj ct1 ct2 = L.fold_right conj1 ct2 ct1
+
+  let disj ct1 ct2 = ct1 @ ct2
+    (*let disj1 d ds = if L.exists (eq_conj d) ds then ds else d :: ds in
+    List.fold_right disj1 ct1 ct2*)
+  ;;
+
+  let substituted_satisfiable ct theta =
     let sat = function
       | DiffVars (x, y) -> (
         let tx = try Some (SubstM.find x theta) with _ -> None in
@@ -256,36 +286,40 @@ module Constraint = struct
       | DiffTop (x, f) ->
         try T.get_top_symb (SubstM.find x theta) <> f with _ -> true
     in
-    L.for_all sat c
+    L.exists (fun c -> L.for_all sat c) ct
   ;;
 
-  let substitute theta =
-    let rec mk_terms_diff acc = function (* constrain two terms different *)
-    | T.Var (z,_), T.Var (w,_) -> assert (w <> z); cons (DiffVars(z, w)) acc
+  let substitute theta ct =
+    (* Extend the constraint ct to include difference of terms s and t *)
+    let rec add_terms_diff ct = function (* constrain two terms different *)
+    | T.Var (z,_), T.Var (w,_) -> if w = z then [] else conj1 [DiffVars(z,w)] ct
     | (T.Fun (f, ts, _) as t), T.Var (x, _)
     | T.Var (x,_), (T.Fun (f, ts, _) as t) ->
-      if L.for_all T.is_var ts then cons (DiffTop(x, f)) acc
+      if L.for_all T.is_var ts then conj1 [DiffTop(x, f)] ct
       else
         let add_var x t acc = x :: (T.get_vars t) @ acc in
         let used_vars = add_var x t (Subst.fold add_var theta []) in
         let vs_new = fresh_vars used_vars x (L.length ts) in
         let vs_new' = L.map T.create_var_term vs_new in
-        cons (DiffTop(x, f)) (L.fold_left mk_terms_diff acc (zip vs_new' ts))
-    | T.Fun (f, ss, _), T.Fun (g, ts, _) -> (
-      if f <> g then acc
-      else List.fold_left2 (fun a s t -> mk_terms_diff a (s, t)) acc ss ts)
+        let diff_top = atom (DiffTop(x, f)) in
+        let diff_arg = L.map (add_terms_diff ct) (zip vs_new' ts) in
+        L.fold_left disj diff_top diff_arg (* difference on top or in arg *)
+    | T.Fun (f, ss, _), T.Fun (g, ts, _) ->
+      if f <> g then ct
+      else L.fold_left disj [] (L.map (add_terms_diff ct) (zip ss ts))
     in
-    let subst acc = function
+    let subst_atom = function
     | DiffVars (x, y) ->
       let tx = try (SubstM.find x theta) with _ -> T.create_var_term x in
       let ty = try (SubstM.find y theta) with _ -> T.create_var_term y in
-      mk_terms_diff acc (tx, ty)
+      add_terms_diff [[]] (tx, ty)
     | DiffTop (x, f) ->
       match (try (SubstM.find x theta) with _ -> T.create_var_term x) with
-      | T.Var (z, _) -> cons (DiffTop(z, f)) acc
-      | t -> mk_terms_diff acc (t, T.create_var_term x)
+      | T.Var (z, _) -> atom (DiffTop(z, f))
+      | t -> add_terms_diff [[]] (t, T.create_var_term x)
     in
-    L.fold_left subst []
+    let subst_conj = L.fold_left (fun ct a -> conj ct (subst_atom a)) empty in
+    L.fold_left (fun ct' c -> disj ct' (subst_conj c)) [] ct
   ;;
 
   let rename rho =
@@ -294,47 +328,53 @@ module Constraint = struct
     | DiffVars (x, y) -> DiffVars (app_rho x, app_rho y)
     | DiffTop (x, f) -> DiffTop (app_rho x, f)
     in
-    L.map ren
+    L.map (L.map ren)
   ;;
 
-  let vars =
+  let vars ct=
     let vars acc = function
     | DiffVars (x, y) ->
       let acc' =  if L.mem x acc then acc else x :: acc in
       if L.mem y acc' then acc' else y :: acc'
     | DiffTop (x, f) -> if L.mem x acc then acc else x :: acc
     in
-    L.fold_left vars []
+    unique (L.fold_left (fun vs c -> L.fold_left vars vs c) [] ct)
   ;;
 
   let unsat funs cs =
     let val_type f = snd (Symbol.get_stype_args_val_def f) in
-    let var_type_exhausted x =
+    let var_type_exhausted c x =
       let t = try Var.get_type x with _ -> failwith "var has no type" in
       let tfuns = L.filter (fun (f, _) -> val_type f = t) funs in
       assert (tfuns <> []);
-      let res = L.for_all (fun (f, _) -> L.mem (DiffTop(x, f)) cs) tfuns in
+      let res = L.for_all (fun (f, _) -> L.mem (DiffTop(x, f)) c) tfuns in
       (*if res then F.printf "type of %s exhausted\n" (Var.to_string x);*)
       res
     in
     let unsat = function DiffVars (x, y) ->  x = y | _ -> false in
-    L.exists unsat cs || L.exists var_type_exhausted (vars cs)
+    let vs = vars cs in
+    let unsatc c = L.exists unsat c || L.exists (var_type_exhausted c) vs in
+    L.for_all unsatc cs
   ;;
 
   (* project constraint to variable list *)
   let project vars =
-    let project acc = function
+    let project conj = function
       | DiffVars (x, y) as c ->
-        if L.mem x vars && L.mem y vars then cons c acc else acc
+        if L.mem x vars && L.mem y vars then cons c conj else conj
       | DiffTop (x, f) ->
-        if L.mem x vars then cons (DiffTop (x, f)) acc else acc
+        if L.mem x vars then cons (DiffTop (x, f)) conj else conj
     in
-    L.fold_left project []
+    L.map (fun c -> L.fold_left project [] c)
   ;;
 
-  let implies c c_gen = L.for_all (fun a -> L.exists (atomic_equal a) c) c_gen
+  let implies ct ct_implied =
+    let impl_by c2 c1 = L.for_all (fun a-> L.exists (atomic_equal a) c1) c2 in
+    L.for_all (fun c_implied -> L.exists (impl_by c_implied) ct) ct_implied
+  ;;
 
-  let negate away_vars cs =
+  (* returns list of substitutions *)
+  let negate away_vars ct =
     let neg = function
     | DiffVars (x, y) -> Subst.singleton x (T.create_var_term y)
     | DiffTop (x,f) ->
@@ -342,7 +382,18 @@ module Constraint = struct
       let xs = L.map T.create_var_term (fresh_vars away_vars x a) in
       Subst.singleton x (T.create_fun_term f xs)
     in
-    L.map neg cs
+    let negate_conj c = L.map neg c in
+    let option_add x t = function
+      | Some s -> (try Some (Subst.add x t s) with _ -> None)
+      | _ -> None
+    in
+    let union s1 s2 = Subst.fold option_add s1 (Some s2) in
+    let add s ss s' = match union s s' with Some s1 -> s1 :: ss | _ -> ss in
+    let add1 ss_ok s = L.fold_left (add s) [] ss_ok in
+    let add_all ss_ok ss =
+      L.fold_left (fun ss_ok2 s -> add1 ss_ok s @ ss_ok2) [] ss
+    in
+    L.fold_left add_all [Subst.create ()] (L.map negate_conj ct)
   ;;
 
 end
@@ -353,7 +404,6 @@ module Ct = Constraint
   Raises Ct.Is_unsat if no such instance exists.
 *)
 let smallest_gnd_instance syms (lit, constr) =
-  (*F.printf "SIG %a\n%!" Ct.pp_clit (lit, constr);*)
   let product xss =
     let cross xs = L.map (fun ys -> L.map (fun x -> x :: ys) xs) in
     let cross_conc xs yss = L.concat (cross xs yss) in
@@ -518,7 +568,8 @@ let diff cc by_cc sigma =
       let xs = L.map T.create_var_term (fresh_vars away x (L.length ts)) in
       let tau = Subst.singleton x (T.create_fun_term f xs) in
       let cc_sub = CC.substitute tau cc in
-      diff ((CC.make clause_s s (Ct.DiffTop(x, f) :: constr_s)) :: acc) i cc_sub
+      let constr_s' = Ct.conj (Ct.atom (Ct.DiffTop(x, f))) constr_s in
+      diff ((CC.make clause_s s constr_s') :: acc) i cc_sub
     | _ -> 
       let also_mapped_to x z y =
         x <> y && (match osubst y with Some (_, Var(x',_)) -> x=x' | _ -> false)
@@ -538,7 +589,8 @@ let diff cc by_cc sigma =
       (* DiffVar: two variables x, y are mapped to same var z  *)
         let tau = Subst.singleton x (T.create_var_term y) in
         let cc_subst = CC.substitute tau cc in
-        diff (CC.make clause_s s (Ct.DiffVars(x,y) :: constr_s)::acc) i cc_subst
+        let constr_s' = Ct.conj (Ct.atom (Ct.DiffVars(x,y))) constr_s in
+        diff (CC.make clause_s s constr_s' :: acc) i cc_subst
       | _ ->  (* remaining cases *)
       (* apply DiffId: since the second clause is an instance of the first, but
         no variable in vars_s is mapped to a functional term and no two 
@@ -549,8 +601,8 @@ let diff cc by_cc sigma =
         (* DiffElim *)
         if CC.equal cc cc_sigma then
           if s = r && not (Ct.implies constr_s constr_r) then (
-            let cs = L.fold_right (remove Ct.cmp_atomic) constr_s constr_r in
-            let subs = Ct.negate (CC.get_vars cc) cs in
+            (*let cs = L.fold_right (remove Ct.eq_conj) constr_s constr_r in*)
+            let subs = Ct.negate (CC.get_vars cc) constr_r in
             let subs' = L.filter (Ct.substituted_satisfiable constr_s) subs in
             let ccs = L.map (fun sigma -> CC.substitute sigma cc) subs' @ acc in
             ccs
@@ -594,7 +646,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
       (by_lit, by_constr) T.pp_term t';*)
   try
     let sigma = unify_var_disj s t' in
-    let constr = Ct.app (Ct.substitute rho by_constr) constr_s in
+    let constr = Ct.conj (Ct.substitute rho by_constr) constr_s in
     if not (Ct.substituted_satisfiable constr sigma) then raise Split_undefined
     else (
       (* compute the representative, if not given *)
@@ -603,9 +655,9 @@ let split_clauses ?(rep=None) syms cc by_cc =
       let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
-      (*if !O.current_options.dbg_backtrace then (
+      if !O.current_options.dbg_backtrace then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
-        Format.printf "  difference:\n");*)
+        Format.printf "  difference:\n");
       let small_inst cc = smallest_gnd_instance syms (cc.selected, cc.constr) in
       (* add flag for representative *)
       let partition = rep :: diff in
@@ -639,11 +691,12 @@ let gnd_instance_inter (t, constr_t) (s, constr_s) =
   let constr_s = Ct.project (T.get_vars s) constr_s in
   let vars = unique (Ct.vars constr_s @ variables s) in
   let rho, t' = rename_term vars t in
+  let constr_t' = Ct.substitute rho constr_t in
   try 
-    (*F.printf "intersect: %a (is %a) vs %a\n%!" Ct.pp_clit (t, constr_t) T.pp_term t' Ct.pp_clit
-      (s, constr_s);*)
+    (*F.printf "intersect: %a (is %a) vs %a\n%!"
+    Ct.pp_clit (t,constr_t) Ct.pp_clit (t',constr_t') Ct.pp_clit (s,constr_s);*)
     let theta = mgu_list [s,t'] in
-    let constr = Ct.app (Ct.substitute rho constr_t) constr_s in
+    let constr = Ct.conj constr_t' constr_s in
     Ct.substituted_satisfiable constr theta
   with Unif.Unification_failed -> false
 ;;
@@ -664,7 +717,7 @@ module PartialInterpretation = struct
   (* Whether constr_lits (presumably on the trail) satisfy l, where the latter
      may be constrained by lconstr.
      Assumption: interpretation is not contradictory, i.e. dp(Gamma) = Gamma *)
-  let trail_sat_lit ?(lconstr = []) constr_lits l =
+  let trail_sat_lit ?(lconstr = Ct.empty) constr_lits l =
     let sl = Term.get_sign_lit l in
     (* search from back of trail for some matching literal *)
     let update_val ((lp_lit, lp_constr) as lp) = function
@@ -678,7 +731,7 @@ module PartialInterpretation = struct
     L.fold_right update_val constr_lits None
   ;;
 
-  let satisfies_lit ?(constr = []) interp l =
+  let satisfies_lit ?(constr = Ct.empty) interp l =
     let sl = T.get_sign_lit l in
     let initial_val l = function AllPositive -> sl | AllNegative -> not sl in
     match trail_sat_lit ~lconstr:constr interp.constr_lits l with
@@ -1000,7 +1053,7 @@ let subst_clause theta c (constr0, constr1) =
   (*F.printf "subst %a to %a: now constraint %a\n%!" C.pp_clause c C.pp_clause c'
     Ct.pp_constraint constr0;*)
   let constr0' = Ct.substitute theta constr0 in
-  let constr' = Ct.rename rho (Ct.app constr0' constr1) in
+  let constr' = Ct.rename rho (Ct.conj constr0' constr1) in
   c', constr'
 ;;
 
@@ -1071,7 +1124,7 @@ let add_intersecting_instances state cs =
           let apply_theta = Subst.apply_subst_term term_db_ref theta in
           if not (Ct.substituted_satisfiable constrs theta) then acc
           else
-            let constrs' =Ct.app (trail_constr) (Ct.substitute theta constrs) in
+            let constrs' = Ct.conj trail_constr (Ct.substitute theta constrs) in
             let substed' = apply_theta u :: (L.map apply_theta substed) in
             let inst = (L.map apply_theta us, substed', constrs') in
             inst :: acc
@@ -1088,7 +1141,7 @@ let add_intersecting_instances state cs =
     (* instantiate both I-all-true literals (see SGGS extension scheme) and
     I-all-false ones, to reflect extension substitution in extension 2. But
     I-all-false ones do not have to be instantiated. *)
-    ext (C.get_lits c, [], [])
+    ext (C.get_lits c, [], Ct.empty)
   in
   let csx = L.concat (L.map ext_clause cs) in
   let cls_cmp x y = pcmp (C.hash_bc x) (C.hash_bc y) in
@@ -1103,7 +1156,6 @@ let add_intersecting_instances state cs =
 
 (* pcgi(A|L, Γ A|C[L]) = 0  *)
 let rec pcgi_empty state (lit, constr) =
-  (*F.printf "check pcgi empty %a\n%!" Ct.pp_clit (lit, constr);*)
   let covers c = covers c (lit, constr) || covers c (compl_lit lit, constr) in
   if L.exists (fun c -> covers (CC.to_clit c)) state.trail then
     true
@@ -1168,7 +1220,6 @@ let gnd_instance_subset_pcgi (state, i) (lit, constr)  =
    to be selected.
 *)
 let check_valid_extension state (c, constr) =
- (*F.printf "check extension %a | %a\n%!" Ct.pp_constraint constr C.pp_clause c;*)
   let ip = I.from_trail state.initial state.trail in
   let sat = L.exists (I.satisfies_lit ~constr:constr ip) (C.get_lits c) in
   (* FIXME: avoid generating satisfied extension clauses in the first place *)
@@ -1188,7 +1239,7 @@ let check_valid_extension state (c, constr) =
   let is_dependent = has_dependence state in
   let all_dep = L.for_all is_dependent flits in
   if all_dep then (
-    (*F.printf "EXTENSION 2: %a %a\n%!" Ct.pp_constraint constr C.pp_clause c;*)
+    F.printf "EXTENSION 2: %a %a\n%!" Ct.pp_constraint constr C.pp_clause c;
     Some ((c, constr), true, fst (L.find is_dependent flits)))
   (* 3. Non-conflicting non-critical SGGS-extension *)
   else (
