@@ -407,8 +407,16 @@ module Ct = Constraint
   Raises Ct.Is_unsat if no such instance exists.
 *)
 let smallest_gnd_instance syms (lit, constr) =
+  (*Format.printf "smallest ground instance %a?\n%!" Ct.pp_clit (lit, constr);*)
   let product xss =
-    let cross xs = L.map (fun ys -> L.map (fun x -> x :: ys) xs) in
+    let cons_check ys acc (x, t) =
+      if Ct.implies constr [[Ct.DiffTop(x, T.get_top_symb t)]] then acc
+      else
+        let clash (y,u) = Ct.implies constr [[Ct.DiffVars(x,y)]] && t=u in 
+        if L.exists clash ys then acc
+        else ((x, t) :: ys) :: acc
+    in
+    let cross xs = L.rev_map (fun ys -> L.fold_left (cons_check ys) [] xs) in
     let cross_conc xs yss = L.concat (cross xs yss) in
     let prod xss = LL.of_list (L.fold_right cross_conc xss [[]]) in
     let cutat i xs = LL.to_list (LL.take i xs) in
@@ -419,7 +427,7 @@ let smallest_gnd_instance syms (lit, constr) =
     let sub_empty = Subst.create () in
     let sigma = L.fold_left (fun s (x,u) -> Subst.add x u s) sub_empty args in
     let pred = Ct.substituted_satisfiable constr in
-    (*F.printf "%a %B\n%!" T.pp_term
+    (*F.printf "smallest? %a %B\n%!" T.pp_term
       (Subst.apply_subst_term term_db_ref sigma lit) (pred sigma);*)
     if pred sigma then Subst.apply_subst_term term_db_ref sigma lit
     else smallest (LL.tl argss)

@@ -7,7 +7,7 @@ import sys
 import random
 import json
 
-timeout_interval = 300
+timeout_interval = 10
 
 SAT = 1
 UNSAT = 2
