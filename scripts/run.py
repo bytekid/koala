@@ -49,7 +49,8 @@ def run_sggs(p, f):
     return UNSAT, (p, resrec) # clausification may return trivial stuff
   outfile = "sggsruns/" + p + ".txt"
   cmd = "./koalaopt --dbg_backtrace true "
-  print(p, flush=True)
+  print(p)
+  sys.stdout.flush()
   if True or not os.path.exists(outfile):
     bashCommand = ("./sandbox %d %s %s" % (timeout_interval, cmd, f))
     print(bashCommand)
@@ -65,7 +66,8 @@ def run_sggs(p, f):
     f.write(out)
     f.close()
   scode = "SUC" if "atisfiable" in out else "TMO" if "TIMEOUT" in out else "UNK"
-  print(p + ": " + scode, flush=True)
+  print(p + ": " + scode)
+  sys.stdout.flush()
   if scode == "SUC":
     print("new acquirement " + p)
   result = SAT if "Satisfiable" in out else UNSAT if "Unsatisfiable" in out \
