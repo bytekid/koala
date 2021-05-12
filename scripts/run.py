@@ -49,7 +49,7 @@ def run_sggs(p, f):
     return UNSAT, (p, resrec) # clausification may return trivial stuff
   outfile = "sggsruns/" + p + ".txt"
   cmd = "./koalaopt --dbg_backtrace true "
-  print(p)
+  print(p, flush=True)
   if True or not os.path.exists(outfile):
     bashCommand = ("./sandbox %d %s %s" % (timeout_interval, cmd, f))
     print(bashCommand)
@@ -65,6 +65,7 @@ def run_sggs(p, f):
     f.write(out)
     f.close()
   scode = "SUC" if "atisfiable" in out else "TMO" if "TIMEOUT" in out else "UNK"
+  print(p + ": " + scode, flush=True)
   if scode == "SUC":
     print("new acquirement " + p)
   result = SAT if "Satisfiable" in out else UNSAT if "Unsatisfiable" in out \
@@ -110,25 +111,24 @@ if __name__ == "__main__":
   features = get_problem_features()
   old_results = get_results()
 
-  while len(old_results) < len(ps):
-    random.shuffle(ps)
-    jobs = []  
-    for p in ps:
-      already_done = p in old_results
-      suc = old_results[p]["success"] if already_done else ''
-      tmo = old_results[p]["timeout"] if already_done else 0
-      skip = suc == 'SUC' or (suc == 'TMO' and tmo >= timeout_interval)
-      if not skip:
-        jobs.append((p, features[p]))
-    
-    numprocs = multiprocessing.cpu_count() - 1
-    print("use %d procs" % numprocs)
-    print("%d jobs" % len(jobs))
-    pool = multiprocessing.Pool(numprocs)
-    total_tasks = len(jobs)
-    results = pool.map_async(check, jobs)
-    pool.close()
-    pool.join()
-    accumulate(results.get(), old_results)
-    old_results = get_results()
+  random.shuffle(ps)
+  jobs = []  
+  for p in ps:
+    already_done = p in old_results
+    suc = old_results[p]["success"] if already_done else ''
+    tmo = old_results[p]["timeout"] if already_done else 0
+    skip = suc == 'SUC' or (suc == 'TMO' and tmo >= timeout_interval)
+    if not skip:
+      jobs.append((p, features[p]))
+  
+  numprocs = multiprocessing.cpu_count() - 1
+  print("use %d procs" % numprocs)
+  print("%d jobs" % len(jobs))
+  pool = multiprocessing.Pool(numprocs)
+  total_tasks = len(jobs)
+  results = pool.map_async(check, jobs)
+  pool.close()
+  pool.join()
+  accumulate(results.get(), old_results)
+  old_results = get_results()
   
