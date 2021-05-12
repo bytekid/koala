@@ -295,7 +295,8 @@ module Constraint = struct
     | T.Var (z,_), T.Var (w,_) -> if w = z then [] else conj1 [DiffVars(z,w)] ct
     | (T.Fun (f, ts, _) as t), T.Var (x, _)
     | T.Var (x,_), (T.Fun (f, ts, _) as t) ->
-      if L.for_all T.is_var ts then conj1 [DiffTop(x, f)] ct
+      if L.mem x (T.get_vars t) then ct (* satisfied by occurs check *)
+      else if L.for_all T.is_var ts then conj1 [DiffTop(x, f)] ct
       else
         let add_var x t acc = x :: (T.get_vars t) @ acc in
         let used_vars = add_var x t (Subst.fold add_var theta []) in
@@ -642,9 +643,9 @@ let split_clauses ?(rep=None) syms cc by_cc =
   Aσ ∧ Bσ | C[L]σ, where σ is the mgu of at(L) and at(M) and (A∧B)σ is 
   satisfiable.*)
   let rho, t' = rename_term (CC.get_vars cc) t in
-  if !O.current_options.dbg_backtrace then
+  (*if !O.current_options.dbg_backtrace then
     Format.printf "SPLIT %a by %a, renamed %a\n" CC.pp_cclause cc Ct.pp_clit 
-      (by_lit, by_constr) T.pp_term t';
+      (by_lit, by_constr) T.pp_term t';*)
   try
     let sigma = unify_var_disj s t' in
     let constr = Ct.conj (Ct.substitute rho by_constr) constr_s in
@@ -656,9 +657,9 @@ let split_clauses ?(rep=None) syms cc by_cc =
       let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
-      if !O.current_options.dbg_backtrace then (
+      (*if !O.current_options.dbg_backtrace then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
-        Format.printf "  difference:\n");
+        Format.printf "  difference:\n");*)
       let small_inst cc = smallest_gnd_instance syms (cc.selected, cc.constr) in
       (* add flag for representative *)
       let partition = rep :: diff in
@@ -1248,7 +1249,7 @@ let check_valid_extension state (c, constr) =
   let is_dependent = has_dependence state in
   let all_dep = L.for_all is_dependent flits in
   if all_dep then (
-    F.printf "EXTENSION 2: %a %a\n%!" Ct.pp_constraint constr C.pp_clause c;
+    (*F.printf "EXTENSION 2: %a %a\n%!" Ct.pp_constraint constr C.pp_clause c;*)
     Some ((c, constr), true, fst (L.find is_dependent flits)))
   (* 3. Non-conflicting non-critical SGGS-extension *)
   else (
@@ -1573,8 +1574,8 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
     if covers (compl_lit left_lit, left_res_cls.constr) right_clit then
       state, right_pos
     else (
-      F.printf "split %d before resolve: %a by %a\n%!" right_pos T.pp_term
-        (compl_lit right_lit) T.pp_term left_lit;
+      (*F.printf "split %d before resolve: %a by %a\n%!" right_pos T.pp_term
+        (compl_lit right_lit) T.pp_term left_lit;*)
       let state', rep, _ = sggs_split Right state right_pos left_res_cls in
       state', get_trail_pos state' rep)
   in
