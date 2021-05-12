@@ -563,7 +563,8 @@ let diff cc by_cc sigma =
     let map_to p o x =
       match osubst x with Some y when p (snd y) -> Some y | _ -> o
     in
-    match L.fold_left (map_to (fun t -> not (T.is_var t))) None vars_s with
+    (* check if some var is mapped to functional term *)
+    match L.fold_left (map_to (not <.> T.is_var)) None vars_s with
     | Some (x, T.Fun(f, ts, _)) ->
       let xs = L.map T.create_var_term (fresh_vars away x (L.length ts)) in
       let tau = Subst.singleton x (T.create_fun_term f xs) in
@@ -572,7 +573,7 @@ let diff cc by_cc sigma =
       diff ((CC.make clause_s s constr_s') :: acc) i cc_sub
     | _ -> 
       let also_mapped_to x z y =
-        x <> y && (match osubst y with Some (_, Var(x',_)) -> x=x' | _ -> false)
+        x <> y && (match osubst y with Some (_, Var(x',_)) -> z=x' | _ -> false)
       in
       let check x =
         let xt = T.create_var_term x in
@@ -641,9 +642,9 @@ let split_clauses ?(rep=None) syms cc by_cc =
   Aσ ∧ Bσ | C[L]σ, where σ is the mgu of at(L) and at(M) and (A∧B)σ is 
   satisfiable.*)
   let rho, t' = rename_term (CC.get_vars cc) t in
-  (*if !O.current_options.dbg_backtrace then
+  if !O.current_options.dbg_backtrace then
     Format.printf "SPLIT %a by %a, renamed %a\n" CC.pp_cclause cc Ct.pp_clit 
-      (by_lit, by_constr) T.pp_term t';*)
+      (by_lit, by_constr) T.pp_term t';
   try
     let sigma = unify_var_disj s t' in
     let constr = Ct.conj (Ct.substitute rho by_constr) constr_s in
@@ -655,9 +656,9 @@ let split_clauses ?(rep=None) syms cc by_cc =
       let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
-      (*if !O.current_options.dbg_backtrace then (
+      if !O.current_options.dbg_backtrace then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
-        Format.printf "  difference:\n");*)
+        Format.printf "  difference:\n");
       let small_inst cc = smallest_gnd_instance syms (cc.selected, cc.constr) in
       (* add flag for representative *)
       let partition = rep :: diff in
