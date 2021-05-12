@@ -348,9 +348,11 @@ module Constraint = struct
       let t = try Var.get_type x with _ -> failwith "var has no type" in
       let tfuns = L.filter (fun (f, _) -> val_type f = t) funs in
       assert (tfuns <> []);
-      let res = L.for_all (fun (f, _) -> L.mem (DiffTop(x, f)) c) tfuns in
-      (*if res then F.printf "type of %s exhausted\n" (Var.to_string x);*)
-      res
+      let rem = L.filter (fun (f, _) -> not (L.mem (DiffTop(x, f)) c)) tfuns in
+      if rem <> [] && L.exists (fun (_,a) -> a > 0) rem then false
+      else (* only constants remain for x, count if enough to satisfy diffvar *)
+        let diff_x = function DiffVars (x',_) when x'=x -> true | _ -> false in
+        L.length (unique (L.filter diff_x c)) >= L.length rem
     in
     let unsat = function DiffVars (x, y) ->  x = y | _ -> false in
     let vs = vars cs in
@@ -657,6 +659,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
       let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
+      assert (L.for_all (fun cc -> cc.constr <> []) diff);
       (*if !O.current_options.dbg_backtrace then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
         Format.printf "  difference:\n");*)
