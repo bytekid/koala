@@ -116,7 +116,8 @@ if __name__ == "__main__":
     for k in suc_keys:
       #s += " & " + str(cnt[k])
       print("  %s: %d" % (k, cnt[k]))
-    print("avg rating: %.2f" % (ratings[n]/cnt))
+    rating_sum = ratings[n]
+    print("avg rating: %.2f" % (rating_sum/cnt))
     suc = cnt["SUC"]
     for k in stat_keys:
       print("  %s: %.2f" % (k, float(cnt[k]) / suc))
