@@ -32,17 +32,19 @@ def problem_stats(outfile):
   f = open(outfile, "r")
   out = f.read()
   m = re.search("# steps:\s+(\d+)", out)
-  steps = int(m.groups()[0])
+  if not m:
+    print("no steps " + outfile)
+  steps = int(m.groups()[0]) if m else 0
   m = re.search("# extensions:\s+(\d+)", out)
   e = int(m.groups()[0]) if m else 0
   m = re.search("# conflicts:\s+(\d+)", out)
-  cf = int(m.groups()[0])
+  cf = int(m.groups()[0]) if m else 0
   m = re.search("# generated clauses:\s+(\d+)", out)
   cl = int(m.groups()[0])
   m = re.search("# deleted clauses:\s+(\d+)", out)
   d = int(m.groups()[0]) if m else 0
   m = re.search("max trail length:\s+(\d+)", out)
-  tl = int(m.groups()[0])
+  tl = int(m.groups()[0]) if m else 0
   m = re.search("time:\s+(\d+.\d+)", out)
   t = float(m.groups()[0]) if m else 0
   return {"steps": steps, "conflicts": cf, "generated clauses": cl, \
