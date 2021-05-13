@@ -34,9 +34,7 @@ def problem_stats(outfile):
   m = re.search("# steps:\s+(\d+)", out)
   steps = int(m.groups()[0])
   m = re.search("# extensions:\s+(\d+)", out)
-  if not m:
-    print("no ext " + outfile)
-  e = int(m.groups()[0])
+  e = int(m.groups()[0]) if m else 0
   m = re.search("# conflicts:\s+(\d+)", out)
   cf = int(m.groups()[0])
   m = re.search("# generated clauses:\s+(\d+)", out)
