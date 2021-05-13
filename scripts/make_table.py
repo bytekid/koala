@@ -117,8 +117,8 @@ if __name__ == "__main__":
       #s += " & " + str(cnt[k])
       print("  %s: %d" % (k, cnt[k]))
     rating_sum = ratings[n]
-    print("avg rating: %.2f" % (rating_sum/cnt))
     suc = cnt["SUC"]
+    print("avg rating: %.2f" % (rating_sum/suc))
     for k in stat_keys:
       print("  %s: %.2f" % (k, float(cnt[k]) / suc))
       if k != "time":
