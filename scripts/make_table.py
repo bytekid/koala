@@ -40,11 +40,11 @@ def problem_stats(outfile):
   m = re.search("# generated clauses:\s+(\d+)", out)
   cl = int(m.groups()[0])
   m = re.search("# deleted clauses:\s+(\d+)", out)
-  d = int(m.groups()[0])
+  d = int(m.groups()[0]) if m else 0
   m = re.search("max trail length:\s+(\d+)", out)
   tl = int(m.groups()[0])
   m = re.search("time:\s+(\d+.\d+)", out)
-  t = float(m.groups()[0])
+  t = float(m.groups()[0]) if m else 0
   return {"steps": steps, "conflicts": cf, "generated clauses": cl, \
     "deleted clauses": d, "trail length": tl, "time": t, "extensions": e}
 
