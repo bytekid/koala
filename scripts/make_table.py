@@ -75,20 +75,24 @@ if __name__ == "__main__":
   results = get_koala_results()
 
   count = {}
+  ratings = {}
   for n in property_names:
     count[n] = {}
+    ratings[n] = 0
     for k in keys:
       count[n][k] = 0
 
   for p in problems:
     res = results[p]
     props = properties[p]
+    rating = features[p]["rating"]
     props["is_controlled"] = props["is_neg_controlled"] or props["is_pos_controlled"]
     stats = None
     succeeded = ("SUC" == res["success"])
 
     for n in property_names:
       if props[n]:
+        ratings[n] += rating
         count[n]["count"] += 1
         count[n][res["success"]] += 1
         if succeeded:
@@ -112,6 +116,7 @@ if __name__ == "__main__":
     for k in suc_keys:
       #s += " & " + str(cnt[k])
       print("  %s: %d" % (k, cnt[k]))
+    print("avg rating: %.2f" % (ratings[n]/cnt))
     suc = cnt["SUC"]
     for k in stat_keys:
       print("  %s: %.2f" % (k, float(cnt[k]) / suc))
