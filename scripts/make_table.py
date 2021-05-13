@@ -8,6 +8,10 @@ sys.path.append('.')
 import re
 import shutil
 
+def get_problems(list):
+  f = open(list, "r")
+  return [l.strip() for l in f.readlines() if len(l.strip()) > 0]
+
 def get_problem_features():
   f = open("data/features.json", "r")
   return json.loads(f.read())
@@ -65,6 +69,7 @@ suc_keys = [ "SUC", "SAT", "UNSAT", "TMO", "UNK", "count" ]
 keys = suc_keys + stat_keys
 
 if __name__ == "__main__":
+  problems = get_problems(str(sys.argv[1]))
   features = get_problem_features()
   properties = get_problem_properties()
   results = get_koala_results()
@@ -75,7 +80,8 @@ if __name__ == "__main__":
     for k in keys:
       count[n][k] = 0
 
-  for (p, res) in results.items():
+  for p in problems:
+    res = results[p]
     props = properties[p]
     props["is_controlled"] = props["is_neg_controlled"] or props["is_pos_controlled"]
     stats = None
