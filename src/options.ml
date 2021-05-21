@@ -984,6 +984,7 @@ type options = {
     mutable clausifier_options : string;
     mutable stdin : bool;
     mutable dbg_backtrace : bool;
+    mutable dbg_more : bool;
     mutable dbg_dump_prop_clauses : bool;
     mutable dbg_dump_prop_clauses_file : string;
     mutable dbg_out_stat : bool;
@@ -1191,6 +1192,7 @@ let default_options () = {
   clausifier_options = "";
   stdin = false;
   dbg_backtrace = false;
+  dbg_more = false;
   dbg_dump_prop_clauses = false;
   dbg_dump_prop_clauses_file = "-";
   dbg_out_stat = false;

@@ -406,37 +406,46 @@ module Ct = Constraint
 (* Computes smallest ground instance of the given constraint literal.
   Raises Ct.Is_unsat if no such instance exists.
 *)
-let smallest_gnd_instance syms (lit, constr) =
-  (*Format.printf "smallest ground instance %a?\n%!" Ct.pp_clit (lit, constr);*)
-  let product xss =
-    let cons_check ys acc (x, t) =
-      if Ct.implies constr [[Ct.DiffTop(x, T.get_top_symb t)]] then acc
+let smallest_inst_cache = H.create 1024
+
+let smallest_gnd_instance syms ((lit, constr) as cl) =
+  if !O.current_options.dbg_more then
+    Format.printf "smallest ground instance %a?\n%!" Ct.pp_clit cl;
+  let concat_map f l = LL.concat (LL.map f l) in
+  let product xss = (* xss: list of lazy lists of possible var instantiations *)
+    let sub_ext_ok sub (x, t) =
+      if Ct.implies constr [[Ct.DiffTop(x, T.get_top_symb t)]] then false
       else
         let clash (y,u) = Ct.implies constr [[Ct.DiffVars(x,y)]] && t=u in 
-        if L.exists clash ys then acc
-        else ((x, t) :: ys) :: acc
+        not (L.exists clash sub)
     in
-    let cross xs = L.rev_map (fun ys -> L.fold_left (cons_check ys) [] xs) in
-    let cross_conc xs yss = L.concat (cross xs yss) in
-    let prod xss = LL.of_list (L.fold_right cross_conc xss [[]]) in
-    let cutat i xs = LL.to_list (LL.take i xs) in
-    LL.concat (LL.of_function (fun i -> Some (prod (L.map (cutat i) xss))))
+    let add sub vt = LL.of_list (if sub_ext_ok sub vt then [vt::sub] else []) in
+    let extend_sub vts sub = concat_map (add sub) vts in
+    let extend_subs subs vts = concat_map (extend_sub vts) subs in
+    L.fold_left extend_subs (LL.singleton []) xss
   in
   let rec smallest argss =
-    let args = try LL.hd argss with LazyList.Is_empty -> raise Ct.Is_unsat in
+    let args = try LL.hd argss with LL.Is_empty -> raise Ct.Is_unsat in
     let sub_empty = Subst.create () in
     let sigma = L.fold_left (fun s (x,u) -> Subst.add x u s) sub_empty args in
     let pred = Ct.substituted_satisfiable constr in
-    (*F.printf "smallest? %a %B\n%!" T.pp_term
-      (Subst.apply_subst_term term_db_ref sigma lit) (pred sigma);*)
+    if !O.current_options.dbg_more then
+      F.printf "smallest? %a %B\n%!" T.pp_term
+        (Subst.apply_subst_term term_db_ref sigma lit) (pred sigma);
     if pred sigma then Subst.apply_subst_term term_db_ref sigma lit
     else smallest (LL.tl argss)
   in 
   if T.is_ground lit then lit
+  else if H.mem smallest_inst_cache cl then H.find smallest_inst_cache cl
   else if Ct.unsat syms constr then raise Ct.Is_unsat
-  else
-    let terms v = LL.map (fun t -> (v, t)) (all_ground_terms (Var.get_type v) syms) in
-    smallest (product (L.map terms (T.get_vars lit)))
+  else (
+    let terms v =
+      LL.map (fun t -> (v, t)) (all_ground_terms (Var.get_type v) syms)
+    in
+    let u = smallest (product (L.map terms (T.get_vars lit))) in
+    H.add smallest_inst_cache (lit, constr) u;
+    u 
+  )
 ;;
 
 (* SGGS stuff *)
@@ -653,9 +662,9 @@ let split_clauses ?(rep=None) syms cc by_cc =
   Aσ ∧ Bσ | C[L]σ, where σ is the mgu of at(L) and at(M) and (A∧B)σ is 
   satisfiable.*)
   let rho, t' = rename_term (CC.get_vars cc) t in
-  (*if !O.current_options.dbg_backtrace then
+  if !O.current_options.dbg_more then
     Format.printf "SPLIT %a by %a, renamed %a\n" CC.pp_cclause cc Ct.pp_clit 
-      (by_lit, by_constr) T.pp_term t';*)
+      (by_lit, by_constr) T.pp_term t';
   try
     let sigma = unify_var_disj s t' in
     let constr = Ct.conj (Ct.substitute rho by_constr) constr_s in
@@ -668,19 +677,15 @@ let split_clauses ?(rep=None) syms cc by_cc =
       (* the difference *)
       let diff = diff cc rep sigma in
       assert (L.for_all (fun cc -> cc.constr <> []) diff);
-      (*if !O.current_options.dbg_backtrace then (
+      if !O.current_options.dbg_more then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
-        Format.printf "  difference:\n");*)
+        Format.printf "  difference:\n");
       let small_inst cc = smallest_gnd_instance syms (cc.selected, cc.constr) in
       (* add flag for representative *)
       let partition = rep :: diff in
       let instance cs c = try (c,small_inst c)::cs with Ct.Is_unsat -> cs in
       let partition = L.fold_left instance [] partition in
       let partition = L.sort (fun (_, s) (_, t) -> sggs_cmp s t) partition in
-      (*F.printf "sorted:\n";
-      L.iter (fun (cc, l) ->
-        F.printf "  %a (for %a)\n%!" pp_cclause cc T.pp_term l
-      ) partition;*)
       L.map fst partition, rep, diff)
   with Unif.Unification_failed -> raise Split_undefined
 ;;
@@ -1167,10 +1172,10 @@ let add_intersecting_instances state cs =
   let csx = L.concat (L.map ext_clause cs) in
   let cls_cmp x y = pcmp (C.hash_bc x) (C.hash_bc y) in
   let csx = unique ~c:(fun (c,_) (c',_) -> cls_cmp c c') csx in
-  (*if !O.current_options.dbg_backtrace then (
+  if !O.current_options.dbg_more then (
     F.printf "potential extension instances:\n";
       L.iter (fun (c,constr) -> F.printf "  %a | %a\n%!"
-        Ct.pp_constraint constr pp_clause c) csx);*)
+        Ct.pp_constraint constr pp_clause c) csx);
   let csx_sizes = L.map (fun c -> c, clause_size (fst c)) csx in
   L.map fst (L.sort (fun (_, s) (_, s') -> pcmp s s') csx_sizes), true)
 ;;
@@ -1479,7 +1484,7 @@ let rec sggs_no_conflict state clauses =
   try
     let ix_state = index state.trail in
     let cc, pos = L.find (is_conflicting state <.> fst) ix_state in
-    if !O.current_options.dbg_backtrace then
+    if !O.current_options.dbg_more then
       F.printf "resolve remaining conflict before extension\n%!";
     sggs_extend ~in_trail:true state clauses cc true pos
   with Not_found -> 
@@ -1546,8 +1551,9 @@ Precondition: cc depends on a clause in the trail.
 and sggs_conflict do_print statex clauses cc pos =
   let conf_lit, constr = cc.selected, cc.constr in
   let _,dep_lit,dep_pos = find_dependence statex.trail (conf_lit,constr) true in
-  (*Format.printf "sggs_conflict: %a at %d %!" CC.pp_cclause cc pos;
-  Format.printf "(depending on %d)\n%!" dep_pos;*)
+  if !O.current_options.dbg_more then (
+    Format.printf "sggs_conflict: %a at %d %!" CC.pp_cclause cc pos;
+    Format.printf "(depending on %d)\n%!" dep_pos);
   let trailx = statex.trail in
   log_step_if do_print statex "extend-conflict";
   let lpos, rpos = min dep_pos pos, max dep_pos pos in

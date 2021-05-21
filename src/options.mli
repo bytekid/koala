@@ -259,6 +259,7 @@ type options = {
     mutable clausifier_options    : string;
     mutable stdin                 : bool;
     mutable dbg_backtrace         : bool;
+    mutable dbg_more         : bool;
     mutable dbg_dump_prop_clauses : bool;
     mutable dbg_dump_prop_clauses_file : string;
     mutable dbg_out_stat          : bool;

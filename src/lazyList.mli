@@ -72,6 +72,8 @@
   at most [n] elements are taken from the lazy list. *)
   val permutations : 'a t -> 'a t t
   (** [permutations ls]. *)
+  val singleton : 'a -> 'a t
+  (** The singleton lazy list. *)
   val take : int -> 'a t -> 'a t
   (** [take n xs] returns the prefix of [xs] with length [n], or
   [xs] itself if it has less elements than [n]. *)
