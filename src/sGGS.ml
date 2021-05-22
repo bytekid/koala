@@ -662,24 +662,25 @@ let split_clauses ?(rep=None) syms cc by_cc =
   Aσ ∧ Bσ | C[L]σ, where σ is the mgu of at(L) and at(M) and (A∧B)σ is 
   satisfiable.*)
   let rho, t' = rename_term (CC.get_vars cc) t in
+  let constr' = Ct.substitute rho by_constr in
   if !O.current_options.dbg_more then
-    Format.printf "SPLIT %a by %a, renamed %a\n" CC.pp_cclause cc Ct.pp_clit 
-      (by_lit, by_constr) T.pp_term t';
+    Format.printf "SPLIT %a by %a\n (renamed %a)\n" CC.pp_cclause cc Ct.pp_clit 
+      (by_lit, by_constr) Ct.pp_clit (t', constr');
   try
     let sigma = unify_var_disj s t' in
-    let constr = Ct.conj (Ct.substitute rho by_constr) constr_s in
+    let constr = Ct.conj constr' constr_s in
     if not (Ct.substituted_satisfiable constr sigma) then raise Split_undefined
     else (
       (* compute the representative, if not given *)
-      (* FIXME: following substitution needed? *)
-      let cc' = { cc with CC.constr = Ct.substitute sigma constr } in 
+      let cc' = { cc with CC.constr = constr' } in
       let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
       assert (L.for_all (fun cc -> cc.constr <> []) diff);
       if !O.current_options.dbg_more then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
-        Format.printf "  difference:\n");
+        Format.printf "  difference:\n";
+        L.iter (Format.printf "  %a \n" CC.pp_cclause) diff);
       let small_inst cc = smallest_gnd_instance syms (cc.selected, cc.constr) in
       (* add flag for representative *)
       let partition = rep :: diff in
