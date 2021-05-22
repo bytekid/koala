@@ -178,7 +178,7 @@ let out_err_str s =
 let tool_name_str = "Koala"
 
 (* version is a list of integers *)
-let tool_current_version = [1;0] (* [2;7;5] *) (*[1;4] *)
+let tool_current_version = [2;0]
 
 let rec tool_version_to_str v = 
   match v with 
@@ -188,14 +188,7 @@ let rec tool_version_to_str v =
 
 let iprover_version_str  = "v"^(tool_version_to_str tool_current_version)
 
-(*let tool_add_info = "(Post CASC-22)"*)
-(*let tool_add_info = "(post CASC-J5 2010)"*)
-
-(* let tool_add_info = "(CASC-24 2013 r3)" *)
-
-(* let tool_add_info = "(CASC-J7 2014)"  *)
-
- let tool_add_info = "(IJCAR 2020 submission)" (* "(post CASC-26 2017)" *)
+let tool_add_info = "(JAR 2021 submission)"
 
 
 let pref_str_head = "\n%---------------- " 
