@@ -25,6 +25,8 @@ let (<!>) l k = L.nth l k
 
 let zip xs ys = L.fold_right2 (fun x y l -> (x,y) :: l) xs ys []
 
+let concat_map f l = LL.concat (LL.map f l)
+
 let term_db_ref = SystemDBs.term_db_ref
 
 let add_term t = TermDB.add_ref t term_db_ref
@@ -317,7 +319,11 @@ module Constraint = struct
     | DiffTop (x, f) ->
       match (try (SubstM.find x theta) with _ -> T.create_var_term x) with
       | T.Var (z, _) -> atom (DiffTop(z, f))
-      | t -> add_terms_diff [[]] (t, T.create_var_term x)
+      | t ->
+        let g = T.get_top_symb t in
+        if g <> f then [[]] 
+        else if g == f then failwith "Constraint.substitute: unsatisfiable"
+        else add_terms_diff [[]] (t, T.create_var_term x)
     in
     let subst_conj = L.fold_left (fun ct a -> conj ct (subst_atom a)) empty in
     L.fold_left (fun ct' c -> disj ct' (subst_conj c)) [] ct
@@ -411,7 +417,6 @@ let smallest_inst_cache = H.create 1024
 let smallest_gnd_instance syms ((lit, constr) as cl) =
   if !O.current_options.dbg_more then
     Format.printf "smallest ground instance %a?\n%!" Ct.pp_clit cl;
-  let concat_map f l = LL.concat (LL.map f l) in
   let product xss = (* xss: list of lazy lists of possible var instantiations *)
     let sub_ext_ok sub (x, t) =
       if Ct.implies constr [[Ct.DiffTop(x, T.get_top_symb t)]] then false
@@ -447,6 +452,25 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     u 
   )
 ;;
+
+let gnd_clause_insts syms c =
+  let terms v = LL.map (fun t -> (v, t)) (all_ground_terms (Var.get_type v) syms) in
+  let product xss = (* xss: list of lazy lists of possible var instantiations *)
+    let add sub vt = LL.of_list [vt::sub] in
+    let extend_sub vts sub = concat_map (add sub) vts in
+    let extend_subs subs vts = concat_map (extend_sub vts) subs in
+    L.fold_left extend_subs (LL.singleton []) xss
+  in
+  let subst_c theta_bnds =
+    let theta = L.fold_left (fun s (v, t) -> Subst.add v t s) (Subst.create ()) theta_bnds in
+    let apply = Subst.apply_subst_term term_db_ref in
+    let subst_lits = L.map (apply theta) (C.get_lits c) in
+    modify_clause c subst_lits
+  in
+  let subs = product (L.map terms (C.get_var_list c)) in
+  L.map subst_c (LL.to_list subs)
+;;
+
 
 (* SGGS stuff *)
 type initial_interpretation = AllNegative | AllPositive
@@ -736,6 +760,8 @@ module PartialInterpretation = struct
   (* Whether constr_lits (presumably on the trail) satisfy l, where the latter
      may be constrained by lconstr.
      Assumption: interpretation is not contradictory, i.e. dp(Gamma) = Gamma *)
+  (* FIXME does not take into account that multiple constr_lits together might
+           satisfy l *)
   let trail_sat_lit ?(lconstr = Ct.empty) constr_lits l =
     let sl = Term.get_sign_lit l in
     (* search from back of trail for some matching literal *)
@@ -1139,11 +1165,11 @@ let add_intersecting_instances state cs =
     L.fold_left check_cclause [] (L.fold_left (@) [] (L.rev_map snd unif_tlits))
   in
   let ext_clause c = (* c is in given clause set S *)
-    let rec ext (unsubsted, substed, constrs) =
-      match unsubsted with
-      | [] ->
-        let c' = modify_clause c substed in
-        let _, rho = normalise_lit_list_renaming term_db_ref substed in
+    let rec ext (lits_todo, lits_done, constrs) = (* (un)substituted literals *)
+      match lits_todo with
+      | [] -> (* all literals of clause processed *)
+        let c' = modify_clause c lits_done in
+        let _, rho = normalise_lit_list_renaming term_db_ref lits_done in
         let constrs' = Ct.project (C.get_var_list c') (Ct.rename rho constrs) in
         if ground_pres && not (C.is_ground c') then [] else [c', constrs']
       | u :: us ->
@@ -1152,22 +1178,22 @@ let add_intersecting_instances state cs =
           if not (Ct.substituted_satisfiable constrs theta) then acc
           else
             let constrs' = Ct.conj trail_constr (Ct.substitute theta constrs) in
-            let substed' = apply_theta u :: (L.map apply_theta substed) in
-            let inst = (L.map apply_theta us, substed', constrs') in
+            let lits_done' = apply_theta u :: (L.map apply_theta lits_done) in
+            let inst = (L.map apply_theta us, lits_done', constrs') in
             inst :: acc
         in
-        let vars = vars_lits (unsubsted @ substed) in
+        let vars = vars_lits (lits_todo @ lits_done) in
         let insts = L.fold_left app [] (inst_lit u vars) in
         let insts' =
           if is_I_all_true state u then insts
           (* I-all-false literals do no have to be instantiated *)
-          else insts @ [(us, u :: substed, constrs)]
+          else insts @ [(us, u :: lits_done, constrs)]
         in
         L.concat (L.map ext insts')
     in
     (* instantiate both I-all-true literals (see SGGS extension scheme) and
     I-all-false ones, to reflect extension substitution in extension 2. But
-    I-all-false ones do not have to be instantiated. *)
+    I-all-false ones do not have to be instantiated, may also remain as are. *)
     ext (C.get_lits c, [], Ct.empty)
   in
   let csx = L.concat (L.map ext_clause cs) in
@@ -1184,8 +1210,7 @@ let add_intersecting_instances state cs =
 (* pcgi(A|L, Γ A|C[L]) = 0  *)
 let rec pcgi_empty state (lit, constr) =
   let covers c = covers c (lit, constr) || covers c (compl_lit lit, constr) in
-  if L.exists (fun c -> covers (CC.to_clit c)) state.trail then
-    true
+  if L.exists (fun c -> covers (CC.to_clit c)) state.trail then true
   else
     let gmatch (l,c) =
       let l, lit = T.get_atom l, T.get_atom lit in
@@ -1213,16 +1238,16 @@ let rec pcgi_empty state (lit, constr) =
 let at_gnd_instance_subset_pcgi (state, i) (lit, constr)  =
   let lit = T.get_atom lit in
   let c = state.trail <!> i in
-  let tlconstr = (T.get_atom c.selected, c.constr) in
-  if not (covers tlconstr (lit, constr)) then false
+  let traillit = (T.get_atom c.selected, c.constr) in
+  if not (covers traillit (lit, constr)) then false
   else
     let no_intersect j = 
       let cc = state.trail <!> j in
       (* assume that at_gnd_instance_subset_pcgi j state is checked separately.
       So either the ith clause does not intersect with the jth, or if it does,
       want that (lit,constr) does not, so that the relevant pcgis are produced*)
-      not (gnd_instance_inter tlconstr (T.get_atom cc.selected, cc.constr)) ||
-      not (gnd_instance_inter tlconstr (lit, constr))
+      not (gnd_instance_inter traillit (T.get_atom cc.selected, cc.constr)) ||
+      not (gnd_instance_inter traillit (lit, constr))
     in
     L.for_all no_intersect (range 0 i)
 ;;
@@ -1273,10 +1298,9 @@ let check_valid_extension state (c, constr) =
     let sellits = if flits <> [] then L.map fst flits else ls in
     let selectable l =
       if pcgi_empty state (l, constr) then false
-      else (
-        (*F.printf "pcgis exist\n%!";*)
+      else
         let unc i = not (at_gnd_instance_subset_pcgi (state, i) (l,constr)) in
-        L.for_all unc (range 0 (L.length state.trail)))
+        L.for_all unc (range 0 (L.length state.trail))
     in
     try
       let sel = L.find selectable sellits in
@@ -1286,7 +1310,7 @@ let check_valid_extension state (c, constr) =
       else (
         (*F.printf "EXTENSION 3: %a %a\n%!" Ct.pp_constraint constr C.pp_clause c;*)
         Some((c, constr), false, sel))
-    (* 4. FIXME critical SGGS-extension *)
+    (* 4. critical SGGS-extension not needed for finite derivations (?) *)
     with Not_found -> None
   )
 ))
@@ -1501,7 +1525,7 @@ let rec sggs_no_conflict state clauses =
     match findext clausesx with
     | None, _ ->
       if computed then (
-        F.printf "model:\n%a\n" pp_trail state; 
+        F.printf "model:\n%a\n" pp_trail state;
         state, Satisfiable
       ) else 
         sggs_no_conflict (empty_cache state) clauses
