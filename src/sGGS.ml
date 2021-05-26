@@ -25,8 +25,6 @@ let (<!>) l k = L.nth l k
 
 let zip xs ys = L.fold_right2 (fun x y l -> (x,y) :: l) xs ys []
 
-let concat_map f l = LL.concat (LL.map f l)
-
 let term_db_ref = SystemDBs.term_db_ref
 
 let add_term t = TermDB.add_ref t term_db_ref
@@ -322,7 +320,7 @@ module Constraint = struct
       | t ->
         let g = T.get_top_symb t in
         if g <> f then [[]] 
-        else if g == f then failwith "Constraint.substitute: unsatisfiable"
+        else if g == f then raise Is_unsat
         else add_terms_diff [[]] (t, T.create_var_term x)
     in
     let subst_conj = L.fold_left (fun ct a -> conj ct (subst_atom a)) empty in
@@ -412,9 +410,25 @@ module Ct = Constraint
 (* Computes smallest ground instance of the given constraint literal.
   Raises Ct.Is_unsat if no such instance exists.
 *)
+(* The following function is auxiliary: it enumerates all tuples of length len
+   of natural numbers. *)
+let index_tuples len =
+  let rec repeat n x = if n = 0 then [] else x :: (repeat (n - 1) x) in
+  let rec range n = if n = 0 then [] else (n - 1) :: (range (n - 1)) in
+  let rec tuples n sum =
+    if sum = 0 then [repeat n 0]
+    else if n = 1 then [[sum]]
+    else
+      let rng = List.rev (range (sum + 1)) in
+      L.concat (L.map (fun v -> L.map (fun ts -> v :: ts) (tuples (n-1) (sum-v))) rng)
+  in
+  LL.concat (LL.of_function (fun i -> Some (LL.of_list (tuples len i))))
+;;
+
 let smallest_inst_cache = H.create 1024
 
 let smallest_gnd_instance syms ((lit, constr) as cl) =
+  let concat_map f l = LL.concat (LL.map f l) in
   if !O.current_options.dbg_more then
     Format.printf "smallest ground instance %a?\n%!" Ct.pp_clit cl;
   let product xss = (* xss: list of lazy lists of possible var instantiations *)
@@ -424,10 +438,18 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
         let clash (y,u) = Ct.implies constr [[Ct.DiffVars(x,y)]] && t=u in 
         not (L.exists clash sub)
     in
-    let add sub vt = LL.of_list (if sub_ext_ok sub vt then [vt::sub] else []) in
-    let extend_sub vts sub = concat_map (add sub) vts in
-    let extend_subs subs vts = concat_map (extend_sub vts) subs in
-    L.fold_left extend_subs (LL.singleton []) xss
+    let rec check_subst = function
+      | [] -> true
+      | xt :: sub -> sub_ext_ok sub xt && (check_subst sub)
+    in
+    let get (xi, i) = try Some (LL.nth xi (L.nth xss i)) with _ -> None in
+    let make_subst idxs =
+      let tops = L.map get (index idxs) in
+      if L.mem None tops then None else Some (L.map (function Some x -> x) tops)
+    in
+    let check = function Some sub when check_subst sub -> true  | _ -> false in
+    let get_some = function Some x -> x | _ -> failwith "none" in
+    LL.map get_some (LL.filter check (LL.map make_subst (index_tuples (L.length xss))))
   in
   let rec smallest argss =
     let args = try LL.hd argss with LL.Is_empty -> raise Ct.Is_unsat in
@@ -447,13 +469,15 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let terms v =
       LL.map (fun t -> (v, t)) (all_ground_terms (Var.get_type v) syms)
     in
-    let u = smallest (product (L.map terms (T.get_vars lit))) in
+    let args_lists = product (L.map terms (T.get_vars lit)) in
+    let u = smallest args_lists in
     H.add smallest_inst_cache (lit, constr) u;
     u 
   )
 ;;
 
 let gnd_clause_insts syms c =
+  let concat_map f l = LL.concat (LL.map f l) in
   let terms v = LL.map (fun t -> (v, t)) (all_ground_terms (Var.get_type v) syms) in
   let product xss = (* xss: list of lazy lists of possible var instantiations *)
     let add sub vt = LL.of_list [vt::sub] in
@@ -609,12 +633,14 @@ let diff cc by_cc sigma =
     in
     (* check if some var is mapped to functional term *)
     match L.fold_left (map_to (not <.> T.is_var)) None vars_s with
-    | Some (x, T.Fun(f, ts, _)) ->
+    | Some (x, T.Fun(f, ts, _)) -> (
       let xs = L.map T.create_var_term (fresh_vars away x (L.length ts)) in
       let tau = Subst.singleton x (T.create_fun_term f xs) in
-      let cc_sub = CC.substitute tau cc in
-      let constr_s' = Ct.conj (Ct.atom (Ct.DiffTop(x, f))) constr_s in
-      diff ((CC.make clause_s s constr_s') :: acc) i cc_sub
+      try
+        let cc_sub = CC.substitute tau cc in
+        let constr_s' = Ct.conj (Ct.atom (Ct.DiffTop(x, f))) constr_s in
+        diff ((CC.make clause_s s constr_s') :: acc) i cc_sub
+      with Ct.Is_unsat -> acc)
     | _ -> 
       let also_mapped_to x z y =
         x <> y && (match osubst y with Some (_, Var(x',_)) -> z=x' | _ -> false)
