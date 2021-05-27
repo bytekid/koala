@@ -428,9 +428,8 @@ let index_tuples len =
 let smallest_inst_cache = H.create 1024
 
 let smallest_gnd_instance syms ((lit, constr) as cl) =
-  let concat_map f l = LL.concat (LL.map f l) in
   if !O.current_options.dbg_more then
-    Format.printf "smallest ground instance %a?\n%!" Ct.pp_clit cl;
+    Format.printf "smallest ground instance %a?%!" Ct.pp_clit cl;
   let product xss = (* xss: list of lazy lists of possible var instantiations *)
     let sub_ext_ok sub (x, t) =
       if Ct.implies constr [[Ct.DiffTop(x, T.get_top_symb t)]] then false
@@ -714,7 +713,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
   let rho, t' = rename_term (CC.get_vars cc) t in
   let constr' = Ct.substitute rho by_constr in
   if !O.current_options.dbg_more then
-    Format.printf "SPLIT %a by %a\n (renamed %a)\n" CC.pp_cclause cc Ct.pp_clit 
+    Format.printf "SPLIT %a \nby %a\n (renamed %a)\n" CC.pp_cclause cc Ct.pp_clit 
       (by_lit, by_constr) Ct.pp_clit (t', constr');
   try
     let sigma = unify_var_disj s t' in
@@ -737,6 +736,10 @@ let split_clauses ?(rep=None) syms cc by_cc =
       let instance cs c = try (c,small_inst c)::cs with Ct.Is_unsat -> cs in
       let partition = L.fold_left instance [] partition in
       let partition = L.sort (fun (_, s) (_, t) -> sggs_cmp s t) partition in
+      if !O.current_options.dbg_more then
+        L.iter (fun (cc, l) ->
+          F.printf "  %a (for %a)\n%!" pp_cclause cc T.pp_term l
+        ) partition;
       L.map fst partition, rep, diff)
   with Unif.Unification_failed -> raise Split_undefined
 ;;
@@ -1222,7 +1225,7 @@ let add_intersecting_instances state cs =
     I-all-false ones do not have to be instantiated, may also remain as are. *)
     ext (C.get_lits c, [], Ct.empty)
   in
-  let csx = L.concat (L.map ext_clause cs) in
+  let csx = L.fold_left L.rev_append [] (L.rev (L.rev_map ext_clause cs)) in
   let cls_cmp x y = pcmp (C.hash_bc x) (C.hash_bc y) in
   let csx = unique ~c:(fun (c,_) (c',_) -> cls_cmp c c') csx in
   if !O.current_options.dbg_more then (
@@ -1429,7 +1432,7 @@ let get_trail_pos state cc =
   try
     snd (L.find (fun (c, _) -> c == cc) (index state.trail))
   with Not_found -> 
-    F.printf "not in trail: %a\n%!" CC.pp_cclause cc;
+    (*F.printf "not in trail: %a\n%!" CC.pp_cclause cc;*)
     raise (Clause_is_not_in_trail cc)
 ;;
 
@@ -1497,9 +1500,11 @@ let rec factor_split state p1 p2 =
   | Some l when is_I_true ->
     assert (unifies l cc.selected);
     let sigma = mgu_list [l, cc.selected] in
+    (*F.printf "factor before move\nto factor %a\nsubst %s\n%!"
+      CC.pp_cclause cc (Subst.to_string sigma);*)
     let factor = CC.substitute sigma cc in
-    (*F.printf "factor before move\nto factor %a\nfactor is %a\n%a%!"
-      CC.pp_cclause cc CC.pp_cclause factor pp_trail state;*)
+    (*F.printf "factor is %a\n%a%!"
+      CC.pp_cclause factor pp_trail state;*)
     let state, _, _ = sggs_split ~rep:(Some factor) Right state p2 factor in
     (* selection in ccr may have changed, get modified factor *)
     let factor' (cc,_) = cc.clause=factor.clause && cc.constr = factor.constr in
@@ -1516,9 +1521,13 @@ let rec complete_split state cc =
   let intersects cl' = cl <> cl' && at_gnd_instance_inter cl cl' in
   try
     let by_cc = L.find (fun c -> intersects (CC.to_clit c)) state.trail in
-    try 
+    try
       let cc_pos = get_trail_pos state cc in
-      let split_state, _, diff = sggs_split Right state cc_pos by_cc in
+      let by_cc_pos = get_trail_pos state by_cc in
+      (* determine which is split by which: in recursive call, 
+         clauses from diff may intersect with clauses *later* on trail *)
+      let pos, by = if cc_pos > by_cc_pos then cc_pos,by_cc else by_cc_pos,cc in
+      let split_state, _, diff = sggs_split Right state pos by in
       let r = L.fold_left complete_split split_state diff in
       r
     with Clause_is_not_in_trail _ -> state (* cc may have been disposed *)
@@ -1632,9 +1641,6 @@ Move cc in state from pos to below dep_pos.
 *)
 and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
   let left_lit, right_lit = left_res_cls.selected, right_res_cls.selected in
-  (*F.printf "resolve \n %d: %a in %a\n %d: %a in %a) \n%!" 
-    left_pos T.pp_term left_lit pp_clause left_res_cls.clause 
-    right_pos T.pp_term right_lit pp_clause right_res_cls.clause;*)
   assert (left_pos < right_pos);
   assert (is_I_all_true state left_lit);
   let state, right_pos =
@@ -1794,7 +1800,7 @@ let fix_signature clauses fms =
 let do_something_smart clauses =
   start_time := Unix.gettimeofday ();
   L.iter (fun c -> L.iter (fun l -> ignore (add_term l)) (C.get_lits c)) clauses;
-  let clauses = Type_inf.sub_type_inf clauses in
+  (*let clauses = Type_inf.sub_type_inf clauses in*)
   let fms = FM.init_fm_state clauses in
   if !O.current_options.dbg_backtrace then (
     F.printf "%d input clauses\n" (L.length clauses);
