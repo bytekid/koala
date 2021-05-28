@@ -428,8 +428,6 @@ let index_tuples len =
 let smallest_inst_cache = H.create 1024
 
 let smallest_gnd_instance syms ((lit, constr) as cl) =
-  if !O.current_options.dbg_more then
-    Format.printf "smallest ground instance %a?%!" Ct.pp_clit cl;
   let product xss = (* xss: list of lazy lists of possible var instantiations *)
     let sub_ext_ok sub (x, t) =
       if Ct.implies constr [[Ct.DiffTop(x, T.get_top_symb t)]] then false
@@ -537,9 +535,8 @@ module ConstrainedClause = struct
   let equal cc cc' =
     (* FIXME: hash comparison may be partial *)
     let cls_cmp x y = pcmp (C.hash_bc x) (C.hash_bc y) in
-    let term_cmp = T.hash cc.selected = T.hash cc'.selected in
-    let constr_cmp = Ct.equal cc.constr cc'.constr in
-    cls_cmp cc.clause cc'.clause = 0 && term_cmp && constr_cmp
+    cls_cmp cc.clause cc'.clause = 0 && T.hash cc.selected = T.hash cc'.selected
+      && Ct.equal cc.constr cc'.constr
   ;;
 
   let eq_upto_select cc cc' =
@@ -911,7 +908,7 @@ let insert x ys pos =
   l
 ;;
 
-let empty_cache state = {state with extension_queue = None} 
+let empty_extension_queue state = {state with extension_queue = None} 
 
 let is_disposable cc state =
   if C.get_lits cc.clause = [] then false
@@ -1096,7 +1093,7 @@ let update_selection_from from_opt (state, from_pos) =
   let aft = L.map update (from from_pos state.trail) in
   let changed = L.exists snd aft in
   let state' = {state with trail = bef @ L.map fst aft} in
-  if changed then empty_cache state' else state'
+  if changed then empty_extension_queue state' else state'
 ;;
   
   let add_clause_to_trail cc state pos =
@@ -1107,7 +1104,7 @@ let update_selection_from from_opt (state, from_pos) =
       let aft', del = L.partition (fun c -> not (covered c)) aft in
       let idx = state.trail_idx in
       L.iter (fun cc' -> ignore (delete_idx idx cc'.selected cc')) del;
-      let state = if del <> [] then empty_cache state else state in
+      let state = if del <> [] then empty_extension_queue state else state in
       DiscTree.add_elem_to_lit idx cc.selected cc;
       let state' = { state with trail = bef @ [cc] @ aft'; trail_idx = idx } in
       update_selection_from None (state', pos + 1), true)
@@ -1118,7 +1115,7 @@ let update_selection_from from_opt (state, from_pos) =
     let idx = state.trail_idx in
     DiscTree.elim_elem_from_lit idx cc_old.selected cc_old;
     let bef, aft = until pos state.trail, from (pos + 1) state.trail in
-    empty_cache {state with trail = bef @ aft}
+    empty_extension_queue {state with trail = bef @ aft}
   ;;
 
 let variant s t = matches s t && matches t s
@@ -1250,7 +1247,8 @@ let rec pcgi_empty state (lit, constr) =
       let tstp_src = C.tstp_source_global_subsumption 0 by_cc.clause in
       (* variables not occurring in literal cause problems with renaming *)
       let constr' = Ct.project (T.get_vars lit) constr in
-      let by_cc = {by_cc with constr = Ct.project (T.get_vars by_cc.selected) by_cc.constr} in
+      let vars = T.get_vars by_cc.selected in
+      let by_cc = {by_cc with constr = Ct.project vars by_cc.constr} in
       let cc = mk_singleton tstp_src lit constr' in
       let parts, _, _ = split_clauses state.signature cc by_cc in
       let chk_pt cc = pcgi_empty state (T.get_atom cc.selected, cc.constr) in
@@ -1337,7 +1335,7 @@ let check_valid_extension state (c, constr) =
       let truerest = L.filter (fun l -> l <> sel && is_I_all_true state l) ls in
       if not (L.for_all (fun l -> is_dependent (l, constr)) truerest) then None
       else (
-        (*F.printf "EXTENSION 3: %a %a\n%!" Ct.pp_constraint constr C.pp_clause c;*)
+        (*F.printf "EXT 3: %a %a\n%!" Ct.pp_constraint constr C.pp_clause c;*)
         Some((c, constr), false, sel))
     (* 4. critical SGGS-extension not needed for finite derivations (?) *)
     with Not_found -> None
@@ -1430,7 +1428,7 @@ exception Clause_is_not_in_trail of CC.constr_clause
 
 let get_trail_pos state cc =
   try
-    snd (L.find (fun (c, _) -> c == cc) (index state.trail))
+    snd (L.find (fun (c, _) -> CC.equal c cc) (index state.trail))
   with Not_found -> 
     (*F.printf "not in trail: %a\n%!" CC.pp_cclause cc;*)
     raise (Clause_is_not_in_trail cc)
@@ -1447,7 +1445,7 @@ let sggs_split ?(rep=None) where state pos by_cc =
   let cc = state.trail <!> pos in
   let partition, rep, diff = split_clauses ~rep:rep state.signature cc by_cc in
   let bef, aft = until pos state.trail, from (pos + 1) state.trail in
-  let state = empty_cache { state with trail =  bef @ aft } in
+  let state = empty_extension_queue { state with trail =  bef @ aft } in
 
   ignore (delete_idx state.trail_idx cc.selected cc);
   let add (state, i) cc =
@@ -1463,7 +1461,7 @@ let sggs_split ?(rep=None) where state pos by_cc =
   let split_lit = (cc.selected, cc.constr, pos + num_added) in
   let aft' = remove_assigned_to split_lit state'' true in
   let until_part = until (pos + num_added) state''.trail in
-  let state = { state with trail = until_part @ aft' } in
+  let state = { state'' with trail = until_part @ aft' } in
 
   log_step state (location_str where ^ "-split");
   state, rep, diff
@@ -1518,6 +1516,8 @@ let rec factor_split state p1 p2 =
   Returns updated state. *)
 let rec complete_split state cc =
   let cl = (cc.selected, cc.constr) in
+  if !O.current_options.dbg_more then
+    Format.printf "complete split %a\n%!" CC.pp_cclause cc;
   let intersects cl' = cl <> cl' && at_gnd_instance_inter cl cl' in
   try
     let by_cc = L.find (fun c -> intersects (CC.to_clit c)) state.trail in
@@ -1563,7 +1563,7 @@ let rec sggs_no_conflict state clauses =
         F.printf "model:\n%a\n" pp_trail state;
         state, Satisfiable
       ) else 
-        sggs_no_conflict (empty_cache state) clauses
+        sggs_no_conflict (empty_extension_queue state) clauses
     | Some ((c, constr), conflict, select), rest ->
       assert (not state.ground_preserving || C.is_ground (c));
       let cc = mk_cclause c select constr in
@@ -1596,7 +1596,8 @@ and sggs_extend ?(print=true) ?(in_trail=false) state clauses cc conflict pos =
       let inter c = gnd_instance_inter compl_cc (CC.to_clit c) && c <> cc in
       let cc' = L.find inter state'.trail in
       let ps, _, _ = split_clauses state.signature cc cc' in
-      sggs_extend ~print:false (remove_from_trail state' pos) clauses (L.hd ps) false pos)
+      let state'' = remove_from_trail state' pos in
+      sggs_extend ~print:false state'' clauses (L.hd ps) false pos)
     else (
       log_step_if print state' "extend-no-conflict";
       (* split recursively by similar or dissimilar literal *)
@@ -1648,8 +1649,9 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
     if covers (compl_lit left_lit, left_res_cls.constr) right_clit then
       state, right_pos
     else (
-      (*F.printf "split %d before resolve: %a by %a\n%!" right_pos T.pp_term
-        (compl_lit right_lit) T.pp_term left_lit;*)
+      if !O.current_options.dbg_more then
+        F.printf "split %d before resolve: %a by %a\n%!" right_pos T.pp_term
+          (compl_lit right_lit) T.pp_term left_lit;
       let state', rep, _ = sggs_split Right state right_pos left_res_cls in
       state', get_trail_pos state' rep)
   in
@@ -1673,7 +1675,7 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
     log_step state' "resolve";
     state', Unsatisfiable)
   else (
-    let state' = empty_cache { state with trail = bef @ aft'} in
+    let state' = empty_extension_queue { state with trail = bef @ aft'} in
     try 
       let constr = Ct.project (C.get_var_list res_clause) right_constr in
       let conf,sel = find_selected (state', right_pos) (res_clause, constr) in
@@ -1759,7 +1761,7 @@ let pick_init_interpretation clauses =
   let ng = neg_ground_preserving clauses in
   let ps, ns = pos_neg_sizes clauses in
   let clauses =
-    if (ng && ps >= ns) || (pg && ns >= ps) || L.length clauses > 100 then clauses
+    if (ng && ps >= ns) || (pg && ns>=ps) || L.length clauses > 100 then clauses
     else flip_to_pg clauses
   in
   let pg = pos_ground_preserving clauses in
@@ -1799,7 +1801,7 @@ let fix_signature clauses fms =
 
 let do_something_smart clauses =
   start_time := Unix.gettimeofday ();
-  L.iter (fun c -> L.iter (fun l -> ignore (add_term l)) (C.get_lits c)) clauses;
+  L.iter (fun c -> L.iter (fun l ->ignore (add_term l)) (C.get_lits c)) clauses;
   (*let clauses = Type_inf.sub_type_inf clauses in*)
   let fms = FM.init_fm_state clauses in
   if !O.current_options.dbg_backtrace then (
