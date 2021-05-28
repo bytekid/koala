@@ -1802,7 +1802,7 @@ let fix_signature clauses fms =
 let do_something_smart clauses =
   start_time := Unix.gettimeofday ();
   L.iter (fun c -> L.iter (fun l ->ignore (add_term l)) (C.get_lits c)) clauses;
-  (*let clauses = Type_inf.sub_type_inf clauses in*)
+  let clauses = Type_inf.sub_type_inf clauses in
   let fms = FM.init_fm_state clauses in
   if !O.current_options.dbg_backtrace then (
     F.printf "%d input clauses\n" (L.length clauses);
