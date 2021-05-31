@@ -547,10 +547,10 @@ module ConstrainedClause = struct
     let (lit, constr, clause) = cc.selected, cc.constr, cc.clause in
     let apply = Subst.apply_subst_term term_db_ref in
     let subst_lits = L.map (apply theta) (C.get_lits clause) in
-    let _, rho = normalise_lit_list_renaming term_db_ref subst_lits in
     let c' = modify_clause clause subst_lits in
+    let rho_lits, rho = normalise_lit_list_renaming term_db_ref subst_lits in
     let constr_subst = Ct.rename rho (Ct.substitute theta constr) in
-    let constr_proj = Ct.project (C.get_var_list cc.clause) constr_subst in
+    let constr_proj = Ct.project (C.get_var_list c') constr_subst in
     let rho' = Subst.var_renaming_to_subst term_db_ref rho in
     make c' (apply rho' (apply theta lit)) constr_proj
   ;;
@@ -611,7 +611,7 @@ exception Split_undefined
    with stronger constraint. *)
 let diff cc by_cc sigma =
   (* representative never changes in recursion *)
-  let r, constr_r = CC.selected by_cc, CC.constr by_cc in
+  let r, constr_r = CC.to_clit by_cc in
   let vars_r = T.get_vars r in
 
   let rec diff acc i cc =
@@ -660,7 +660,6 @@ let diff cc by_cc sigma =
         no variable in vars_s is mapped to a functional term and no two 
         variables in vars_s are mapped to the same term, (s, constr_s, clause_s)
         must be a variant of (r, constr_r, clause_r) *)
-        if i > 50 then failwith "FIXME: looping split";
         let cc_sigma = CC.substitute sigma cc in
         (* DiffElim *)
         if CC.equal cc cc_sigma then
@@ -916,7 +915,7 @@ let is_disposable cc state =
     ) state.trail in
     (*if b then
       F.printf "dispose %a because of %a\n%!" pp_cclause cc pp_cclause
-        (L.find (fun l -> covers (CC.to_clit l) (CC.to_clit cc)) state.trail));*)
+        (L.find (fun l -> covers (CC.to_clit l) (CC.to_clit cc)) state.trail);*)
     b)
 ;;
 
@@ -1661,6 +1660,8 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
   let left_lit, right_lit = left_res_cls.selected, right_res_cls.selected in
   assert (left_pos < right_pos);
   assert (is_I_all_true state left_lit);
+  (*F.printf "resolve: left %a with right %a\n%!" CC.pp_cclause left_res_cls
+    CC.pp_cclause right_res_cls;*)
   let state, right_pos =
     let right_clit = CC.to_clit right_res_cls in
     if covers (compl_lit left_lit, left_res_cls.constr) right_clit then
