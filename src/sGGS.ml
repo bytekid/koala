@@ -913,9 +913,9 @@ let is_disposable cc state =
     let b = L.exists (fun lt -> 
     covers (CC.to_clit lt) (CC.to_clit cc)
     ) state.trail in
-    (*if b then
+    if b then
       F.printf "dispose %a because of %a\n%!" pp_cclause cc pp_cclause
-        (L.find (fun l -> covers (CC.to_clit l) (CC.to_clit cc)) state.trail);*)
+        (L.find (fun l -> covers (CC.to_clit l) (CC.to_clit cc)) state.trail);
     b)
 ;;
 
@@ -1351,7 +1351,11 @@ exception Disposable
 let find_selected (state, pos) (c, constr) =
   let ip = I.from_trail state.initial state.trail in
   let sat = L.exists (I.satisfies_lit ~constr:constr ip) (C.get_lits c) in
-  if sat then raise Disposable;
+  if sat then (
+    (*F.printf "in clause %a : %a\n" Ct.pp_constraint constr C.pp_clause c; 
+      F.printf " %a sat\n" T.pp_term (L.find (I.satisfies_lit ~constr:constr ip)
+      (C.get_lits c)); *) 
+  raise Disposable);
 
   let stater = { state with trail = until pos state.trail} in
   let ls = C.get_lits c in
@@ -1433,9 +1437,9 @@ let get_trail_pos state cc =
 
 
 (******************************** SPLITTING ***********************************)
-type split_location = Left | Right
+type split_location = Left | Right | Factor
 
-let location_str = function Left -> "left" | _ -> "right"
+let location_str = function Left -> "left" | Right -> "right"  | _ -> "factor"
 
 (* returns partition and representative; the latter can be given as argument *)
 let sggs_split ?(rep=None) where state pos by_cc =
@@ -1451,7 +1455,7 @@ let sggs_split ?(rep=None) where state pos by_cc =
   in
   let state', num_added = L.fold_left add (state,0) partition in
   let state'' = (* left splitting may require selection update to rightmost *)
-    if where = Right then state'
+    if where = Right || where = Factor then state'
     else update_selection_from (Some (CC.to_clit cc)) (state', pos + num_added)
   in
 
@@ -1519,7 +1523,7 @@ let rec factor_split state p1 p2 =
     if not (Ct.equal constr1 sub_constr) then
       F.printf "need more complicated constraint for factoring\n%!";*)
     
-    let state, _, _ = sggs_split ~rep:(Some factor) Right state p2 factor in
+    let state, _, _ = sggs_split ~rep:(Some factor) Factor state p2 factor in
     (* selection in ccr may have changed, get modified factor *)
     let factor' (cc,_) = cc.clause=factor.clause && cc.constr = factor.constr in
     assert (L.exists factor' (index state.trail));
@@ -1694,8 +1698,9 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
     state', Unsatisfiable)
   else (
     let state' = empty_extension_queue { state with trail = bef @ aft'} in
-    try 
-      let constr = Ct.project (C.get_var_list res_clause) right_constr in
+    try
+      let vars = C.get_var_list res_clause in
+      let constr = Ct.project vars (Ct.conj right_constr left_res_cls.constr) in
       let conf,sel = find_selected (state', right_pos) (res_clause, constr) in
       let cc = mk_cclause res_clause sel constr in
       inc_clauses state;
