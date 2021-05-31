@@ -432,7 +432,7 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let sub_ext_ok sub (x, t) =
       if Ct.implies constr [[Ct.DiffTop(x, T.get_top_symb t)]] then false
       else
-        let clash (y,u) = Ct.implies constr [[Ct.DiffVars(x,y)]] && t=u in 
+        let clash (y,u) = Ct.implies constr [[Ct.DiffVars(x,y)]] && t = u in 
         not (L.exists clash sub)
     in
     let rec check_subst = function
@@ -453,9 +453,6 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let sub_empty = Subst.create () in
     let sigma = L.fold_left (fun s (x,u) -> Subst.add x u s) sub_empty args in
     let pred = Ct.substituted_satisfiable constr in
-    if !O.current_options.dbg_more then
-      F.printf "smallest? %a %B\n%!" T.pp_term
-        (Subst.apply_subst_term term_db_ref sigma lit) (pred sigma);
     if pred sigma then Subst.apply_subst_term term_db_ref sigma lit
     else smallest (LL.tl argss)
   in 
@@ -733,10 +730,11 @@ let split_clauses ?(rep=None) syms cc by_cc =
       let instance cs c = try (c,small_inst c)::cs with Ct.Is_unsat -> cs in
       let partition = L.fold_left instance [] partition in
       let partition = L.sort (fun (_, s) (_, t) -> sggs_cmp s t) partition in
-      if !O.current_options.dbg_more then
+      if !O.current_options.dbg_more then (
+        Format.printf "  sorted partition:\n";
         L.iter (fun (cc, l) ->
           F.printf "  %a (for %a)\n%!" pp_cclause cc T.pp_term l
-        ) partition;
+        ) partition);
       L.map fst partition, rep, diff)
   with Unif.Unification_failed -> raise Split_undefined
 ;;
@@ -1497,12 +1495,31 @@ let rec factor_split state p1 p2 =
   match factorizable state p1 p2 with
   | Some l when is_I_true ->
     assert (unifies l cc.selected);
-    let sigma = mgu_list [l, cc.selected] in
-    (*F.printf "factor before move\nto factor %a\nsubst %s\n%!"
+    let vars = CC.get_vars cc in
+    let rho, l' = rename_term vars l in
+    let mod_lits = l' :: (remove_term l (C.get_lits (CC.clause cc))) in
+    (*F.printf "unify %a and %a\n%!" T.pp_term l' T.pp_term cc.selected;*)
+    let sigma = mgu_list [l', cc.selected] in
+    (*F.printf "factoring\nto factor %a\nsubst %s\n%!"
       CC.pp_cclause cc (Subst.to_string sigma);*)
-    let factor = CC.substitute sigma cc in
-    (*F.printf "factor is %a\n%a%!"
-      CC.pp_cclause factor pp_trail state;*)
+
+    let tstp_src = C.tstp_source_global_subsumption 0 cc.clause in
+    let sub_lits = L.map (S.apply_subst_term term_db_ref sigma) mod_lits in
+    let sub_clause = C.create_clause term_db_ref tstp_src sub_lits in
+
+    let constr0 = CC.constr cc in
+    let constr1 = Ct.substitute sigma constr0 in
+    let constr2' = Ct.substitute sigma (Ct.substitute rho constr0) in
+    let constr2' = Ct.conj constr1 constr2' in
+    let sub_constr = Ct.project (C.get_var_list sub_clause) constr2' in
+    let sub_l = S.apply_subst_term term_db_ref sigma l' in
+    
+    let factor = CC.make sub_clause sub_l sub_constr in
+    (*F.printf "factor is %a\n%a%!" CC.pp_cclause factor pp_trail state;
+
+    if not (Ct.equal constr1 sub_constr) then
+      F.printf "need more complicated constraint for factoring\n%!";*)
+    
     let state, _, _ = sggs_split ~rep:(Some factor) Right state p2 factor in
     (* selection in ccr may have changed, get modified factor *)
     let factor' (cc,_) = cc.clause=factor.clause && cc.constr = factor.constr in
