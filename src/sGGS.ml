@@ -52,12 +52,14 @@ let from n ll =
   let rec from i l = 
     if i == 0 then l
     else match l with
-      | [] -> [] (*Format.printf "from failed %d %d\n%!" n (L.length ll); failwith "from: failed"*)
+      | [] -> []
       | _ :: xs -> from (i - 1) xs
 in from n ll
 ;;
 
 let from_to i j l = until (j - i) (from i l)
+
+let split_at i l = try until i l, from i l with _ -> l,[]
 
 (* exclusive i *)
 let rec range i j = if i >= j then [] else i :: (range (i+1) j) 
@@ -210,7 +212,9 @@ module Constraint = struct
   
   type t = atomic list list (* disjunction of conjunctions *)
 
-  let empty = [[]]
+  let top = [[]]
+
+  let bot = []
 
   let atom a = [[a]]
 
@@ -319,8 +323,10 @@ module Constraint = struct
         else if g == f then raise Is_unsat
         else add_terms_diff [[]] (t, T.create_var_term x)
     in
-    let subst_conj = L.fold_left (fun ct a -> conj ct (subst_atom a)) empty in
-    L.fold_left (fun ct' c -> disj ct' (subst_conj c)) [] ct
+    try
+      let subst_conj = L.fold_left (fun ct a -> conj ct (subst_atom a)) top in
+      L.fold_left (fun ct' c -> disj ct' (subst_conj c)) [] ct
+    with Is_unsat -> bot
   ;;
 
   let rename rho =
@@ -792,7 +798,7 @@ module PartialInterpretation = struct
      Assumption: interpretation is not contradictory, i.e. dp(Gamma) = Gamma *)
   (* FIXME does not take into account that multiple constr_lits together might
            satisfy l *)
-  let trail_sat_lit ?(lconstr = Ct.empty) constr_lits l =
+  let trail_sat_lit ?(lconstr = Ct.top) constr_lits l =
     let sl = Term.get_sign_lit l in
     (* search from back of trail for some matching literal *)
     let update_val ((lp_lit, lp_constr) as lp) = function
@@ -806,7 +812,7 @@ module PartialInterpretation = struct
     L.fold_right update_val constr_lits None
   ;;
 
-  let satisfies_lit ?(constr = Ct.empty) interp l =
+  let satisfies_lit ?(constr = Ct.top) interp l =
     let sl = T.get_sign_lit l in
     let initial_val l = function AllPositive -> sl | AllNegative -> not sl in
     match trail_sat_lit ~lconstr:constr interp.constr_lits l with
@@ -1224,7 +1230,7 @@ let add_intersecting_instances state cs =
     (* instantiate both I-all-true literals (see SGGS extension scheme) and
     I-all-false ones, to reflect extension substitution in extension 2. But
     I-all-false ones do not have to be instantiated, may also remain as are. *)
-    ext (C.get_lits c, [], Ct.empty)
+    ext (C.get_lits c, [], Ct.top)
   in
   let csx = L.fold_left L.rev_append [] (L.rev (L.rev_map ext_clause cs)) in
   let cls_cmp x y = pcmp (C.hash_bc x) (C.hash_bc y) in
@@ -1234,7 +1240,8 @@ let add_intersecting_instances state cs =
       L.iter (fun (c,constr) -> F.printf "  %a | %a\n%!"
         Ct.pp_constraint constr pp_clause c) csx);
   let csx_sizes = L.map (fun c -> c, clause_size (fst c)) csx in
-  L.map fst (L.sort (fun (_, s) (_, s') -> pcmp s s') csx_sizes), true)
+  let pre, suf = split_at 20 csx_sizes in
+  L.map fst (L.sort (fun (_, s) (_, s') -> pcmp s s') pre @ suf), true)
 ;;
 
 (* pcgi(A|L, Γ A|C[L]) = 0  *)
@@ -1496,14 +1503,8 @@ let rec dependence_share_split state p1 p2 =
   match shares_dependency state p1 p2 with
   | Some l when not (mgu_exists l (state.trail <!> p2).selected) -> (
     match split state p1 (state.trail <!> p2) with
-    | state', Some (p1', p2') -> dependence_share_split state p1' p2'
+    | state', Some (p1', p2') -> dependence_share_split state' p1' p2'
     | res -> res
-    (*let state, _, _ = sggs_split Left state p1 ccr in
-    try
-      let ccr', p2' = L.find (eq_upto_select ccr <.> fst) (index state.trail) in
-      let _, _, p1' = find_last_dependence state (ccr'.clause, ccr'.constr) in
-      dependence_share_split state p1' p2'
-    with Not_found -> state, None*)
   )
   | _ ->
     (* finally, check whether ground instances of right coincide with left:
@@ -1582,10 +1583,14 @@ This is also the entry point for the procedure, where clauses are the set of
 input clauses.
 *)
 let rec sggs_no_conflict state clauses =
-  L.iter (fun c -> L.iter (fun c' -> 
-    let disj = c = c' || not (at_gnd_instance_inter (CC.to_clit c) (CC.to_clit c')) in
-    if not disj then F.printf "intersection %a\n%a\n%!" CC.pp_cclause c CC.pp_cclause c';
-    assert disj) state.trail) state.trail;
+  if !O.current_options.dbg_more then
+    L.iter (fun c -> L.iter (fun c' -> 
+      let disj = 
+        c = c' || not (at_gnd_instance_inter (CC.to_clit c) (CC.to_clit c'))
+      in
+      if not disj then F.printf "dirty trail: %a\n%a\n%!"
+        CC.pp_cclause c CC.pp_cclause c';
+      assert disj) state.trail) state.trail;
   try
     let ix_state = index state.trail in
     let cc, pos = L.find (is_conflicting state <.> fst) ix_state in
@@ -1601,7 +1606,6 @@ let rec sggs_no_conflict state clauses =
       let o = check_valid_extension state c in
       if o = None then findext cs else o, cs
     in
-    (*F.printf "%s\n%!" (if computed then "computed" else "reused");*)
     match findext clausesx with
     | None, _ ->
       if computed then (
@@ -1672,6 +1676,7 @@ and sggs_conflict do_print statex clauses cc pos =
       If the two unify this is a factoring step, otherwise left split. *)
     let statex1, lpos, rpos = factor_split statex lpos rpos in
     let statex2, poss = dependence_share_split statex1 lpos rpos in
+    F.printf "after dep share split\n%!";
     match poss with
     | Some (lpos, rpos) ->
       let statex3, lcls, rcls, lpos, rpos = sggs_move statex2 lpos rpos in
