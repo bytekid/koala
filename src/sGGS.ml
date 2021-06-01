@@ -1611,7 +1611,7 @@ let rec sggs_no_conflict state clauses =
       inc_clauses_and_extensions state;
       let state' = {state with extension_queue = Some (LL.tl valid_exts) } in
       sggs_extend state' clauses cc conflict (L.length state.trail)
-    with _ -> (
+    with LL.Is_empty -> (
       if computed then (
         F.printf "model:\n%a\n" pp_trail state;
         state, Satisfiable
