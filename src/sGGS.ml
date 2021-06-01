@@ -234,10 +234,6 @@ module Constraint = struct
     | _ -> List.iter pp_conj (index cs)
   ;;
 
-  let pp_clit ppf (l, constr) =
-    F.fprintf ppf "%a | %a" pp_constraint constr T.pp_term l
-  ;;
-
   let cmp_atomic s t =
     let cmp = function 
     | DiffVars(x,y), DiffVars(x',y') ->
@@ -273,7 +269,7 @@ module Constraint = struct
     List.fold_right disj1 ct1 ct2*)
   ;;
 
-  let substituted_satisfiable ct theta =
+  let substituted_sat ct theta =
     let sat = function
       | DiffVars (x, y) -> (
         let tx = try Some (SubstM.find x theta) with _ -> None in
@@ -442,7 +438,8 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let get (xi, i) = try Some (LL.nth xi (L.nth xss i)) with _ -> None in
     let make_subst idxs =
       let tops = L.map get (index idxs) in
-      if L.mem None tops then None else Some (L.map (function Some x -> x) tops)
+      let the = function Some x -> x | _ -> failwith "option type is empty" in
+      if L.mem None tops then None else Some (L.map the tops)
     in
     let check = function Some sub when check_subst sub -> true  | _ -> false in
     let get_some = function Some x -> x | _ -> failwith "none" in
@@ -452,7 +449,7 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let args = try LL.hd argss with LL.Is_empty -> raise Ct.Is_unsat in
     let sub_empty = Subst.create () in
     let sigma = L.fold_left (fun s (x,u) -> Subst.add x u s) sub_empty args in
-    let pred = Ct.substituted_satisfiable constr in
+    let pred = Ct.substituted_sat constr in
     if pred sigma then Subst.apply_subst_term term_db_ref sigma lit
     else smallest (LL.tl argss)
   in 
@@ -489,11 +486,21 @@ let gnd_clause_insts syms c =
   L.map subst_c (LL.to_list subs)
 ;;
 
+module ConstrainedLiteral = struct
+  type t = Term.literal * Ct.t
+
+  let compl (l, c) = (T.compl_lit l, c)
+
+  let pp_clit ppf (l, constr) =
+    F.fprintf ppf "%a | %a" Ct.pp_constraint constr T.pp_term l
+  ;;
+
+end
+
+module CL = ConstrainedLiteral
 
 (* SGGS stuff *)
 type initial_interpretation = AllNegative | AllPositive
-
-type constr_literal = Term.literal * Ct.t
 
 module ConstrainedClause = struct
   type constr_clause = {
@@ -666,7 +673,7 @@ let diff cc by_cc sigma =
           if s = r && not (Ct.implies constr_s constr_r) then (
             (*let cs = L.fold_right (remove Ct.eq_conj) constr_s constr_r in*)
             let subs = Ct.negate (CC.get_vars cc) constr_r in
-            let subs' = L.filter (Ct.substituted_satisfiable constr_s) subs in
+            let subs' = L.filter (Ct.substituted_sat constr_s) subs in
             let ccs = L.map (fun sigma -> CC.substitute sigma cc) subs' @ acc in
             ccs
           ) else acc
@@ -706,15 +713,15 @@ let split_clauses ?(rep=None) syms cc by_cc =
   let rho, t' = rename_term (CC.get_vars cc) t in
   let constr' = Ct.substitute rho by_constr in
   if !O.current_options.dbg_more then
-    Format.printf "SPLIT %a \nby %a\n (renamed %a)\n" CC.pp_cclause cc Ct.pp_clit 
-      (by_lit, by_constr) Ct.pp_clit (t', constr');
+    Format.printf "SPLIT %a \nby %a\n renamed %a\n" CC.pp_cclause cc CL.pp_clit 
+      (by_lit, by_constr) CL.pp_clit (t', constr');
   try
     let sigma = unify_var_disj s t' in
-    let constr = Ct.conj constr' constr_s in
-    if not (Ct.substituted_satisfiable constr sigma) then raise Split_undefined
+    let constr_conj = Ct.conj constr' constr_s in
+    if not (Ct.substituted_sat constr_conj sigma) then raise Split_undefined
     else (
       (* compute the representative, if not given *)
-      let cc' = { cc with CC.constr = constr' } in
+      let cc' = { cc with CC.constr = constr_conj } in
       let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
@@ -744,7 +751,7 @@ let gnd_instance_subset (t, constr_t) (p, constr_p) =
   let constr_p = Ct.project (T.get_vars p) constr_p in
   try 
     let theta = Unif.matches p t in
-    if not (Ct.substituted_satisfiable constr_p theta) then false
+    if not (Ct.substituted_sat constr_p theta) then false
     else Ct.implies constr_t (Ct.substitute theta constr_p)
   with Unif.Matching_failed -> false
 ;;
@@ -760,10 +767,10 @@ let gnd_instance_inter (t, constr_t) (s, constr_s) =
   let constr_t' = Ct.substitute rho constr_t in
   try 
     (*F.printf "intersect: %a (is %a) vs %a\n%!"
-    Ct.pp_clit (t,constr_t) Ct.pp_clit (t',constr_t') Ct.pp_clit (s,constr_s);*)
+    CL.pp_clit (t,constr_t) CL.pp_clit (t',constr_t') CL.pp_clit (s,constr_s);*)
     let theta = mgu_list [s,t'] in
     let constr = Ct.conj constr_t' constr_s in
-    Ct.substituted_satisfiable constr theta
+    Ct.substituted_sat constr theta
   with Unif.Unification_failed -> false
 ;;
 
@@ -774,7 +781,7 @@ let at_gnd_instance_inter (t, ct) (s, cs) =
 module PartialInterpretation = struct
   type t = {
     default: initial_interpretation;
-    constr_lits: constr_literal list 
+    constr_lits: CL.t list 
   }
 
   let get_constr_lits i = i.constr_lits
@@ -824,7 +831,7 @@ module Trail = struct
   type t = CC.constr_clause list
 end
 
-exception No_dependence of constr_literal
+exception No_dependence of CL.t
 
 type state = {
   conflicts: int ref;
@@ -942,7 +949,7 @@ let find_dependence trail (l, l_constr) maybe_split =
   in
   match L.fold_right check_dep (index trail) None with
   | None -> 
-    (*F.printf "%a has no dependence\n%!" Ct.pp_clit (l, l_constr);*)
+    (*F.printf "%a has no dependence\n%!" CL.pp_clit (l, l_constr);*)
     raise (No_dependence (l, l_constr))
   | Some r -> r
 ;;
@@ -1013,8 +1020,8 @@ let check_invariants state =
     let check_conflict trl cc =
       L.iter (fun cc' ->
         if gnd_instance_inter (CC.to_clit cc) (CC.to_clit cc') then (
-          F.printf "%a and %a are intersecting\n%!" Ct.pp_clit (CC.to_clit cc) 
-            Ct.pp_clit (CC.to_clit cc');
+          F.printf "%a and %a are intersecting\n%!" CL.pp_clit (CC.to_clit cc) 
+            CL.pp_clit (CC.to_clit cc');
           raise Invariant_invalid)
       ) trl;
       trl @ [cc]
@@ -1180,7 +1187,7 @@ let add_intersecting_instances state cs =
           (* unify does not work: f(X, f(Y, X)) vs f(U, f(U, V)), so use mgu *)
           let theta = mgu_list [trail_lit', clinst] in
           let trail_constr' = Ct.substitute rho trail_constr in
-          if not (Ct.substituted_satisfiable trail_constr' theta) then acc
+          if not (Ct.substituted_sat trail_constr' theta) then acc
           else (theta, Ct.substitute theta trail_constr') :: acc
         with _ -> acc
     in
@@ -1198,7 +1205,7 @@ let add_intersecting_instances state cs =
       | u :: us ->
         let app acc (theta, trail_constr) =
           let apply_theta = Subst.apply_subst_term term_db_ref theta in
-          if not (Ct.substituted_satisfiable constrs theta) then acc
+          if not (Ct.substituted_sat constrs theta) then acc
           else
             let constrs' = Ct.conj trail_constr (Ct.substitute theta constrs) in
             let lits_done' = apply_theta u :: (L.map apply_theta lits_done) in
@@ -1476,20 +1483,34 @@ let sggs_split ?(rep=None) where state pos by_cc =
   literal in c2 depends on c1. By this time the selected literal in c2 may have
   changed. Returns updated state and positions p1 < p2. *)
 let rec dependence_share_split state p1 p2 =
+  let split state p_left ccr =
+    let state, _, _ = sggs_split Left state p_left ccr in
+    try (* find split-by clause in trail: selection may have changed *)
+      let ccr', p2' = L.find (eq_upto_select ccr <.> fst) (index state.trail) in
+      let _, _, p1' = find_last_dependence state (ccr'.clause, ccr'.constr) in
+      state, Some (p1', p2')
+      (* If the split-by clause had other literals assigned to split clause, it
+       was deleted. In this case, this conflict is no longer relevant. *)
+    with Not_found -> state, None
+  in
   match shares_dependency state p1 p2 with
   | Some l when not (mgu_exists l (state.trail <!> p2).selected) -> (
-    let ccr = state.trail <!> p2 in
-    let state, _, _ = sggs_split Left state p1 ccr in
-    (* find split-by clause in trail: selection may have changed *)
+    match split state p1 (state.trail <!> p2) with
+    | state', Some (p1', p2') -> dependence_share_split state p1' p2'
+    | res -> res
+    (*let state, _, _ = sggs_split Left state p1 ccr in
     try
       let ccr', p2' = L.find (eq_upto_select ccr <.> fst) (index state.trail) in
       let _, _, p1' = find_last_dependence state (ccr'.clause, ccr'.constr) in
       dependence_share_split state p1' p2'
-    (* If the split-by clause had other literals assigned to split clause, it
-       was deleted. In this case, this conflict is no longer relevant. *)
-    with Not_found -> state, None
+    with Not_found -> state, None*)
   )
-  | _ -> state, Some (p1, p2)
+  | _ ->
+    (* finally, check whether ground instances of right coincide with left:
+       if not, do left split  *)
+    let nth p = CC.to_clit (state.trail <!> p) in
+    if gnd_instance_subset (nth p1) (CL.compl (nth p2)) then state, Some (p1,p2)
+    else ((*F.printf "xtra left split\n";*) split state p1 (state.trail <!> p2))
 ;;
 
 let rec factor_split state p1 p2 =
@@ -1501,10 +1522,10 @@ let rec factor_split state p1 p2 =
     let vars = CC.get_vars cc in
     let rho, l' = rename_term vars l in
     let mod_lits = l' :: (remove_term l (C.get_lits (CC.clause cc))) in
-    (*F.printf "unify %a and %a\n%!" T.pp_term l' T.pp_term cc.selected;*)
     let sigma = mgu_list [l', cc.selected] in
-    (*F.printf "factoring\nto factor %a\nsubst %s\n%!"
-      CC.pp_cclause cc (Subst.to_string sigma);*)
+    if !O.current_options.dbg_more then
+      F.printf "factoring %a\n with substitution %s\n%!"
+        CC.pp_cclause cc (Subst.to_string sigma);
 
     let tstp_src = C.tstp_source_global_subsumption 0 cc.clause in
     let sub_lits = L.map (S.apply_subst_term term_db_ref sigma) mod_lits in
@@ -1561,6 +1582,10 @@ This is also the entry point for the procedure, where clauses are the set of
 input clauses.
 *)
 let rec sggs_no_conflict state clauses =
+  L.iter (fun c -> L.iter (fun c' -> 
+    let disj = c = c' || not (at_gnd_instance_inter (CC.to_clit c) (CC.to_clit c')) in
+    if not disj then F.printf "intersection %a\n%a\n%!" CC.pp_cclause c CC.pp_cclause c';
+    assert disj) state.trail) state.trail;
   try
     let ix_state = index state.trail in
     let cc, pos = L.find (is_conflicting state <.> fst) ix_state in
@@ -1651,7 +1676,7 @@ and sggs_conflict do_print statex clauses cc pos =
     | Some (lpos, rpos) ->
       let statex3, lcls, rcls, lpos, rpos = sggs_move statex2 lpos rpos in
       sggs_resolve statex3 clauses lcls rcls lpos rpos
-    (* This case happens after the split the right clause was deleted. The
+    (* This case happens if after the split the right clause was deleted. The
         conflict thus no longer needs to be considered. *)
     | None -> sggs_no_conflict statex2 clauses
   ) else (* no move *)
@@ -1719,13 +1744,15 @@ Move clause in state from p2 (on the right) to just before p1 (further left).
 and sggs_move state p1 p2 =
   assert (p2 >= p1);
   let trail = state.trail in
+  let ll, lr = CC.to_clit (trail <!> p1), CC.to_clit (trail <!> p2) in
+  (*assert (gnd_instance_subset lr (CL.compl ll));*)
   let bef, mid, aft = until p1 trail, from_to p1 p2 trail,from (p2 + 1) trail in  
   let trail' = bef @ [trail <!> p2] @ mid @ aft in
   (* index does not change because set of literals remains the same *)
   let state_moved = reorder_state state trail' in
   log_step state_moved "move";
   let cleft, cright = trail' <!> p1, trail' <!> (p1 + 1) in
-  let state', cright = state_moved, cright (* FIXME: split? *) in
+  let state', cright = state_moved, cright in
   state', cleft, cright, p1, p1 + 1
 ;;
 
