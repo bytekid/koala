@@ -719,7 +719,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
   let rho, t' = rename_term (CC.get_vars cc) t in
   let constr' = Ct.substitute rho by_constr in
   if !O.current_options.dbg_more then
-    Format.printf "SPLIT %a \nby %a\n renamed %a\n" CC.pp_cclause cc CL.pp_clit 
+    Format.printf "SPLIT %a \nby %a\n renamed %a\n%!" CC.pp_cclause cc CL.pp_clit 
       (by_lit, by_constr) CL.pp_clit (t', constr');
   try
     let sigma = unify_var_disj s t' in
@@ -728,7 +728,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
     else (
       (* compute the representative, if not given *)
       let cc' = { cc with CC.constr = constr_conj } in
-      let rep = match rep with Some r -> r | None -> CC.substitute sigma cc' in
+      let rep = match rep with Some r -> F.printf "rep given\n%!"; r | None -> CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
       assert (L.for_all (fun cc -> cc.constr <> []) diff);
@@ -745,7 +745,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
       if !O.current_options.dbg_more then (
         Format.printf "  sorted partition:\n";
         L.iter (fun (cc, l) ->
-          F.printf "  %a (for %a)\n%!" pp_cclause cc T.pp_term l
+          F.printf "  %a (for %a)\n%!" CC.pp_cclause cc T.pp_term l
         ) partition);
       L.map fst partition, rep, diff)
   with Unif.Unification_failed -> raise Split_undefined
@@ -1178,7 +1178,7 @@ The returned set of clauses are candidates for conflict clauses.
 let add_intersecting_instances state cs =
   match state.extension_queue with
   | Some q -> q, false
-  | None -> (
+  | None -> ( 
   let ground_pres = state.ground_preserving in
   let vars_lits = L.fold_left (fun acc l -> T.get_vars l @ acc) [] in
   (* Instantiations of literal linst to (negation of) trail literal. Returns
@@ -1233,14 +1233,15 @@ let add_intersecting_instances state cs =
     ext (C.get_lits c, [], Ct.top)
   in
   let csx = L.fold_left (fun acc x -> LL.append acc (LL.of_list (ext_clause x))) LL.empty cs in
-  let cls_cmp x y = pcmp (C.hash_bc x) (C.hash_bc y) in
+  let cls_cmp (x,_) (y,_) = pcmp (C.hash_bc x) (C.hash_bc y) in
   (*let csx = unique ~c:(fun (c,_) (c',_) -> cls_cmp c c') csx in*)
   (*if !O.current_options.dbg_more then (
     F.printf "potential extension instances:\n";
       L.iter (fun (c,constr) -> F.printf "  %a | %a\n%!"
         Ct.pp_constraint constr pp_clause c) csx);*)
   let add_size = L.map (fun c -> c, clause_size (fst c)) in
-  let pre, suf = unique (LL.to_list (LL.take 50 csx)), LL.from 50 csx in
+  let pre,suf = unique ~c:cls_cmp (LL.to_list (LL.take 50 csx)), LL.from 50 csx in
+  if L.length pre < 50 then F.printf " few extension clauses: %d\n%!" (L.length pre);
   let pre_sort = L.map fst (L.sort (fun (_, s) (_, s') -> pcmp s s') (add_size pre)) in
   LL.append (LL.of_list pre_sort) suf, true)
 ;;
@@ -1541,12 +1542,12 @@ let rec factor_split state p1 p2 =
     let sub_l = S.apply_subst_term term_db_ref sigma l' in
     
     let factor = CC.make sub_clause sub_l sub_constr in
-    (*F.printf "factor is %a\n%a%!" CC.pp_cclause factor pp_trail state;
+    F.printf "factor is %a\n%a%!" CC.pp_cclause factor pp_trail state;
 
     if not (Ct.equal constr1 sub_constr) then
-      F.printf "need more complicated constraint for factoring\n%!";*)
+      F.printf "need more complicated constraint for factoring\n%!";
     
-    let state, _, _ = sggs_split ~rep:(Some factor) Factor state p2 factor in
+    let state, factor, _ = sggs_split Factor state p2 factor in
     (* selection in ccr may have changed, get modified factor *)
     let factor' (cc,_) = cc.clause=factor.clause && cc.constr = factor.constr in
     assert (L.exists factor' (index state.trail));
