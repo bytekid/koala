@@ -495,7 +495,7 @@ let gnd_clause_insts syms c =
 module ConstrainedLiteral = struct
   type t = Term.literal * Ct.t
 
-  let compl (l, c) = (T.compl_lit l, c)
+  let compl (l, c) = (compl_lit l, c)
 
   let pp_clit ppf (l, constr) =
     F.fprintf ppf "%a | %a" Ct.pp_constraint constr T.pp_term l
@@ -926,9 +926,9 @@ let is_disposable cc state =
     let b = L.exists (fun lt -> 
     covers (CC.to_clit lt) (CC.to_clit cc)
     ) state.trail in
-    if b then
+    (*if b then
       F.printf "dispose %a because of %a\n%!" pp_cclause cc pp_cclause
-        (L.find (fun l -> covers (CC.to_clit l) (CC.to_clit cc)) state.trail);
+        (L.find (fun l -> covers (CC.to_clit l) (CC.to_clit cc)) state.trail);*)
     b)
 ;;
 
@@ -1106,27 +1106,27 @@ let update_selection_from from_opt (state, from_pos) =
   if changed then empty_extension_queue state' else state'
 ;;
   
-  let add_clause_to_trail cc state pos =
-    let bef, aft = until pos state.trail, from pos state.trail in
-    if is_disposable cc {state with trail = bef} then state, false
-    else (
-      let covered lt = covers (CC.to_clit cc) (lt.selected, lt.constr) in
-      let aft', del = L.partition (fun c -> not (covered c)) aft in
-      let idx = state.trail_idx in
-      L.iter (fun cc' -> ignore (delete_idx idx cc'.selected cc')) del;
-      let state = if del <> [] then empty_extension_queue state else state in
-      DiscTree.add_elem_to_lit idx cc.selected cc;
-      let state' = { state with trail = bef @ [cc] @ aft'; trail_idx = idx } in
-      update_selection_from None (state', pos + 1), true)
-  ;;
-  
-  let remove_from_trail state pos =
-    let cc_old = state.trail <!> pos in
+let add_clause_to_trail cc state pos =
+  let bef, aft = until pos state.trail, from pos state.trail in
+  if is_disposable cc {state with trail = bef} then empty_extension_queue state, false
+  else (
+    let covered lt = covers (CC.to_clit cc) (lt.selected, lt.constr) in
+    let aft', del = L.partition (fun c -> not (covered c)) aft in
     let idx = state.trail_idx in
-    DiscTree.elim_elem_from_lit idx cc_old.selected cc_old;
-    let bef, aft = until pos state.trail, from (pos + 1) state.trail in
-    empty_extension_queue {state with trail = bef @ aft}
-  ;;
+    L.iter (fun cc' -> ignore (delete_idx idx cc'.selected cc')) del;
+    let state = if del <> [] then empty_extension_queue state else state in
+    DiscTree.add_elem_to_lit idx cc.selected cc;
+    let state' = { state with trail = bef @ [cc] @ aft'; trail_idx = idx } in
+    update_selection_from None (state', pos + 1), true)
+;;
+
+let remove_from_trail state pos =
+  let cc_old = state.trail <!> pos in
+  let idx = state.trail_idx in
+  DiscTree.elim_elem_from_lit idx cc_old.selected cc_old;
+  let bef, aft = until pos state.trail, from (pos + 1) state.trail in
+  empty_extension_queue {state with trail = bef @ aft}
+;;
 
 let variant s t = matches s t && matches t s
 
@@ -1241,7 +1241,6 @@ let add_intersecting_instances state cs =
         Ct.pp_constraint constr pp_clause c) csx);*)
   let add_size = L.map (fun c -> c, clause_size (fst c)) in
   let pre,suf = unique ~c:cls_cmp (LL.to_list (LL.take 50 csx)), LL.from 50 csx in
-  if L.length pre < 50 then F.printf " few extension clauses: %d\n%!" (L.length pre);
   let pre_sort = L.map fst (L.sort (fun (_, s) (_, s') -> pcmp s s') (add_size pre)) in
   LL.append (LL.of_list pre_sort) suf, true)
 ;;
@@ -1542,10 +1541,10 @@ let rec factor_split state p1 p2 =
     let sub_l = S.apply_subst_term term_db_ref sigma l' in
     
     let factor = CC.make sub_clause sub_l sub_constr in
-    F.printf "factor is %a\n%a%!" CC.pp_cclause factor pp_trail state;
+    (*F.printf "factor is %a\n%a%!" CC.pp_cclause factor pp_trail state;
 
     if not (Ct.equal constr1 sub_constr) then
-      F.printf "need more complicated constraint for factoring\n%!";
+      F.printf "need more complicated constraint for factoring\n%!";*)
     
     let state, factor, _ = sggs_split Factor state p2 factor in
     (* selection in ccr may have changed, get modified factor *)
@@ -1676,7 +1675,6 @@ and sggs_conflict do_print statex clauses cc pos =
       If the two unify this is a factoring step, otherwise left split. *)
     let statex1, lpos, rpos = factor_split statex lpos rpos in
     let statex2, poss = dependence_share_split statex1 lpos rpos in
-    F.printf "after dep share split\n%!";
     match poss with
     | Some (lpos, rpos) ->
       let statex3, lcls, rcls, lpos, rpos = sggs_move statex2 lpos rpos in
@@ -1733,8 +1731,7 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
       let constr = Ct.project vars (Ct.conj right_constr left_res_cls.constr) in
       let conf,sel = find_selected (state', right_pos) (res_clause, constr) in
       let cc = mk_cclause res_clause sel constr in
-      inc_clauses state;
-      (* FIXME use add_to_trail *)
+      inc_clauses state';
       DiscTree.add_elem_to_lit state'.trail_idx sel cc;
       log_step { state with trail = bef @ [cc] @ aft'} "resolve";
       sggs_extend ~print:false state' clauses cc conf right_pos
