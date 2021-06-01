@@ -62,7 +62,7 @@ def run_sggs(p, f):
     f = open(outfile, "r")
     out = f.read()
   if "Satisfiable" in out or "Unsatisfiable" in out:
-    f = open(outfile, "a")
+    f = open(outfile, "w")
     f.write(out)
     f.close()
   scode = "SUC" if "atisfiable" in out else "TMO" if "TIMEOUT" in out else "UNK"
