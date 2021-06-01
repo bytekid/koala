@@ -29,6 +29,7 @@
   val filter : ('a -> bool) -> 'a t -> 'a t
   (** [filter f ls] removes all elements from [ls] that do not
   satisfy the predicate [f]. *)
+  val from : int -> 'a t -> 'a t
   val hd : 'a t -> 'a
   (** Extracts the first element of the given lazy list.
   @raise Failure "empty" if the lazy list was empty. *)

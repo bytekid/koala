@@ -852,7 +852,7 @@ type state = {
   ground_preserving: bool;
   signature : (Sym.t * int) list;
   finite_base: bool;
-  extension_queue: (C.clause * Ct.t) list option
+  extension_queue: (C.clause * Ct.t) LL.t option
 }
 
 let mk_initial_state init gp syms = 
@@ -1232,16 +1232,17 @@ let add_intersecting_instances state cs =
     I-all-false ones do not have to be instantiated, may also remain as are. *)
     ext (C.get_lits c, [], Ct.top)
   in
-  let csx = L.fold_left L.rev_append [] (L.rev (L.rev_map ext_clause cs)) in
+  let csx = L.fold_left (fun acc x -> LL.append acc (LL.of_list (ext_clause x))) LL.empty cs in
   let cls_cmp x y = pcmp (C.hash_bc x) (C.hash_bc y) in
-  let csx = unique ~c:(fun (c,_) (c',_) -> cls_cmp c c') csx in
-  if !O.current_options.dbg_more then (
+  (*let csx = unique ~c:(fun (c,_) (c',_) -> cls_cmp c c') csx in*)
+  (*if !O.current_options.dbg_more then (
     F.printf "potential extension instances:\n";
       L.iter (fun (c,constr) -> F.printf "  %a | %a\n%!"
-        Ct.pp_constraint constr pp_clause c) csx);
-  let csx_sizes = L.map (fun c -> c, clause_size (fst c)) csx in
-  let pre, suf = split_at 20 csx_sizes in
-  L.map fst (L.sort (fun (_, s) (_, s') -> pcmp s s') pre @ suf), true)
+        Ct.pp_constraint constr pp_clause c) csx);*)
+  let add_size = L.map (fun c -> c, clause_size (fst c)) in
+  let pre, suf = unique (LL.to_list (LL.take 50 csx)), LL.from 50 csx in
+  let pre_sort = L.map fst (L.sort (fun (_, s) (_, s') -> pcmp s s') (add_size pre)) in
+  LL.append (LL.of_list pre_sort) suf, true)
 ;;
 
 (* pcgi(A|L, Γ A|C[L]) = 0  *)
@@ -1600,25 +1601,23 @@ let rec sggs_no_conflict state clauses =
   with Not_found -> 
     (*check_invariants state;*)
     let clausesx, computed = add_intersecting_instances state clauses in
-    let rec findext = function
-    | [] -> None, []
-    | c :: cs ->
-      let o = check_valid_extension state c in
-      if o = None then findext cs else o, cs
-    in
-    match findext clausesx with
-    | None, _ ->
+    let check_ext c = check_valid_extension state c != None in
+    try
+      let valid_exts = LL.filter check_ext clausesx in
+      let c = LL.hd valid_exts in
+      let Some ((c, constr), conflict, select) = check_valid_extension state c in
+      assert (not state.ground_preserving || C.is_ground (c));
+      let cc = mk_cclause c select constr in
+      inc_clauses_and_extensions state;
+      let state' = {state with extension_queue = Some (LL.tl valid_exts) } in
+      sggs_extend state' clauses cc conflict (L.length state.trail)
+    with _ -> (
       if computed then (
         F.printf "model:\n%a\n" pp_trail state;
         state, Satisfiable
       ) else 
         sggs_no_conflict (empty_extension_queue state) clauses
-    | Some ((c, constr), conflict, select), rest ->
-      assert (not state.ground_preserving || C.is_ground (c));
-      let cc = mk_cclause c select constr in
-      inc_clauses_and_extensions state;
-      let state' = {state with extension_queue = Some rest} in
-      sggs_extend state' clauses cc conflict (L.length state.trail)
+    )
 
 (* 
 Extend the state by adding clause c at position pos in the trail.

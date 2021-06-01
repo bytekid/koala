@@ -46,11 +46,21 @@ let rec find p xs = match fc xs with
  | Nil        -> raise Not_found
 ;;
 
+let rec find_split p xs = match fc xs with
+ | Cons(x,xs) -> if p x then x, xs else find_split p xs
+ | Nil        -> raise Not_found
+;;
+
 let nth n ls =
  let rec nth i xs = match fc xs with
   | Cons(x,xs) -> if i = n then x else nth (i+1) xs
   | Nil        -> failwith "out of bounds"
  in nth 0 ls
+;;
+
+let rec from n xs = if n < 1 then xs else match fc xs with
+  | Cons(x,xs) -> from (n - 1) xs
+  | Nil        -> empty
 ;;
 
 let rec take n xs = if n < 1 then empty else lazy(match fc xs with
