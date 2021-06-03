@@ -218,6 +218,8 @@ module Constraint = struct
 
   let atom a = [[a]]
 
+  let is_diff_top = function DiffTop(_,_) -> true | _ -> false
+
   let pp_constraint ppf cs =
     let pp_atom (c, i) =
       if i > 0 then F.fprintf ppf " & ";
@@ -409,6 +411,19 @@ end
 
 module Ct = Constraint
 
+module ConstrainedLiteral = struct
+  type t = Term.literal * Ct.t
+
+  let compl (l, c) = (compl_lit l, c)
+
+  let pp_clit ppf (l, constr) =
+    F.fprintf ppf "%a | %a" Ct.pp_constraint constr T.pp_term l
+  ;;
+
+end
+
+module CL = ConstrainedLiteral
+
 (* Computes smallest ground instance of the given constraint literal.
   Raises Ct.Is_unsat if no such instance exists.
 *)
@@ -463,12 +478,22 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
   else if H.mem smallest_inst_cache cl then H.find smallest_inst_cache cl
   else if Ct.unsat syms constr then raise Ct.Is_unsat
   else (
+    F.printf "start computing sgi of %a \n%!" CL.pp_clit cl;
+    let dtops = match snd cl with [c] -> L.filter Ct.is_diff_top c  | _ -> [] in
     let terms v =
-      LL.map (fun t -> (v, t)) (all_ground_terms (Var.get_type v) syms)
+      let gterms = all_ground_terms (Var.get_type v) syms in
+      let sat_difftop t = function 
+        | Ct.DiffTop(x, f) when x = v -> T.get_top_symb t <> f 
+        | _ -> true
+      in
+      let satisfies_constr t = L.for_all (sat_difftop t) dtops in
+      let gterms_prefiltered = LL.filter satisfies_constr gterms in
+      LL.map (fun t -> (v, t)) gterms_prefiltered
     in
     let args_lists = product (L.map terms (T.get_vars lit)) in
     let u = smallest args_lists in
     H.add smallest_inst_cache (lit, constr) u;
+    F.printf "done\n%!";
     u 
   )
 ;;
@@ -491,19 +516,6 @@ let gnd_clause_insts syms c =
   let subs = product (L.map terms (C.get_var_list c)) in
   L.map subst_c (LL.to_list subs)
 ;;
-
-module ConstrainedLiteral = struct
-  type t = Term.literal * Ct.t
-
-  let compl (l, c) = (compl_lit l, c)
-
-  let pp_clit ppf (l, constr) =
-    F.fprintf ppf "%a | %a" Ct.pp_constraint constr T.pp_term l
-  ;;
-
-end
-
-module CL = ConstrainedLiteral
 
 (* SGGS stuff *)
 type initial_interpretation = AllNegative | AllPositive
@@ -1194,7 +1206,10 @@ let add_intersecting_instances state cs =
           let theta = mgu_list [trail_lit', clinst] in
           let trail_constr' = Ct.substitute rho trail_constr in
           if not (Ct.substituted_sat trail_constr' theta) then acc
-          else (theta, Ct.substitute theta trail_constr') :: acc
+          else
+            let trail_constr'' = Ct.substitute theta trail_constr' in
+            let lit_theta = S.apply_subst_term term_db_ref theta trail_lit in
+            (theta, Ct.project (T.get_vars lit_theta) trail_constr'') :: acc
         with _ -> acc
     in
     let unif_tlits = DiscTree.get_unif_candidates state.trail_idx clinst in
@@ -1218,7 +1233,7 @@ let add_intersecting_instances state cs =
             let inst = (L.map apply_theta us, lits_done', constrs') in
             inst :: acc
         in
-        let vars = vars_lits (lits_todo @ lits_done) in
+        let vars = vars_lits (lits_todo @ lits_done) @ (Ct.vars constrs) in
         let insts = L.fold_left app [] (inst_lit u vars) in
         let insts' =
           if is_I_all_true state u then insts
@@ -1232,17 +1247,19 @@ let add_intersecting_instances state cs =
     I-all-false ones do not have to be instantiated, may also remain as are. *)
     ext (C.get_lits c, [], Ct.top)
   in
-  let csx = L.fold_left (fun acc x -> LL.append acc (LL.of_list (ext_clause x))) LL.empty cs in
+  let combine acc x = LL.append acc (LL.of_list (ext_clause x)) in
+  let csx = L.fold_left combine LL.empty cs in
   let cls_cmp (x,_) (y,_) = pcmp (C.hash_bc x) (C.hash_bc y) in
   (*let csx = unique ~c:(fun (c,_) (c',_) -> cls_cmp c c') csx in*)
   (*if !O.current_options.dbg_more then (
-    F.printf "potential extension instances:\n";
+    F.printf "%d potential extension instances:\n" (L.length (LL.to_list csx));
       L.iter (fun (c,constr) -> F.printf "  %a | %a\n%!"
-        Ct.pp_constraint constr pp_clause c) csx);*)
+        Ct.pp_constraint constr pp_clause c) (LL.to_list csx)); *)
   let add_size = L.map (fun c -> c, clause_size (fst c)) in
-  let pre,suf = unique ~c:cls_cmp (LL.to_list (LL.take 50 csx)), LL.from 50 csx in
-  let pre_sort = L.map fst (L.sort (fun (_, s) (_, s') -> pcmp s s') (add_size pre)) in
-  LL.append (LL.of_list pre_sort) suf, true)
+  let k = 50 in
+  let pre,suf = unique ~c:cls_cmp (LL.to_list (LL.take k csx)), LL.from k csx in
+  let pre' = L.map fst (L.sort (fun (_,x) (_,y) -> pcmp x y) (add_size pre)) in
+  LL.append (LL.of_list pre') suf, true)
 ;;
 
 (* pcgi(A|L, Γ A|C[L]) = 0  *)
@@ -1584,28 +1601,28 @@ This is also the entry point for the procedure, where clauses are the set of
 input clauses.
 *)
 let rec sggs_no_conflict state clauses =
-  if !O.current_options.dbg_more then
+  (*if !O.current_options.dbg_more then
     L.iter (fun c -> L.iter (fun c' -> 
       let disj = 
         c = c' || not (at_gnd_instance_inter (CC.to_clit c) (CC.to_clit c'))
       in
       if not disj then F.printf "dirty trail: %a\n%a\n%!"
         CC.pp_cclause c CC.pp_cclause c';
-      assert disj) state.trail) state.trail;
+      assert disj) state.trail) state.trail;*)
   try
     let ix_state = index state.trail in
     let cc, pos = L.find (is_conflicting state <.> fst) ix_state in
     if !O.current_options.dbg_more then
       F.printf "resolve remaining conflict before extension\n%!";
     sggs_extend ~in_trail:true state clauses cc true pos
-  with Not_found -> 
+  with Not_found ->
     (*check_invariants state;*)
     let clausesx, computed = add_intersecting_instances state clauses in
     let check_ext c = check_valid_extension state c != None in
     try
       let valid_exts = LL.filter check_ext clausesx in
       let c = LL.hd valid_exts in
-      let Some ((c, constr), conflict, select) = check_valid_extension state c in
+      let Some ((c,constr), conflict, select) = check_valid_extension state c in
       assert (not state.ground_preserving || C.is_ground (c));
       let cc = mk_cclause c select constr in
       inc_clauses_and_extensions state;
@@ -1614,6 +1631,30 @@ let rec sggs_no_conflict state clauses =
     with LL.Is_empty -> (
       if computed then (
         F.printf "model:\n%a\n" pp_trail state;
+
+        (* check model *)
+        (*let cs = L.concat (L.map (gnd_clause_insts state.signature) clauses) in
+        let ip = I.from_trail state.initial state.trail in
+        L.iter (fun c -> 
+          let sat = L.exists (I.satisfies_lit ip) (C.get_lits c) in
+          if not sat then (
+            F.printf "instance %a not satisfied\n%!" C.pp_clause c;
+            let clause_cover (cx, constr) =
+              if L.length (C.get_lits c) != L.length (C.get_lits cx) then false
+              else
+                L.for_all 
+                  (fun l -> L.exists 
+                    (fun l' -> gnd_instance_subset (l, Ct.top) (l', constr)) 
+                  (C.get_lits cx))
+                (C.get_lits c)
+            in
+            L.iter (fun cx -> 
+              if clause_cover cx then 
+                F.printf "covered by %a | %a\n%!" Ct.pp_constraint (snd cx) C.pp_clause (fst cx)
+            ) (LL.to_list clausesx)
+          )
+        ) cs;*)
+
         state, Satisfiable
       ) else 
         sggs_no_conflict (empty_extension_queue state) clauses
@@ -1746,8 +1787,6 @@ Move clause in state from p2 (on the right) to just before p1 (further left).
 and sggs_move state p1 p2 =
   assert (p2 >= p1);
   let trail = state.trail in
-  let ll, lr = CC.to_clit (trail <!> p1), CC.to_clit (trail <!> p2) in
-  (*assert (gnd_instance_subset lr (CL.compl ll));*)
   let bef, mid, aft = until p1 trail, from_to p1 p2 trail,from (p2 + 1) trail in  
   let trail' = bef @ [trail <!> p2] @ mid @ aft in
   (* index does not change because set of literals remains the same *)
