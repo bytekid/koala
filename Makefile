@@ -123,6 +123,7 @@ BASE_NAMES_AFTER_LEXER = \
 	inference_rules \
 	finite_models \
 	lazyList \
+	constraint \
 	sGGS \
 	git_info
 

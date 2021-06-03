@@ -336,6 +336,8 @@ val list_remove_duplicates : ('a list) -> ('a list)
 (* as above based on = *)
 val list_remove_duplicates_ordered_non_ptr : ('a list) -> ('a list)
 
+val unique : ?c:('a -> 'a -> int) -> ('a list) -> ('a list)
+
 val list_find2 : ('a -> 'b -> bool) -> ('a list) -> ('b list) -> ('a *'b) 
 
 val list_return_g_if_f2 : 

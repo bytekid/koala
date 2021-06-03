@@ -977,6 +977,10 @@ let rec list_remove_duplicates' rest list =
 let list_remove_duplicates list = 
   List.rev (list_remove_duplicates' [] list) 
 
+let rec unique ?(c = Pervasives.compare) = function
+| [] -> []
+| x :: xs -> x :: unique ~c:c (List.filter (fun y -> c x y <> 0) xs)
+;;
 
 (* removes duplicates  based on the fact 
    that literals are preordered i.e. the same are in sequence*)

@@ -18,13 +18,13 @@ module O = Options
 module FM = Finite_models
 module IMap = Lib.IntMap
 
+module Ct = Constraint
+
 type result = Satisfiable | Unsatisfiable | Unknown
 
 let (<.>) f g x = f (g x)
 
 let (<!>) l k = L.nth l k
-
-let zip xs ys = L.fold_right2 (fun x y l -> (x,y) :: l) xs ys []
 
 let term_db_ref = SystemDBs.term_db_ref
 
@@ -48,10 +48,6 @@ let index ?(from=0) l =
 let rec repeat n x = if n = 0 then [] else x :: (repeat (n - 1) x)
 
 let rec intrange n = if n = 0 then [] else (n - 1) :: (intrange (n - 1))
-
-let is_some = function Some _ -> true | _ -> false
-
-      let the = function Some x -> x | _ -> failwith "option type is empty"
 
 (* exclusive i *)
 let rec until i l = 
@@ -84,11 +80,6 @@ let rec remove eq x = function
 ;;
 
 let remove_term = remove (fun s t -> T.compare_key s t = 0)
-
-let rec unique ?(c = pcmp) = function
-  | [] -> []
-  | x :: xs -> x :: unique ~c:c (L.filter (fun y -> c x y <> 0) xs)
-;;
 
 let list_opt_fold f o = L.fold_left (fun o x -> if o<>None then o else f x) None 
 
@@ -204,228 +195,6 @@ let all_ground_terms sort funs =
     LL.concat (LL.of_function (fun i -> Some (LL.of_list (sized sort (i + 1)))))
 ;;
 
-let rec fresh_vars away_var_list x n =
-  let rec vars away_var_list x n =
-    if n = 0 then []
-    else
-      let fresh_vars_env = Var.init_fresh_vars_env_away away_var_list in
-      let y = Var.get_next_fresh_var fresh_vars_env (Var.get_type x) in
-      y :: (vars (y :: away_var_list) y (n-1))
-  in
-  vars away_var_list x n
-;;
-
-module Constraint = struct
-
-  exception Is_unsat
-
-  type atomic =
-    | DiffVars of Var.var * Var.var
-    | DiffTop of Var.var * Symbol.symbol 
-  
-  type t = atomic list list (* disjunction of conjunctions *)
-
-  let top = [[]]
-
-  let bot = []
-
-  let atom a = [[a]]
-
-  let is_diff_top = function DiffTop(_,_) -> true | _ -> false
-
-  let is_diff_var c = not (is_diff_top c)
-
-  let pp_constraint ppf cs =
-    let pp_atom (c, i) =
-      if i > 0 then F.fprintf ppf " & ";
-      match c with
-      | DiffVars (x, y) -> F.fprintf ppf "%a != %a" Var.pp_var x Var.pp_var y
-      | DiffTop (x, f) -> F.fprintf ppf "top(%a) != %a"
-        Var.pp_var x Symbol.pp_symbol f
-    in
-    let pp_conj (c, i) =
-      if i > 0 then F.fprintf ppf " | ";
-      F.fprintf ppf "( ";
-      List.iter pp_atom (index c);
-      F.fprintf ppf " )"
-    in
-    match cs with
-    | [[]] -> ()
-    | [[a]] -> pp_atom (a, 0)
-    | _ -> List.iter pp_conj (index cs)
-  ;;
-
-  let cmp_atomic s t =
-    let cmp = function 
-    | DiffVars(x,y), DiffVars(x',y') ->
-      if (x = x' && y = y') || (x = y' && y = x') then 0 else pcmp (x,y) (x',y')
-    | DiffTop(x, f), DiffTop(x', f') -> pcmp (x, f) (x', f')
-    | DiffTop _, DiffVars _ -> 1
-    | DiffVars _, DiffTop _ -> -1
-    in cmp (s,t)
-  ;;
-
-  let atomic_equal s t = cmp_atomic s t = 0
-
-  let eq_conj c1 c2 =
-    let imp c c' = L.for_all (fun a -> L.exists (atomic_equal a) c') c in
-    imp c1 c2 && imp c2 c1
-  ;;
-
-  let equal ct1 ct2 =
-    let conj_subset c c' = L.for_all (fun a-> L.exists (atomic_equal a) c') c in
-    let conj_equal c c' = conj_subset c c' && conj_subset c' c in
-    let disj_subset ct = L.for_all (fun c -> L.exists (conj_equal c) ct) in
-    disj_subset ct1 ct2 && disj_subset ct2 ct1
-  ;;
-
-  let cons a cs = if L.exists (atomic_equal a) cs then cs else a :: cs
-
-  let conj1 c ct = List.map ((@) c) ct
-
-  let conj ct1 ct2 = L.fold_right conj1 ct2 ct1
-
-  let disj ct1 ct2 = ct1 @ ct2
-    (*let disj1 d ds = if L.exists (eq_conj d) ds then ds else d :: ds in
-    List.fold_right disj1 ct1 ct2*)
-  ;;
-
-  let substituted_sat ct theta =
-    let sat = function
-      | DiffVars (x, y) -> (
-        let tx = try Some (SubstM.find x theta) with _ -> None in
-        let ty = try Some (SubstM.find y theta) with _ -> None in
-        match tx, ty with
-          | Some tx, Some ty -> tx <> ty
-          | None, Some u -> (try x <> T.get_var u with _ -> true)
-          | Some u, None -> (try y <> T.get_var u with _ -> true)
-          | _ -> x <> y)
-      | DiffTop (x, f) ->
-        try T.get_top_symb (SubstM.find x theta) <> f with _ -> true
-    in
-    L.exists (fun c -> L.for_all sat c) ct
-  ;;
-
-  let substitute theta ct =
-    (* Extend the constraint ct to include difference of terms s and t *)
-    let rec add_terms_diff ct = function (* constrain two terms different *)
-    | T.Var (z,_), T.Var (w,_) -> if w = z then [] else conj1 [DiffVars(z,w)] ct
-    | (T.Fun (f, ts, _) as t), T.Var (x, _)
-    | T.Var (x,_), (T.Fun (f, ts, _) as t) ->
-      if L.mem x (T.get_vars t) then ct (* satisfied by occurs check *)
-      else if L.for_all T.is_var ts then conj1 [DiffTop(x, f)] ct
-      else
-        let add_var x t acc = x :: (T.get_vars t) @ acc in
-        let used_vars = add_var x t (Subst.fold add_var theta []) in
-        let vs_new = fresh_vars used_vars x (L.length ts) in
-        let vs_new' = L.map mk_var_term vs_new in
-        let diff_top = atom (DiffTop(x, f)) in
-        let diff_arg = L.map (add_terms_diff ct) (zip vs_new' ts) in
-        L.fold_left disj diff_top diff_arg (* difference on top or in arg *)
-    | T.Fun (f, ss, _), T.Fun (g, ts, _) ->
-      if f <> g then ct
-      else L.fold_left disj [] (L.map (add_terms_diff ct) (zip ss ts))
-    in
-    let subst_atom = function
-    | DiffVars (x, y) ->
-      let tx = try (SubstM.find x theta) with _ -> mk_var_term x in
-      let ty = try (SubstM.find y theta) with _ -> mk_var_term y in
-      add_terms_diff [[]] (tx, ty)
-    | DiffTop (x, f) ->
-      match (try (SubstM.find x theta) with _ -> mk_var_term x) with
-      | T.Var (z, _) -> atom (DiffTop(z, f))
-      | t ->
-        let g = T.get_top_symb t in
-        if g <> f then [[]] 
-        else if g == f then raise Is_unsat
-        else add_terms_diff [[]] (t, mk_var_term x)
-    in
-    try
-      let subst_conj = L.fold_left (fun ct a -> conj ct (subst_atom a)) top in
-      L.fold_left (fun ct' c -> disj ct' (subst_conj c)) [] ct
-    with Is_unsat -> bot
-  ;;
-
-  let rename rho =
-    let app_rho = Var.apply_renaming rho in
-    let ren = function
-    | DiffVars (x, y) -> DiffVars (app_rho x, app_rho y)
-    | DiffTop (x, f) -> DiffTop (app_rho x, f)
-    in
-    L.map (L.map ren)
-  ;;
-
-  let vars ct=
-    let vars acc = function
-    | DiffVars (x, y) ->
-      let acc' =  if L.mem x acc then acc else x :: acc in
-      if L.mem y acc' then acc' else y :: acc'
-    | DiffTop (x, f) -> if L.mem x acc then acc else x :: acc
-    in
-    unique (L.fold_left (fun vs c -> L.fold_left vars vs c) [] ct)
-  ;;
-
-  let unsat funs cs =
-    let val_type f = snd (Symbol.get_stype_args_val_def f) in
-    let var_type_exhausted c x =
-      let t = try Var.get_type x with _ -> failwith "var has no type" in
-      let tfuns = L.filter (fun (f, _) -> val_type f = t) funs in
-      assert (tfuns <> []);
-      let rem = L.filter (fun (f, _) -> not (L.mem (DiffTop(x, f)) c)) tfuns in
-      if rem <> [] && L.exists (fun (_,a) -> a > 0) rem then false
-      else (* only constants remain for x, count if enough to satisfy diffvar *)
-        let diff_x = function DiffVars (x',_) when x'=x -> true | _ -> false in
-        L.length (unique (L.filter diff_x c)) >= L.length rem
-    in
-    let unsat = function DiffVars (x, y) ->  x = y | _ -> false in
-    let vs = vars cs in
-    let unsatc c = L.exists unsat c || L.exists (var_type_exhausted c) vs in
-    L.for_all unsatc cs
-  ;;
-
-  (* project constraint to variable list *)
-  let project vars =
-    let project conj = function
-      | DiffVars (x, y) as c ->
-        if L.mem x vars && L.mem y vars then cons c conj else conj
-      | DiffTop (x, f) ->
-        if L.mem x vars then cons (DiffTop (x, f)) conj else conj
-    in
-    L.map (fun c -> L.fold_left project [] c)
-  ;;
-
-  let implies ct ct_implied =
-    let impl_by c2 c1 = L.for_all (fun a-> L.exists (atomic_equal a) c1) c2 in
-    L.for_all (fun c_implied -> L.exists (impl_by c_implied) ct) ct_implied
-  ;;
-
-  (* returns list of substitutions *)
-  let negate away_vars ct =
-    let neg = function
-    | DiffVars (x, y) -> Subst.singleton x (mk_var_term y)
-    | DiffTop (x,f) ->
-      let a = Sym.get_arity f in
-      let xs = L.map mk_var_term (fresh_vars away_vars x a) in
-      Subst.singleton x (mk_fun_term f xs)
-    in
-    let negate_conj c = L.map neg c in
-    let option_add x t = function
-      | Some s -> (try Some (Subst.add x t s) with _ -> None)
-      | _ -> None
-    in
-    let union s1 s2 = Subst.fold option_add s1 (Some s2) in
-    let add s ss s' = match union s s' with Some s1 -> s1 :: ss | _ -> ss in
-    let add1 ss_ok s = L.fold_left (add s) [] ss_ok in
-    let add_all ss_ok ss =
-      L.fold_left (fun ss_ok2 s -> add1 ss_ok s @ ss_ok2) [] ss
-    in
-    L.fold_left add_all [Subst.create ()] (L.map negate_conj ct)
-  ;;
-
-end
-
-module Ct = Constraint
-
 module ConstrainedLiteral = struct
   type t = Term.literal * Ct.t
 
@@ -462,7 +231,7 @@ let index_tuples diff_idx_pairs len =
         else Some (t @ [v])
       in
       let ext_prefxs v = LL.map (ext v) (tuples (n - 1) (sum - v)) in
-      let the_content l = LL.map the (LL.filter is_some l) in
+      let the_content l = LL.map Lib.get_some (LL.filter Lib.is_some l) in
       LL.concat (LL.map (fun v -> the_content (ext_prefxs v)) rng)
   in
   LL.concat (LL.of_function (fun i -> Some (tuples len i)))
@@ -488,7 +257,7 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let get (xi, i) = try Some (LL.nth xi (L.nth xss i)) with _ -> None in
     let make_subst idxs =
       let tops = L.map get (index idxs) in
-      if L.mem None tops then None else Some (L.map the tops)
+      if L.mem None tops then None else Some (L.map Lib.get_some tops)
     in
     let check = function Some sub when check_subst sub -> true  | _ -> false in
     let get_some = function Some x -> x | _ -> failwith "none" in
@@ -499,16 +268,16 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let args = try LL.hd argss with LL.Is_empty -> raise Ct.Is_unsat in
     let sub_empty = Subst.create () in
     let sigma = L.fold_left (fun s (x,u) -> Subst.add x u s) sub_empty args in
-    let pred = Ct.substituted_sat constr in
-    if pred sigma then Subst.apply_subst_term term_db_ref sigma lit
+    let sat = Ct.substituted_sat sigma constr in
+    if sat then Subst.apply_subst_term term_db_ref sigma lit
     else smallest (i+1) (LL.tl argss)
   in 
   if T.is_ground lit then lit
   else if H.mem smallest_inst_cache cl then H.find smallest_inst_cache cl
   else if Ct.unsat syms constr then raise Ct.Is_unsat
   else (
-    F.printf "start computing sgi of %a (term size %d)\n%!"
-      CL.pp_clit cl (T.get_num_of_symb (fst cl) + (T.get_num_of_var (fst cl)));
+    (*F.printf "start computing sgi of %a (term size %d)\n%!"
+      CL.pp_clit cl (T.get_num_of_symb (fst cl) + (T.get_num_of_var (fst cl)));*)
     let terms v =
       let gterms = all_ground_terms (Var.get_type v) syms in
       let sat_difftop t = function 
@@ -527,7 +296,6 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let args_lists = product diff_idx_pairs (L.map terms vars) in
     let u = smallest 0 args_lists in
     H.add smallest_inst_cache (lit, constr) u;
-    F.printf "done\n%!";
     u 
   )
 ;;
@@ -567,7 +335,10 @@ module ConstrainedClause = struct
   let selected c = c.selected
   let constr c = c.constr
 
-  let get_vars c = unique (C.get_var_list c.clause @ (Ct.vars c.constr))
+  let get_vars c =
+    let vs = C.get_var_list c.clause @ (Ct.vars c.constr) in
+    Lib.unique ~c:Var.compare vs
+  ;;
 
   let make c sel constr = { clause = c; selected = sel; constr = constr }
 
@@ -687,7 +458,7 @@ let diff cc by_cc sigma =
     (* check if some var is mapped to functional term *)
     match L.fold_left (map_to (not <.> T.is_var)) None vars_s with
     | Some (x, T.Fun(f, ts, _)) -> (
-      let xs = L.map mk_var_term (fresh_vars away x (L.length ts)) in
+      let xs = L.map mk_var_term (Ct.fresh_vars away x (L.length ts)) in
       let t = mk_fun_term f xs in
       let tau = Subst.singleton x t in
       try
@@ -727,7 +498,7 @@ let diff cc by_cc sigma =
           if s = r && not (Ct.implies constr_s constr_r) then (
             (*let cs = L.fold_right (remove Ct.eq_conj) constr_s constr_r in*)
             let subs = Ct.negate (CC.get_vars cc) constr_r in
-            let subs' = L.filter (Ct.substituted_sat constr_s) subs in
+            let subs' =L.filter (fun s -> Ct.substituted_sat s constr_s) subs in
             let ccs = L.map (fun sigma -> CC.substitute sigma cc) subs' @ acc in
             ccs
           ) else acc
@@ -773,7 +544,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
     let sigma = unify_var_disj s t' in
     let constr_conj = Ct.conj constr' constr_s in
     (* FIXME is this needed? cf SYN353-1 *)
-    if not (Ct.substituted_sat constr_conj sigma) then raise Split_undefined
+    if not (Ct.substituted_sat sigma constr_conj) then raise Split_undefined
     else (
       (* compute the representative, if not given *)
       let cc' = { cc with CC.constr = constr_conj } in
@@ -806,7 +577,7 @@ let gnd_instance_subset (t, constr_t) (p, constr_p) =
   let constr_p = Ct.project (T.get_vars p) constr_p in
   try 
     let theta = Unif.matches p t in
-    if not (Ct.substituted_sat constr_p theta) then false
+    if not (Ct.substituted_sat theta constr_p) then false
     else Ct.implies constr_t (Ct.substitute theta constr_p)
   with Unif.Matching_failed -> false
 ;;
@@ -817,7 +588,7 @@ let covers pat_clit clit = gnd_instance_subset clit pat_clit
 let gnd_instance_inter (t, constr_t) (s, constr_s) =
   let constr_t = Ct.project (T.get_vars t) constr_t in
   let constr_s = Ct.project (T.get_vars s) constr_s in
-  let vars = unique (Ct.vars constr_s @ variables s) in
+  let vars = Lib.unique ~c:Var.compare (Ct.vars constr_s @ variables s) in
   let rho, t' = rename_term vars t in
   let constr_t' = Ct.substitute rho constr_t in
   try 
@@ -825,7 +596,7 @@ let gnd_instance_inter (t, constr_t) (s, constr_s) =
     CL.pp_clit (t,constr_t) CL.pp_clit (t',constr_t') CL.pp_clit (s,constr_s);*)
     let theta = mgu_list [s,t'] in
     let constr = Ct.conj constr_t' constr_s in
-    Ct.substituted_sat constr theta
+    Ct.substituted_sat theta constr
   with Unif.Unification_failed -> false
 ;;
 
@@ -1242,7 +1013,7 @@ let add_intersecting_instances state cs =
           (* unify does not work: f(X, f(Y, X)) vs f(U, f(U, V)), so use mgu *)
           let theta = mgu_list [trail_lit', clinst] in
           let trail_constr' = Ct.substitute rho trail_constr in
-          if not (Ct.substituted_sat trail_constr' theta) then acc
+          if not (Ct.substituted_sat theta trail_constr') then acc
           else
             let trail_constr'' = Ct.substitute theta trail_constr' in
             let lit_theta = S.apply_subst_term term_db_ref theta trail_lit in
@@ -1263,7 +1034,7 @@ let add_intersecting_instances state cs =
       | u :: us ->
         let app acc (theta, trail_constr) =
           let apply_theta = Subst.apply_subst_term term_db_ref theta in
-          if not (Ct.substituted_sat constrs theta) then acc
+          if not (Ct.substituted_sat theta constrs) then acc
           else
             let constrs' = Ct.conj trail_constr (Ct.substitute theta constrs) in
             let lits_done' = apply_theta u :: (L.map apply_theta lits_done) in
@@ -1294,7 +1065,8 @@ let add_intersecting_instances state cs =
         Ct.pp_constraint constr pp_clause c) (LL.to_list csx)); *)
   let add_size = L.map (fun c -> c, clause_size (fst c)) in
   let k = 50 in
-  let pre,suf = unique ~c:cls_cmp (LL.to_list (LL.take k csx)), LL.from k csx in
+  let pre = Lib.unique ~c:cls_cmp (LL.to_list (LL.take k csx)) in
+  let suf = LL.from k csx in
   let pre' = L.map fst (L.sort (fun (_,x) (_,y) -> pcmp x y) (add_size pre)) in
   LL.append (LL.of_list pre') suf, true)
 ;;
