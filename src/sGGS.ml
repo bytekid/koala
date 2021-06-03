@@ -123,14 +123,25 @@ let mgu ?(away=[]) l r =
   mgu_list [(l, r)]
 ;;
 
-let pp_lits ppf lits =
-  F.fprintf ppf "{%a}" (Lib.pp_any_list Term.pp_term "; ") lits
+let unifies t u =
+  try let _ =  Unif.unify_bterms (1, t) (2, u) in true
+  with Unif.Unification_failed -> false
 ;;
+
+(* Unif.unify_bterms is wrong *)
+let unify_var_disj clauselit traillit = mgu_list [(clauselit, traillit)]
+(*  let mgu = Unif.unify_bterms (1, clauselit) (2, traillit) in
+  let add x t l = Subst.add (snd x) (snd t) l in
+  let sigma = SubstBound.SubstM.fold add mgu (Subst.create ()) in
+  sigma, mgu
+;;*)
 
 (* first argument is pattern *)
 let matches l t =
   try let _ = Unif.matches l t in true with Unif.Matching_failed -> false
 ;;
+
+let variant s t = matches s t && matches t s
 
 let ensure_match l t =
   if not (matches l t) then (
@@ -208,17 +219,15 @@ end
 
 module CL = ConstrainedLiteral
 
-(* Computes smallest ground instance of the given constraint literal.
-  Raises Ct.Is_unsat if no such instance exists.
-*)
-(* The following function is auxiliary: it enumerates all tuples of length len
-   of natural numbers. *)
+(* Smallest ground instance computation *)
 let get_diff_map diff_idxs len =
   let ext i l (j,k) = if i = j then k::l else if k = i then j::l else l in
   let diff i = List.fold_left (ext i) [] diff_idxs in
   L.fold_left (fun m i -> IMap.add i (diff i) m) IMap.empty (intrange len)
 ;;
-  
+
+(* The following function is auxiliary: it enumerates all tuples of length len
+   of natural numbers. *)
 let index_tuples diff_idx_pairs len =
   let dmap = get_diff_map diff_idx_pairs len in
   let rec tuples n sum =
@@ -239,6 +248,9 @@ let index_tuples diff_idx_pairs len =
 
 let smallest_inst_cache = H.create 1024
 
+(* Computes smallest ground instance of the given constraint literal.
+  Raises Ct.Is_unsat if no such instance exists.
+*)
 let smallest_gnd_instance syms ((lit, constr) as cl) =
   let dtops = match snd cl with [c] -> L.filter Ct.is_diff_top c  | _ -> [] in
   let dvar = match snd cl with [c] -> L.filter Ct.is_diff_var c  | _ -> [] in
@@ -271,7 +283,7 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     if !O.current_options.dbg_more then
       assert (Ct.substituted_sat sigma constr);
     Subst.apply_subst_term term_db_ref sigma lit
-    (* FIXME if no errors with assertion, get rid of this recursion *)
+    (* FIXME if no errors with this assertion, get rid of recursion *)
     (*let sat = Ct.substituted_sat sigma constr in
     if sat then Subst.apply_subst_term term_db_ref sigma lit
     else smallest (i+1) (LL.tl argss)*)
@@ -288,8 +300,8 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
         | Ct.DiffTop(x, f) when x = v -> T.get_top_symb t <> f 
         | _ -> true
       in
-      let satisfies_constr t = L.for_all (sat_difftop t) dtops in
-      let gterms_prefiltered = LL.filter satisfies_constr gterms in
+      let satisfies_difftops t = L.for_all (sat_difftop t) dtops in
+      let gterms_prefiltered = LL.filter satisfies_difftops gterms in
       LL.map (fun t -> (v, t)) gterms_prefiltered
     in
     let vars = T.get_vars lit in
@@ -304,6 +316,7 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
   )
 ;;
 
+(* to debug model *)
 let gnd_clause_insts syms c =
   let concat_map f l = LL.concat (LL.map f l) in
   let terms v = LL.map (fun t -> (v, t)) (all_ground_terms (Var.get_type v) syms) in
@@ -394,45 +407,6 @@ end
 module CC = ConstrainedClause
 
 open CC
-
-let pp_lits ppf ls =
-  L.iter (fun (l, i) ->
-    if i > 0 then F.fprintf ppf ", ";
-    F.fprintf ppf "%a" T.pp_term l;
-  ) (index ls)
-;;
-
-let pp_clause ppf cc = pp_lits ppf (C.get_lits cc)
-
-let pp_clauses ppf ccs = L.iter (fun l -> F.fprintf ppf "%a\n" pp_clause l) ccs
-
-let subst_str sub =
-  let add x t l = 
-    let k,v = x in
-    (string_of_int k) ^ (Var.to_string v) ^ " -> " ^ (Term.to_string t) ^ l
-  in
-  SubstBound.SubstM.fold add sub ""
-;;
-
-let unifies t u =
-  try let _ =  Unif.unify_bterms (1, t) (2, u) in true
-  with Unif.Unification_failed -> false
-;;
-
-let unify clauselit traillit =
-  let mgu = Unif.unify_bterms (1, clauselit) (2, traillit) in
-  let add x t l = if fst x = 2 then Subst.add (snd x) (snd t) l else l in
-  let sigma = SubstBound.SubstM.fold add mgu (Subst.create ()) in
-  sigma
-;;
-
-(* Unif.unify_bterms is wrong *)
-let unify_var_disj clauselit traillit = mgu_list [(clauselit, traillit)]
-(*  let mgu = Unif.unify_bterms (1, clauselit) (2, traillit) in
-  let add x t l = Subst.add (snd x) (snd t) l in
-  let sigma = SubstBound.SubstM.fold add mgu (Subst.create ()) in
-  sigma, mgu
-;;*)
 
 let rename_term vars t = 
   let rho, ts = rename_term_list term_db_ref vars [t] in
@@ -657,9 +631,7 @@ end
 
 module I = PartialInterpretation
 
-module Trail = struct
-  type t = CC.constr_clause list
-end
+type trail = CC.constr_clause list
 
 exception No_dependence of CL.t
 
@@ -670,7 +642,7 @@ type state = {
   generated_clauses: int ref;
   initial: initial_interpretation;
   max_trail_len: int ref;
-  trail: Trail.t;
+  trail: trail;
   trail_idx: CC.constr_clause DiscTree.t;
   steps: int ref;
   ground_preserving: bool;
@@ -950,48 +922,6 @@ let remove_from_trail state pos =
   DiscTree.elim_elem_from_lit idx cc_old.selected cc_old;
   let bef, aft = until pos state.trail, from (pos + 1) state.trail in
   empty_extension_queue {state with trail = bef @ aft}
-;;
-
-let variant s t = matches s t && matches t s
-
-(* return the substituted clause and the substituted constraints.
-  Note that to constr0 (the original constraints) the substitution is applied,
-  while to constr1, the new splitting consraints only the renaming.  *)
-let subst_clause theta c (constr0, constr1) =
-  let apply_theta = Subst.apply_subst_term term_db_ref theta in
-  let subst_lits = L.map apply_theta (C.get_lits c) in
-  let _, rho = normalise_lit_list_renaming term_db_ref subst_lits in
-  (* normalizing substitution also needs to be applied to constraints *)
-  let c' = modify_clause c subst_lits in
-  (*F.printf "subst %a to %a: now constraint %a\n%!" C.pp_clause c C.pp_clause c'
-    Ct.pp_constraint constr0;*)
-  let constr0' = Ct.substitute theta constr0 in
-  let constr' = Ct.rename rho (Ct.conj constr0' constr1) in
-  c', constr'
-;;
-
-let find_splitting_opportunity trail_lits cs =
-  (* return substitution useful for split *)
-  let check_lit (trail_lit, i) l =
-    try
-      let theta = unify (compl_lit l) trail_lit in
-      if matches (compl_lit l) trail_lit then None
-      else
-        Some (i, theta)
-    with Unif.Matching_failed | Unif.Unification_failed -> None
-  in
-  let check_trail_lit acc tl = 
-    if acc <> None then acc
-    else
-      let check_clause acc c = 
-        if acc <> None then acc
-        else
-          let ls = C.get_lits c in
-          L.fold_left (fun a l -> if a=None then check_lit tl l else a) None ls
-      in
-    L.fold_left check_clause None cs
-  in
-  L.fold_left check_trail_lit None (index trail_lits)
 ;;
 
 (*
