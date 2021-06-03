@@ -68,8 +68,8 @@ def run_sggs(p, f):
   scode = "SUC" if "atisfiable" in out else "TMO" if "TIMEOUT" in out else "UNK"
   print(p + ": " + scode)
   sys.stdout.flush()
-  if scode == "SUC":
-    print("new acquirement " + p)
+  #if scode == "SUC":
+  #  print("new acquirement " + p)
   result = SAT if "Satisfiable" in out else UNSAT if "Unsatisfiable" in out \
     else TIMEOUT if "TIMEOUT" in out else UNKNOWN
   resrec = { "success": scode, "result": text[result], "timeout": timeout_interval}

@@ -215,6 +215,9 @@ module ConstrainedLiteral = struct
     F.fprintf ppf "%a | %a" Ct.pp_constraint constr T.pp_term l
   ;;
 
+  let vars (l, constr) =
+    Lib.unique ~c:Var.compare (T.get_vars l @ (Ct.vars constr))
+  ;;
 end
 
 module CL = ConstrainedLiteral
@@ -304,7 +307,7 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
       let gterms_prefiltered = LL.filter satisfies_difftops gterms in
       LL.map (fun t -> (v, t)) gterms_prefiltered
     in
-    let vars = T.get_vars lit in
+    let vars = CL.vars cl in
     let index_vars = index vars in
     let vidx x = snd (L.find (fun (y, _) -> x = y) index_vars) in
     let vpairs l = function Ct.DiffVars(x,y) -> (vidx x,vidx y) :: l | _ -> l in
@@ -950,7 +953,7 @@ let add_intersecting_instances state cs =
           if not (Ct.substituted_sat theta trail_constr') then acc
           else
             let trail_constr'' = Ct.substitute theta trail_constr' in
-            let lit_theta = S.apply_subst_term term_db_ref theta trail_lit in
+            let lit_theta = S.apply_subst_term term_db_ref theta trail_lit' in
             (theta, Ct.project (T.get_vars lit_theta) trail_constr'') :: acc
         with _ -> acc
     in
@@ -1393,10 +1396,10 @@ let rec sggs_no_conflict state clauses =
             in
             L.iter (fun cx -> 
               if clause_cover cx then 
-                F.printf "covered by %a | %a\n%!" Ct.pp_constraint (snd cx) C.pp_clause (fst cx)
+                F.printf "covered by %a | %a: %b\n%!" Ct.pp_constraint (snd cx) C.pp_clause (fst cx) (check_ext cx)
             ) (LL.to_list clausesx)
           )
-        ) cs;*)
+        ) cs; *)
 
         state, Satisfiable
       ) else 
