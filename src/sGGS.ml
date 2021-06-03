@@ -1,10 +1,5 @@
+(*** MODULES ******************************************************************)
 module H = Hashtbl
-open Clause
-open Term
-open Logic_interface
-open Subst
-open Finite_models
-
 module T = Term
 module L = List
 module F = Format
@@ -17,16 +12,32 @@ module LL = LazyList
 module O = Options 
 module FM = Finite_models
 module IMap = Lib.IntMap
-
 module Ct = Constraint
+
+(*** OPENS ********************************************************************)
+open Clause
+open Term
+open Logic_interface
+open Subst
+open Finite_models
+
+(*** TYPES ********************************************************************)
 
 type result = Satisfiable | Unsatisfiable | Unknown
 
+(*** GLOBALS ******************************************************************)
+
+let term_db_ref = SystemDBs.term_db_ref
+
+let start_time = ref 0.;;
+let time_ground_instances = ref 0.;;
+let time_compute_ext_clauses = ref 0.;;
+let time_split = ref 0.;;
+
+(*** FUNCTIONS ****************************************************************)
 let (<.>) f g x = f (g x)
 
 let (<!>) l k = L.nth l k
-
-let term_db_ref = SystemDBs.term_db_ref
 
 let add_term t = TermDB.add_ref t term_db_ref
 
@@ -38,7 +49,7 @@ let mk_fun_term f ts = add_term (Term.create_fun_term f ts)
 
 let pcmp = Pervasives.compare
 
-let start_time = ref 0.0
+let time = Unix.gettimeofday
 
 (* utilities *)
 let index ?(from=0) l =
@@ -295,6 +306,7 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
   else if H.mem smallest_inst_cache cl then H.find smallest_inst_cache cl
   else if Ct.unsat syms constr then raise Ct.Is_unsat
   else (
+    let t = time () in
     (*F.printf "start computing sgi of %a (term size %d)\n%!"
       CL.pp_clit cl (T.get_num_of_symb (fst cl) + (T.get_num_of_var (fst cl)));*)
     let terms v =
@@ -315,6 +327,7 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let args_lists = product diff_idx_pairs (L.map terms vars) in
     let u = smallest 0 args_lists in
     H.add smallest_inst_cache (lit, constr) u;
+    time_ground_instances := !time_ground_instances +. (time () -. t);
     u 
   )
 ;;
@@ -508,14 +521,14 @@ let sggs_cmp l l' =
 ;;
 
 (* split s clause by t clause, rep is optional representative *)
-let split_clauses ?(rep=None) syms cc by_cc =
+let split_clauses syms cc by_cc =
+  let t_start = time () in
   let by_lit = by_cc.selected in
   let by_constr = Ct.project (T.get_vars by_lit) by_cc.constr in
   let s, t = T.get_atom (CC.selected cc), T.get_atom by_lit in
   let constr_s, clause_s = CC.constr cc, CC.clause cc in
-  (* If no representative is given: the representative of D in split(C,D) is 
-  Aσ ∧ Bσ | C[L]σ, where σ is the mgu of at(L) and at(M) and (A∧B)σ is 
-  satisfiable.*)
+  (* the representative of D in split(C,D) is Aσ ∧ Bσ | C[L]σ, where σ is the 
+  mgu of at(L) and at(M) and (A∧B)σ is satisfiable.*)
   let rho, t' = rename_term (CC.get_vars cc) t in
   let constr' = Ct.substitute rho by_constr in
   if !O.current_options.dbg_more then
@@ -529,10 +542,9 @@ let split_clauses ?(rep=None) syms cc by_cc =
     else (
       (* compute the representative, if not given *)
       let cc' = { cc with CC.constr = constr_conj } in
-      let rep = match rep with Some r -> F.printf "rep given\n%!"; r | None -> CC.substitute sigma cc' in
+      let rep = CC.substitute sigma cc' in
       (* the difference *)
       let diff = diff cc rep sigma in
-      assert (L.for_all (fun cc -> cc.constr <> []) diff);
       if !O.current_options.dbg_more then (
         Format.printf "  representative %a \n" CC.pp_cclause rep;
         Format.printf "  difference:\n";
@@ -548,6 +560,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
         L.iter (fun (cc, l) ->
           F.printf "  %a (for %a)\n%!" CC.pp_cclause cc T.pp_term l
         ) partition);
+      time_split := !time_split +. (time () -. t_start);
       L.map fst partition, rep, diff)
   with Unif.Unification_failed -> raise Split_undefined
 ;;
@@ -699,7 +712,10 @@ let print_stats state =
   F.printf "# generated clauses: %d\n" !(state.generated_clauses);
   F.printf "# deleted clauses:   %d\n" !(state.deleted_clauses);
   F.printf "max trail length:    %d\n" !(state.max_trail_len);
-  F.printf "time:                %.2f\n" (Unix.gettimeofday () -. !start_time)
+  F.printf "time:                %.2f\n" (time () -. !start_time);
+  F.printf " extension clauses:  %.2f\n" !time_compute_ext_clauses;
+  F.printf " splits:             %.2f\n" !time_split;
+  F.printf " ground instances:   %.2f\n" !time_ground_instances;
 ;;
 
 let log_step_if b state step_name = if b then log_step state step_name else ()
@@ -1220,9 +1236,9 @@ type split_location = Left | Right | Factor
 let location_str = function Left -> "left" | Right -> "right"  | _ -> "factor"
 
 (* returns partition and representative; the latter can be given as argument *)
-let sggs_split ?(rep=None) where state pos by_cc =
+let sggs_split where state pos by_cc =
   let cc = state.trail <!> pos in
-  let partition, rep, diff = split_clauses ~rep:rep state.signature cc by_cc in
+  let partition, rep, diff = split_clauses state.signature cc by_cc in
   let bef, aft = until pos state.trail, from (pos + 1) state.trail in
   let state = empty_extension_queue { state with trail =  bef @ aft } in
 
@@ -1366,6 +1382,7 @@ let rec sggs_no_conflict state clauses =
     let clausesx, computed = add_intersecting_instances state clauses in
     let check_ext c = check_valid_extension state c != None in
     try
+      let t = time () in
       let valid_exts = LL.filter check_ext clausesx in
       let c = LL.hd valid_exts in
       let Some ((c,constr), conflict, select) = check_valid_extension state c in
@@ -1373,6 +1390,7 @@ let rec sggs_no_conflict state clauses =
       let cc = mk_cclause c select constr in
       inc_clauses_and_extensions state;
       let state' = {state with extension_queue = Some (LL.tl valid_exts) } in
+      time_compute_ext_clauses := !time_compute_ext_clauses +. (time () -. t);
       sggs_extend state' clauses cc conflict (L.length state.trail)
     with LL.Is_empty -> (
       if computed then (
@@ -1637,7 +1655,7 @@ let fix_signature clauses fms =
 ;;
 
 let do_something_smart clauses =
-  start_time := Unix.gettimeofday ();
+  start_time := time ();
   L.iter (fun c -> L.iter (fun l ->ignore (add_term l)) (C.get_lits c)) clauses;
   let clauses = Type_inf.sub_type_inf clauses in
   let fms = FM.init_fm_state clauses in
@@ -1670,7 +1688,7 @@ let do_something_smart clauses =
 ;;
 
 let print_empty_clause_result _ =
-  start_time := Unix.gettimeofday ();
+  start_time := time ();
   Format.printf "\nSZS status Unsatisfiable\n%!";
   let state = mk_initial_state AllNegative false [] in
   print_stats state;
