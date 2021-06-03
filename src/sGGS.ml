@@ -268,9 +268,13 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let args = try LL.hd argss with LL.Is_empty -> raise Ct.Is_unsat in
     let sub_empty = Subst.create () in
     let sigma = L.fold_left (fun s (x,u) -> Subst.add x u s) sub_empty args in
-    let sat = Ct.substituted_sat sigma constr in
+    if !O.current_options.dbg_more then
+      assert (Ct.substituted_sat sigma constr);
+    Subst.apply_subst_term term_db_ref sigma lit
+    (* FIXME if no errors with assertion, get rid of this recursion *)
+    (*let sat = Ct.substituted_sat sigma constr in
     if sat then Subst.apply_subst_term term_db_ref sigma lit
-    else smallest (i+1) (LL.tl argss)
+    else smallest (i+1) (LL.tl argss)*)
   in 
   if T.is_ground lit then lit
   else if H.mem smallest_inst_cache cl then H.find smallest_inst_cache cl
