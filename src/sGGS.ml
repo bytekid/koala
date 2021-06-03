@@ -16,6 +16,7 @@ module SSet = Clause.SSet
 module LL = LazyList
 module O = Options 
 module FM = Finite_models
+module IMap = Lib.IntMap
 
 type result = Satisfiable | Unsatisfiable | Unknown
 
@@ -31,6 +32,10 @@ let add_term t = TermDB.add_ref t term_db_ref
 
 let compl_lit l = add_term (Term.compl_lit l)
 
+let mk_var_term x = add_term (Term.create_var_term x)
+
+let mk_fun_term f ts = add_term (Term.create_fun_term f ts)
+
 let pcmp = Pervasives.compare
 
 let start_time = ref 0.0
@@ -39,6 +44,14 @@ let start_time = ref 0.0
 let index ?(from=0) l =
   snd (L.fold_left (fun (i, xs) y -> (i + 1, xs @ [y,i])) (from,[]) l)
 ;;
+
+let rec repeat n x = if n = 0 then [] else x :: (repeat (n - 1) x)
+
+let rec intrange n = if n = 0 then [] else (n - 1) :: (intrange (n - 1))
+
+let is_some = function Some _ -> true | _ -> false
+
+      let the = function Some x -> x | _ -> failwith "option type is empty"
 
 (* exclusive i *)
 let rec until i l = 
@@ -196,7 +209,7 @@ let rec fresh_vars away_var_list x n =
     if n = 0 then []
     else
       let fresh_vars_env = Var.init_fresh_vars_env_away away_var_list in
-      let y = Var.get_next_fresh_var fresh_vars_env (Var.get_type x) in 
+      let y = Var.get_next_fresh_var fresh_vars_env (Var.get_type x) in
       y :: (vars (y :: away_var_list) y (n-1))
   in
   vars away_var_list x n
@@ -219,6 +232,8 @@ module Constraint = struct
   let atom a = [[a]]
 
   let is_diff_top = function DiffTop(_,_) -> true | _ -> false
+
+  let is_diff_var c = not (is_diff_top c)
 
   let pp_constraint ppf cs =
     let pp_atom (c, i) =
@@ -303,7 +318,7 @@ module Constraint = struct
         let add_var x t acc = x :: (T.get_vars t) @ acc in
         let used_vars = add_var x t (Subst.fold add_var theta []) in
         let vs_new = fresh_vars used_vars x (L.length ts) in
-        let vs_new' = L.map T.create_var_term vs_new in
+        let vs_new' = L.map mk_var_term vs_new in
         let diff_top = atom (DiffTop(x, f)) in
         let diff_arg = L.map (add_terms_diff ct) (zip vs_new' ts) in
         L.fold_left disj diff_top diff_arg (* difference on top or in arg *)
@@ -313,17 +328,17 @@ module Constraint = struct
     in
     let subst_atom = function
     | DiffVars (x, y) ->
-      let tx = try (SubstM.find x theta) with _ -> T.create_var_term x in
-      let ty = try (SubstM.find y theta) with _ -> T.create_var_term y in
+      let tx = try (SubstM.find x theta) with _ -> mk_var_term x in
+      let ty = try (SubstM.find y theta) with _ -> mk_var_term y in
       add_terms_diff [[]] (tx, ty)
     | DiffTop (x, f) ->
-      match (try (SubstM.find x theta) with _ -> T.create_var_term x) with
+      match (try (SubstM.find x theta) with _ -> mk_var_term x) with
       | T.Var (z, _) -> atom (DiffTop(z, f))
       | t ->
         let g = T.get_top_symb t in
         if g <> f then [[]] 
         else if g == f then raise Is_unsat
-        else add_terms_diff [[]] (t, T.create_var_term x)
+        else add_terms_diff [[]] (t, mk_var_term x)
     in
     try
       let subst_conj = L.fold_left (fun ct a -> conj ct (subst_atom a)) top in
@@ -387,11 +402,11 @@ module Constraint = struct
   (* returns list of substitutions *)
   let negate away_vars ct =
     let neg = function
-    | DiffVars (x, y) -> Subst.singleton x (T.create_var_term y)
+    | DiffVars (x, y) -> Subst.singleton x (mk_var_term y)
     | DiffTop (x,f) ->
       let a = Sym.get_arity f in
-      let xs = L.map T.create_var_term (fresh_vars away_vars x a) in
-      Subst.singleton x (T.create_fun_term f xs)
+      let xs = L.map mk_var_term (fresh_vars away_vars x a) in
+      Subst.singleton x (mk_fun_term f xs)
     in
     let negate_conj c = L.map neg c in
     let option_add x t = function
@@ -429,23 +444,37 @@ module CL = ConstrainedLiteral
 *)
 (* The following function is auxiliary: it enumerates all tuples of length len
    of natural numbers. *)
-let index_tuples len =
-  let rec repeat n x = if n = 0 then [] else x :: (repeat (n - 1) x) in
-  let rec range n = if n = 0 then [] else (n - 1) :: (range (n - 1)) in
+let get_diff_map diff_idxs len =
+  let ext i l (j,k) = if i = j then k::l else if k = i then j::l else l in
+  let diff i = List.fold_left (ext i) [] diff_idxs in
+  L.fold_left (fun m i -> IMap.add i (diff i) m) IMap.empty (intrange len)
+;;
+  
+let index_tuples diff_idx_pairs len =
+  let dmap = get_diff_map diff_idx_pairs len in
   let rec tuples n sum =
-    if sum = 0 then [repeat n 0]
-    else if n = 1 then [[sum]]
+    if sum = 0 then LL.of_list [repeat n 0]
+    else if n + 1 = len then LL.singleton [sum]
     else
-      let rng = List.rev (range (sum + 1)) in
-      L.concat (L.map (fun v -> L.map (fun ts -> v :: ts) (tuples (n-1) (sum-v))) rng)
+      let rng = LL.of_list (List.rev (intrange (sum + 1))) in
+      let ext v t =
+        if L.exists (fun j -> (t <!> j) = v) (IMap.find n dmap) then None
+        else Some (t @ [v])
+      in
+      let ext_prefxs v = LL.map (ext v) (tuples (n - 1) (sum - v)) in
+      let the_content l = LL.map the (LL.filter is_some l) in
+      LL.concat (LL.map (fun v -> the_content (ext_prefxs v)) rng)
   in
-  LL.concat (LL.of_function (fun i -> Some (LL.of_list (tuples len i))))
+  LL.concat (LL.of_function (fun i -> Some (tuples len i)))
 ;;
 
 let smallest_inst_cache = H.create 1024
 
 let smallest_gnd_instance syms ((lit, constr) as cl) =
-  let product xss = (* xss: list of lazy lists of possible var instantiations *)
+  let dtops = match snd cl with [c] -> L.filter Ct.is_diff_top c  | _ -> [] in
+  let dvar = match snd cl with [c] -> L.filter Ct.is_diff_var c  | _ -> [] in
+  (* xss: list of lazy lists of possible var instantiations *)
+  let product diff_idx_pairs xss =
     let sub_ext_ok sub (x, t) =
       if Ct.implies constr [[Ct.DiffTop(x, T.get_top_symb t)]] then false
       else
@@ -459,27 +488,27 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     let get (xi, i) = try Some (LL.nth xi (L.nth xss i)) with _ -> None in
     let make_subst idxs =
       let tops = L.map get (index idxs) in
-      let the = function Some x -> x | _ -> failwith "option type is empty" in
       if L.mem None tops then None else Some (L.map the tops)
     in
     let check = function Some sub when check_subst sub -> true  | _ -> false in
     let get_some = function Some x -> x | _ -> failwith "none" in
-    LL.map get_some (LL.filter check (LL.map make_subst (index_tuples (L.length xss))))
+    let itups = index_tuples diff_idx_pairs (L.length xss) in
+    LL.map get_some (LL.filter check (LL.map make_subst itups))
   in
-  let rec smallest argss =
+  let rec smallest i argss =
     let args = try LL.hd argss with LL.Is_empty -> raise Ct.Is_unsat in
     let sub_empty = Subst.create () in
     let sigma = L.fold_left (fun s (x,u) -> Subst.add x u s) sub_empty args in
     let pred = Ct.substituted_sat constr in
     if pred sigma then Subst.apply_subst_term term_db_ref sigma lit
-    else smallest (LL.tl argss)
+    else smallest (i+1) (LL.tl argss)
   in 
   if T.is_ground lit then lit
   else if H.mem smallest_inst_cache cl then H.find smallest_inst_cache cl
   else if Ct.unsat syms constr then raise Ct.Is_unsat
   else (
-    F.printf "start computing sgi of %a \n%!" CL.pp_clit cl;
-    let dtops = match snd cl with [c] -> L.filter Ct.is_diff_top c  | _ -> [] in
+    F.printf "start computing sgi of %a (term size %d)\n%!"
+      CL.pp_clit cl (T.get_num_of_symb (fst cl) + (T.get_num_of_var (fst cl)));
     let terms v =
       let gterms = all_ground_terms (Var.get_type v) syms in
       let sat_difftop t = function 
@@ -490,8 +519,13 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
       let gterms_prefiltered = LL.filter satisfies_constr gterms in
       LL.map (fun t -> (v, t)) gterms_prefiltered
     in
-    let args_lists = product (L.map terms (T.get_vars lit)) in
-    let u = smallest args_lists in
+    let vars = T.get_vars lit in
+    let index_vars = index vars in
+    let vidx x = snd (L.find (fun (y, _) -> x = y) index_vars) in
+    let vpairs l = function Ct.DiffVars(x,y) -> (vidx x,vidx y) :: l | _ -> l in
+    let diff_idx_pairs = L.fold_left vpairs [] dvar in
+    let args_lists = product diff_idx_pairs (L.map terms vars) in
+    let u = smallest 0 args_lists in
     H.add smallest_inst_cache (lit, constr) u;
     F.printf "done\n%!";
     u 
@@ -641,6 +675,7 @@ let diff cc by_cc sigma =
 
   let rec diff acc i cc =
     let (s, constr_s, clause_s) = CC.selected cc, CC.constr cc, CC.clause cc in
+    (*F.printf " of %a\n%!" CL.pp_clit (s, constr_s);*)
     (* DiffSim *)
     let sigma = ensure_match s r in
     let vars_s = T.get_vars s in
@@ -652,8 +687,9 @@ let diff cc by_cc sigma =
     (* check if some var is mapped to functional term *)
     match L.fold_left (map_to (not <.> T.is_var)) None vars_s with
     | Some (x, T.Fun(f, ts, _)) -> (
-      let xs = L.map T.create_var_term (fresh_vars away x (L.length ts)) in
-      let tau = Subst.singleton x (T.create_fun_term f xs) in
+      let xs = L.map mk_var_term (fresh_vars away x (L.length ts)) in
+      let t = mk_fun_term f xs in
+      let tau = Subst.singleton x t in
       try
         let cc_sub = CC.substitute tau cc in
         let constr_s' = Ct.conj (Ct.atom (Ct.DiffTop(x, f))) constr_s in
@@ -664,7 +700,7 @@ let diff cc by_cc sigma =
         x <> y && (match osubst y with Some (_, Var(x',_)) -> z=x' | _ -> false)
       in
       let check x =
-        let xt = T.create_var_term x in
+        let xt = mk_var_term x in
         let t = Subst.apply_subst_term term_db_ref sigma (add_term xt) in
         if not (T.is_var t) then None
         else if L.exists (also_mapped_to x (T.get_var t)) vars_s then
@@ -676,7 +712,7 @@ let diff cc by_cc sigma =
       match to_same_var with
       | Some (x, y) ->
       (* DiffVar: two variables x, y are mapped to same var z  *)
-        let tau = Subst.singleton x (T.create_var_term y) in
+        let tau = Subst.singleton x (mk_var_term y) in
         let cc_subst = CC.substitute tau cc in
         let constr_s' = Ct.conj (Ct.atom (Ct.DiffVars(x,y))) constr_s in
         diff (CC.make clause_s s constr_s' :: acc) i cc_subst
@@ -736,6 +772,7 @@ let split_clauses ?(rep=None) syms cc by_cc =
   try
     let sigma = unify_var_disj s t' in
     let constr_conj = Ct.conj constr' constr_s in
+    (* FIXME is this needed? cf SYN353-1 *)
     if not (Ct.substituted_sat constr_conj sigma) then raise Split_undefined
     else (
       (* compute the representative, if not given *)

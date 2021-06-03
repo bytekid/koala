@@ -42,7 +42,7 @@ let compare =
   pair_compare_lex Pervasives.compare Symbol.compare
 
 (* assume vt are shared but v are not shared *)
-let equal (v1, vt1) (v2, vt2) = (v1 = v2) && (vt1 == vt2)
+let equal (v1, vt1) (v2, vt2) = (vt1 == vt2) && (v1 = v2)
 
 let compare_bvar =
   pair_compare_lex Pervasives.compare compare 
