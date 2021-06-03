@@ -306,8 +306,6 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     in
     let vars = T.get_vars lit in
     let index_vars = index vars in
-    L.iter (fun (x,i) -> F.printf "%d : %a  " i Var.pp_var x) index_vars;
-    F.printf "\n%!";
     let vidx x = snd (L.find (fun (y, _) -> x = y) index_vars) in
     let vpairs l = function Ct.DiffVars(x,y) -> (vidx x,vidx y) :: l | _ -> l in
     let diff_idx_pairs = L.fold_left vpairs [] dvar in
