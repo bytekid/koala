@@ -7,9 +7,11 @@ exception Is_unsat
 
 type atomic =
   | DiffVars of Var.var * Var.var
-  | DiffTop of Var.var * Symbol.symbol 
+  | DiffTop of Var.var * Symbol.symbol
 
-type t = atomic list list (* disjunction of conjunctions *)
+type conjunct = atomic list
+  
+type t = conjunct list (* disjunction of conjunctions *)
 
 let top = [[]]
 
@@ -34,7 +36,7 @@ let pp_constraint ppf cs =
     F.fprintf ppf "( ";
     match c with
     | [] -> ()
-    | a :: ats -> pp_atom ~no_sep:true a; List.iter pp_atom c;
+    | a :: ats -> pp_atom ~no_sep:true a; List.iter pp_atom ats;
     F.fprintf ppf " )"
   in
   match cs with
@@ -49,7 +51,7 @@ let cmp_atomic s t =
   | DiffVars(x,y), DiffVars(x',y') ->
     if (x = x' && y = y') || (x = y' && y = x') then 0 else pcmp (x,y) (x',y')
   | DiffTop(x, f), DiffTop(x', f') -> pcmp (x, f) (x', f')
-  | DiffTop _, DiffVars _ -> 1
+  | DiffTop _, DiffVars _
   | DiffVars _, DiffTop _ -> -1
   in cmp (s,t)
 ;;
@@ -70,13 +72,13 @@ let equal ct1 ct2 =
 
 let cons a cs = if L.exists (atomic_equal a) cs then cs else a :: cs
 
-let conj1 c ct = List.map ((@) c) ct
+let conj1 c ct = List.map (List.fold_right cons c) ct
 
 let conj ct1 ct2 = L.fold_right conj1 ct2 ct1
 
-let disj ct1 ct2 = ct1 @ ct2
-  (*let disj1 d ds = if L.exists (eq_conj d) ds then ds else d :: ds in
-  List.fold_right disj1 ct1 ct2*)
+let disj ct1 ct2 = (*ct1 @ ct2*)
+  let disj1 d ds = if L.exists (eq_conj d) ds then ds else d :: ds in
+  List.fold_right disj1 ct1 ct2
 ;;
 
 let substituted_sat theta ct =

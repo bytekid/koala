@@ -1,8 +1,10 @@
 type atomic =
   | DiffVars of Var.var * Var.var
-  | DiffTop of Var.var * Symbol.symbol 
+  | DiffTop of Var.var * Symbol.symbol
 
-type t = atomic list list
+type conjunct = atomic list
+
+type t = conjunct list
 
 exception Is_unsat
 
@@ -21,6 +23,8 @@ val pp_constraint : Format.formatter -> t -> unit
 val equal : t -> t -> bool
 
 val unsat : (Symbol.t * int) list -> t -> bool
+
+val conj1 : conjunct -> t -> t
 
 val conj : t -> t -> t
 

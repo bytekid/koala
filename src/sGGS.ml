@@ -232,11 +232,11 @@ let index_tuples diff_idx_pairs len =
   let dmap = get_diff_map diff_idx_pairs len in
   let rec tuples n sum =
     if sum = 0 then LL.of_list [repeat n 0]
-    else if n + 1 = len then LL.singleton [sum]
+    else if n = 1 then LL.singleton [sum]
     else
       let rng = LL.of_list (List.rev (intrange (sum + 1))) in
       let ext v t =
-        if L.exists (fun j -> (t <!> j) = v) (IMap.find n dmap) then None
+        if L.exists (fun j -> j <= n-1 && (t <!> j) = v) (try IMap.find (n-1) dmap with Not_found -> F.printf " not found %d\n%!" (n-1); raise Not_found) then None
         else Some (t @ [v])
       in
       let ext_prefxs v = LL.map (ext v) (tuples (n - 1) (sum - v)) in
@@ -306,6 +306,8 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
     in
     let vars = T.get_vars lit in
     let index_vars = index vars in
+    L.iter (fun (x,i) -> F.printf "%d : %a  " i Var.pp_var x) index_vars;
+    F.printf "\n%!";
     let vidx x = snd (L.find (fun (y, _) -> x = y) index_vars) in
     let vpairs l = function Ct.DiffVars(x,y) -> (vidx x,vidx y) :: l | _ -> l in
     let diff_idx_pairs = L.fold_left vpairs [] dvar in
@@ -463,7 +465,7 @@ let diff cc by_cc sigma =
       (* DiffVar: two variables x, y are mapped to same var z  *)
         let tau = Subst.singleton x (mk_var_term y) in
         let cc_subst = CC.substitute tau cc in
-        let constr_s' = Ct.conj (Ct.atom (Ct.DiffVars(x,y))) constr_s in
+        let constr_s' = Ct.conj1 [Ct.DiffVars(x,y)] constr_s in
         diff (CC.make clause_s s constr_s' :: acc) i cc_subst
       | _ ->  (* remaining cases *)
       (* apply DiffId: since the second clause is an instance of the first, but
@@ -1375,8 +1377,8 @@ let rec sggs_no_conflict state clauses =
       if computed then (
         F.printf "model:\n%a\n" pp_trail state;
 
-        (* check model *)
-        (*let cs = L.concat (L.map (gnd_clause_insts state.signature) clauses) in
+        (* check model 
+        let cs = L.concat (L.map (gnd_clause_insts state.signature) clauses) in
         let ip = I.from_trail state.initial state.trail in
         L.iter (fun c -> 
           let sat = L.exists (I.satisfies_lit ip) (C.get_lits c) in
