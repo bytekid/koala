@@ -314,7 +314,6 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
       (Ct.unsat syms (snd cl));*)
     let terms v =
       let gterms = all_ground_terms (Var.get_type v) syms in
-      let vars = CL.vars cl in
       let sat_difftop t = function 
         | Ct.DiffTop(x, f) when x = v -> T.get_top_symb t <> f 
         | _ -> true
@@ -638,6 +637,10 @@ module PartialInterpretation = struct
     | None -> initial_val l interp.default
   ;;
   
+  let satisfies_clause ?(constr = Ct.top) interp c =
+    L.exists (satisfies_lit ~constr:constr interp) (C.get_lits c)
+  ;;
+
   let from_trail init trail =
     let ls = L.map (fun cc -> (CC.selected cc, CC.constr cc)) trail in
     { default = init; constr_lits = ls}
@@ -1148,8 +1151,7 @@ exception Disposable
 *)
 let find_selected (state, pos) (c, constr) =
   let ip = I.from_trail state.initial state.trail in
-  let sat = L.exists (I.satisfies_lit ~constr:constr ip) (C.get_lits c) in
-  if sat then (
+  if I.satisfies_clause ~constr:constr ip c then (
     (*F.printf "in clause %a : %a\n" Ct.pp_constraint constr C.pp_clause c; 
       F.printf " %a sat\n" T.pp_term (L.find (I.satisfies_lit ~constr:constr ip)
       (C.get_lits c)); *) 
@@ -1367,6 +1369,8 @@ This is also the entry point for the procedure, where clauses are the set of
 input clauses.
 *)
 let rec sggs_no_conflict state clauses =
+  if !(state.steps) > 4000 then failwith "I'm bored";
+  if !O.current_options.dbg_more then F.printf "start sggs_no_conflict\n%!";
   (*if !O.current_options.dbg_more then
     L.iter (fun c -> L.iter (fun c' -> 
       let disj = 
@@ -1435,7 +1439,6 @@ trail, in this case a non-conflicting extension is performed. Otherwise,
 conflict-handling is triggered.
 *)
 and sggs_extend ?(print=true) ?(in_trail=false) state clauses cc conflict pos =
-  (*F.printf "extend with %a, conflict %B\n%!" CC.pp_cclause cc conflict;*)
   let state', added =
     if in_trail then state, true else add_clause_to_trail cc state pos
   in
@@ -1453,8 +1456,14 @@ and sggs_extend ?(print=true) ?(in_trail=false) state clauses cc conflict pos =
       let inter c = gnd_instance_inter compl_cc (CC.to_clit c) && c <> cc in
       let cc' = L.find inter state'.trail in
       let ps, _, _ = split_clauses state.signature cc cc' in
+      let ip = I.from_trail state.initial state.trail in
+      let sat cc = I.satisfies_clause ~constr:cc.constr ip cc.clause in
+      (* FIXME: L.hd ps should work, but causes loop on PUZ025-1 *)
+      let keep =
+        if L.exists (not <.> sat) ps then L.find (not <.> sat) ps else L.hd ps
+      in
       let state'' = remove_from_trail state' pos in
-      sggs_extend ~print:false state'' clauses (L.hd ps) false pos)
+      sggs_extend ~print:false state'' clauses keep false pos)
     else (
       log_step_if print state' "extend-no-conflict";
       (* split recursively by similar or dissimilar literal *)
