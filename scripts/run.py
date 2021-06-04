@@ -46,7 +46,7 @@ def get_problems(list):
 def problem_stats(out):
   m = re.search("# steps:\s+(\d+)", out)
   if not m:
-    print("no steps " + outfile)
+    print("no steps ")
   steps = int(m.groups()[0]) if m else 0
   m = re.search("# extensions:\s+(\d+)", out)
   e = int(m.groups()[0]) if m else 0
@@ -109,8 +109,9 @@ def run_sggs(p, f):
   #  print("new acquirement " + p)
   result = SAT if "Satisfiable" in out else UNSAT if "Unsatisfiable" in out \
     else TIMEOUT if "TIMEOUT" in out else UNKNOWN
-  resrec = { "success": scode, "result": text[result], \
-    "timeout": timeout_interval, "stats": problem_stats(out)}
+  resrec = { "success": scode, "result": text[result], "timeout": timeout_interval}
+  if scode == "SUC":
+    resrec["stats"] = problem_stats(out)
   return result, (p, resrec)
 
 def check(p_fs):
