@@ -1369,7 +1369,6 @@ This is also the entry point for the procedure, where clauses are the set of
 input clauses.
 *)
 let rec sggs_no_conflict state clauses =
-  if !(state.steps) > 4000 then failwith "I'm bored";
   if !O.current_options.dbg_more then F.printf "start sggs_no_conflict\n%!";
   (*if !O.current_options.dbg_more then
     L.iter (fun c -> L.iter (fun c' -> 

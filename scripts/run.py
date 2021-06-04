@@ -42,6 +42,43 @@ def get_problems(list):
   f = open(list, "r")
   return [l.strip() for l in f.readlines() if len(l.strip()) > 0]
 
+
+def problem_stats(out):
+  m = re.search("# steps:\s+(\d+)", out)
+  if not m:
+    print("no steps " + outfile)
+  steps = int(m.groups()[0]) if m else 0
+  m = re.search("# extensions:\s+(\d+)", out)
+  e = int(m.groups()[0]) if m else 0
+  m = re.search("# conflicts:\s+(\d+)", out)
+  cf = int(m.groups()[0]) if m else 0
+  m = re.search("# generated clauses:\s+(\d+)", out)
+  cl = int(m.groups()[0])
+  m = re.search("# deleted clauses:\s+(\d+)", out)
+  d = int(m.groups()[0]) if m else 0
+  m = re.search("max trail length:\s+(\d+)", out)
+  tl = int(m.groups()[0]) if m else 0
+  m = re.search("time:\s+(\d+.\d+)", out)
+  t = float(m.groups()[0]) if m else 0
+  # more time details
+  m = re.search("extension clauses:\s+(\d+.\d+)", out)
+  t_ec = float(m.groups()[0]) if m else 0
+  m = re.search("splits:\s+(\d+.\d+)", out)
+  t_sp = float(m.groups()[0]) if m else 0
+  m = re.search("ground instances:\s+(\d+.\d+)", out)
+  t_gi = float(m.groups()[0]) if m else 0
+  return {
+    "steps": steps,
+    "conflicts": cf,
+    "generated clauses": cl,
+    "deleted clauses": d,
+    "trail length": tl,
+    "extensions": e,
+    "time": t,
+    "time extensions": t_ec,
+    "time splits": t_sp,
+    "time instances": t_gi}
+
 def run_sggs(p, f):
   pfile = open(f, "r")
   if "($false)" in pfile.read():
@@ -58,13 +95,13 @@ def run_sggs(p, f):
     out, err = process.communicate()
     if err:
       print(err)
+    elif "Satisfiable" in out or "Unsatisfiable" in out:
+      f = open(outfile, "w")
+      f.write(out)
+      f.close()
   else:
     f = open(outfile, "r")
     out = f.read()
-  if "Satisfiable" in out or "Unsatisfiable" in out:
-    f = open(outfile, "w")
-    f.write(out)
-    f.close()
   scode = "SUC" if "atisfiable" in out else "TMO" if "TIMEOUT" in out else "UNK"
   print(p + ": " + scode)
   sys.stdout.flush()
@@ -72,7 +109,8 @@ def run_sggs(p, f):
   #  print("new acquirement " + p)
   result = SAT if "Satisfiable" in out else UNSAT if "Unsatisfiable" in out \
     else TIMEOUT if "TIMEOUT" in out else UNKNOWN
-  resrec = { "success": scode, "result": text[result], "timeout": timeout_interval}
+  resrec = { "success": scode, "result": text[result], \
+    "timeout": timeout_interval, "stats": problem_stats(out)}
   return result, (p, resrec)
 
 def check(p_fs):
