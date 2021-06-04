@@ -1503,51 +1503,54 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
   assert (is_I_all_true state left_lit);
   (*F.printf "resolve: left %a with right %a\n%!" CC.pp_cclause left_res_cls
     CC.pp_cclause right_res_cls;*)
-  let state, right_pos =
+  let state, right_pos, resolve_required =
     let right_clit = CC.to_clit right_res_cls in
     if covers (compl_lit left_lit, left_res_cls.constr) right_clit then
-      state, right_pos
+      state, right_pos, true
     else (
       if !O.current_options.dbg_more then
         F.printf "split %d before resolve: %a by %a\n%!" right_pos T.pp_term
           (compl_lit right_lit) T.pp_term left_lit;
       let state', rep, _ = sggs_split Right state right_pos left_res_cls in
-      state', get_trail_pos state' rep)
+      let rpos,do_res = try get_trail_pos state' rep, true with _ -> 0, false in
+      state', rpos, do_res)
   in
-  let right_res_cls = state.trail <!> right_pos in
-  let right_lit, right_constr = right_res_cls.selected, right_res_cls.constr in
-  let theta = ensure_match (compl_lit left_lit) right_lit in
-  let apply_theta = Subst.apply_subst_term term_db_ref theta in
-  let del_lit l c = remove_term l (C.get_lits c.clause) in
-  let left_part = L.map apply_theta (del_lit left_lit left_res_cls) in
-  let resolvent = del_lit right_lit right_res_cls @ left_part in
-  let res_clause = modify_clause right_res_cls.clause resolvent in
-  let bef, aft = until right_pos state.trail, from (right_pos +1) state.trail in
-  let right = (right_lit, right_constr, right_pos) in
-  let aft' = remove_assigned_to right state false in
-  ignore (delete_idx state.trail_idx right_lit right_res_cls);
+  if not resolve_required then sggs_no_conflict state clauses
+    else (
+    let right_res_cls = state.trail <!> right_pos in
+    let right_lit,right_constr = right_res_cls.selected, right_res_cls.constr in
+    let theta = ensure_match (compl_lit left_lit) right_lit in
+    let apply_theta = Subst.apply_subst_term term_db_ref theta in
+    let del_lit l c = remove_term l (C.get_lits c.clause) in
+    let left_part = L.map apply_theta (del_lit left_lit left_res_cls) in
+    let resolvent = del_lit right_lit right_res_cls @ left_part in
+    let res_clause = modify_clause right_res_cls.clause resolvent in
+    let bef,aft = until right_pos state.trail, from (right_pos+1) state.trail in
+    let right = (right_lit, right_constr, right_pos) in
+    let aft' = remove_assigned_to right state false in
+    ignore (delete_idx state.trail_idx right_lit right_res_cls);
 
-  if resolvent = [] then (
-    let cc = mk_cclause res_clause left_lit right_constr in (* dummy select *)
-    inc_clauses state;
-    let state' = { state with trail = bef @ [cc] @ aft'} in
-    log_step state' "resolve";
-    state', Unsatisfiable)
-  else (
-    let state' = empty_extension_queue { state with trail = bef @ aft'} in
-    try
-      let vars = C.get_var_list res_clause in
-      let constr = Ct.project vars (Ct.conj right_constr left_res_cls.constr) in
-      let conf,sel = find_selected (state', right_pos) (res_clause, constr) in
-      let cc = mk_cclause res_clause sel constr in
-      inc_clauses state';
-      DiscTree.add_elem_to_lit state'.trail_idx sel cc;
-      log_step { state with trail = bef @ [cc] @ aft'} "resolve";
-      sggs_extend ~print:false state' clauses cc conf right_pos
-    with Disposable ->
-      log_step state' "resolve+delete";
-      sggs_no_conflict state' clauses
-  )
+    if resolvent = [] then (
+      let cc = mk_cclause res_clause left_lit right_constr in (* dummy select *)
+      inc_clauses state;
+      let state' = { state with trail = bef @ [cc] @ aft'} in
+      log_step state' "resolve";
+      state', Unsatisfiable)
+    else (
+      let state' = empty_extension_queue { state with trail = bef @ aft'} in
+      try
+        let vars = C.get_var_list res_clause in
+        let constr = Ct.project vars (Ct.conj right_constr left_res_cls.constr) in
+        let conf,sel = find_selected (state', right_pos) (res_clause, constr) in
+        let cc = mk_cclause res_clause sel constr in
+        inc_clauses state';
+        DiscTree.add_elem_to_lit state'.trail_idx sel cc;
+        log_step { state with trail = bef @ [cc] @ aft'} "resolve";
+        sggs_extend ~print:false state' clauses cc conf right_pos
+      with Disposable ->
+        log_step state' "resolve+delete";
+        sggs_no_conflict state' clauses
+    ))
 
 (* 
 Move clause in state from p2 (on the right) to just before p1 (further left).
