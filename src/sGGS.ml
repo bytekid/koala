@@ -33,6 +33,7 @@ let start_time = ref 0.;;
 let time_ground_instances = ref 0.;;
 let time_compute_ext_clauses = ref 0.;;
 let time_split = ref 0.;;
+let time_test = ref 0.;;
 
 (*** FUNCTIONS ****************************************************************)
 let (<.>) f g x = f (g x)
@@ -723,6 +724,8 @@ let print_stats state =
   F.printf " extension clauses:  %.2f\n" !time_compute_ext_clauses;
   F.printf " splits:             %.2f\n" !time_split;
   F.printf " ground instances:   %.2f\n" !time_ground_instances;
+  if !time_test > 0. then
+    F.printf " test:               %.2f\n" !time_test;
 ;;
 
 let log_step_if b state step_name = if b then log_step state step_name else ()
@@ -874,6 +877,15 @@ let check_invariants state =
     | [] -> ()
     | c :: bef_rev -> check_clause (c, i) (L.rev bef_rev); check (i - 1) bef_rev
   in check (L.length state.trail - 1) (L.rev state.trail);
+
+  (*if !O.current_options.dbg_more then
+    L.iter (fun c -> L.iter (fun c' -> 
+      let disj = 
+        c = c' || not (at_gnd_instance_inter (CC.to_clit c) (CC.to_clit c'))
+      in
+      if not disj then F.printf "dirty trail: %a\n%a\n%!"
+        CC.pp_cclause c CC.pp_cclause c';
+      assert disj) state.trail) state.trail;*)
 ;;
 
 (*
@@ -911,8 +923,6 @@ let update_selection_from from_opt (state, from_pos) =
         let sel, _, i = find_last_dependence state (cc.clause, cc.constr) in
         let cc' = {cc with selected = sel} in
         if sel <> cc.selected then (
-          (*F.printf "update %a to %a dep on %d\n%!" CC.pp_cclause cc
-            T.pp_term sel i;*)
           DiscTree.elim_elem_from_lit state.trail_idx cc.selected cc;
           DiscTree.add_elem_to_lit state.trail_idx sel cc'
         );
@@ -948,87 +958,6 @@ let remove_from_trail state pos =
   DiscTree.elim_elem_from_lit idx cc_old.selected cc_old;
   let bef, aft = until pos state.trail, from (pos + 1) state.trail in
   empty_extension_queue {state with trail = bef @ aft}
-;;
-
-(*
-Repeatedly extend the set of clauses cs by instances C.theta of a clause C in cs
-such that l.theta occurs in interp (the trail).
-The returned set of clauses are candidates for conflict clauses.
-*)
-let add_intersecting_instances state cs =
-  match state.extension_queue with
-  | Some q -> q, false
-  | None -> ( 
-  let ground_pres = state.ground_preserving in
-  let vars_lits = L.fold_left (fun acc l -> T.get_vars l @ acc) [] in
-  (* Instantiations of literal linst to (negation of) trail literal. Returns
-     list of satisfiable (substitution, constraint) pairs. 
-     vars are variables used in clause instance, to be renamed away from *)
-  let inst_lit linst vars = 
-    let clinst = compl_lit linst in
-    let check_cclause acc cc =
-        try
-          let trail_lit, trail_constr = cc.selected, cc.constr in
-          let rho, trail_lit' = rename_term vars trail_lit in
-          (* unify does not work: f(X, f(Y, X)) vs f(U, f(U, V)), so use mgu *)
-          let theta = mgu_list [trail_lit', clinst] in
-          let trail_constr' = Ct.substitute rho trail_constr in
-          if not (Ct.substituted_sat theta trail_constr') then acc
-          else
-            let trail_constr'' = Ct.substitute theta trail_constr' in
-            let lit_theta = S.apply_subst_term term_db_ref theta trail_lit' in
-            (theta, Ct.project (T.get_vars lit_theta) trail_constr'') :: acc
-        with _ -> acc
-    in
-    let unif_tlits = DiscTree.get_unif_candidates state.trail_idx clinst in
-    L.fold_left check_cclause [] (L.fold_left (@) [] (L.rev_map snd unif_tlits))
-  in
-  let ext_clause c = (* c is in given clause set S *)
-    let rec ext (lits_todo, lits_done, constrs) = (* (un)substituted literals *)
-      match lits_todo with
-      | [] -> (* all literals of clause processed *)
-        let c' = modify_clause c lits_done in
-        let _, rho = normalise_lit_list_renaming term_db_ref lits_done in
-        let constrs' = Ct.project (C.get_var_list c') (Ct.rename rho constrs) in
-        if ground_pres && not (C.is_ground c') then [] else [c', constrs']
-      | u :: us ->
-        let app acc (theta, trail_constr) =
-          let apply_theta = Subst.apply_subst_term term_db_ref theta in
-          if not (Ct.substituted_sat theta constrs) then acc
-          else
-            let constrs' = Ct.conj trail_constr (Ct.substitute theta constrs) in
-            let lits_done' = apply_theta u :: (L.map apply_theta lits_done) in
-            let inst = (L.map apply_theta us, lits_done', constrs') in
-            inst :: acc
-        in
-        let vars = vars_lits (lits_todo @ lits_done) @ (Ct.vars constrs) in
-        let insts = L.fold_left app [] (inst_lit u vars) in
-        let insts' =
-          if is_I_all_true state u then insts
-          (* I-all-false literals do no have to be instantiated *)
-          else insts @ [(us, u :: lits_done, constrs)]
-        in
-        L.concat (L.map ext insts')
-    in
-    (* instantiate both I-all-true literals (see SGGS extension scheme) and
-    I-all-false ones, to reflect extension substitution in extension 2. But
-    I-all-false ones do not have to be instantiated, may also remain as are. *)
-    ext (C.get_lits c, [], Ct.top)
-  in
-  let combine acc x = LL.append acc (LL.of_list (ext_clause x)) in
-  let csx = L.fold_left combine LL.empty cs in
-  let cls_cmp (x,_) (y,_) = pcmp (C.hash_bc x) (C.hash_bc y) in
-  (*let csx = unique ~c:(fun (c,_) (c',_) -> cls_cmp c c') csx in*)
-  (*if !O.current_options.dbg_more then (
-    F.printf "%d potential extension instances:\n" (L.length (LL.to_list csx));
-      L.iter (fun (c,constr) -> F.printf "  %a | %a\n%!"
-        Ct.pp_constraint constr pp_clause c) (LL.to_list csx)); *)
-  let add_size = L.map (fun c -> c, clause_size (fst c)) in
-  let k = 50 in
-  let pre = Lib.unique ~c:cls_cmp (LL.to_list (LL.take k csx)) in
-  let suf = LL.from k csx in
-  let pre' = L.map fst (L.sort (fun (_,x) (_,y) -> pcmp x y) (add_size pre)) in
-  LL.append (LL.of_list pre') suf, true)
 ;;
 
 (* pcgi(A|L, Γ A|C[L]) = 0  *)
@@ -1099,8 +1028,10 @@ let gnd_instance_subset_pcgi (state, i) (lit, constr)  =
 let check_valid_extension state (c, constr) =
   let ip = I.from_trail state.initial state.trail in
   let sat = L.exists (I.satisfies_lit ~constr:constr ip) (C.get_lits c) in
+  if !O.current_options.dbg_more then
+    assert (not (Ct.unsat state.signature constr));
   (* FIXME: avoid generating satisfied extension clauses in the first place *)
-  if Ct.unsat state.signature constr || sat then None
+  if sat then None
   else (
   (* 1. SGGS-extension with I-all-true conflict clause. Select literal assigned
      to largest index *)
@@ -1140,6 +1071,91 @@ let check_valid_extension state (c, constr) =
   )
 ))
 ;;
+
+
+(*
+Repeatedly extend the set of clauses cs by instances C.theta of a clause C in cs
+such that l.theta occurs in interp (the trail).
+The returned set of clauses are candidates for conflict clauses.
+*)
+let add_intersecting_instances state cs =
+  (*let is_invalid c = check_valid_extension state c = None in*)
+  match state.extension_queue with
+  | Some q -> q, false
+  | None -> ( 
+  let ground_pres = state.ground_preserving in
+  let vars_lits = L.fold_left (fun acc l -> T.get_vars l @ acc) [] in
+  (* Instantiations of literal linst to (negation of) trail literal. Returns
+     list of satisfiable (substitution, constraint) pairs. 
+     vars are variables used in clause instance, to be renamed away from *)
+  let inst_lit linst vars = 
+    let clinst = compl_lit linst in
+    let check_cclause acc cc =
+        try
+          let trail_lit, trail_constr = cc.selected, cc.constr in
+          let rho, trail_lit' = rename_term vars trail_lit in
+          (* unify does not work: f(X, f(Y, X)) vs f(U, f(U, V)), so use mgu *)
+          let theta = mgu_list [trail_lit', clinst] in
+          let trail_constr' = Ct.substitute rho trail_constr in
+          if not (Ct.substituted_sat theta trail_constr') then acc
+          else
+            let trail_constr'' = Ct.substitute theta trail_constr' in
+            let lit_theta = S.apply_subst_term term_db_ref theta trail_lit' in
+            (theta, Ct.project (T.get_vars lit_theta) trail_constr'') :: acc
+        with _ -> acc
+    in
+    let unif_tlits = DiscTree.get_unif_candidates state.trail_idx clinst in
+    L.fold_left check_cclause [] (L.fold_left (@) [] (L.rev_map snd unif_tlits))
+  in
+  let ext_clause c = (* c is in given clause set S *)
+    let rec ext (lits_todo, lits_done, constrs) = (* (un)substituted literals *)
+      match lits_todo with
+      | [] -> (* all literals of clause processed *)
+        let c' = modify_clause c lits_done in
+        let _, rho = normalise_lit_list_renaming term_db_ref lits_done in
+        let constrs' = Ct.project (C.get_var_list c') (Ct.rename rho constrs) in
+        let cc = (c', constrs') in
+        if ground_pres && not (C.is_ground c') then [] else [cc]
+      | u :: us ->
+        let app acc (theta, trail_constr) =
+          let apply_theta = Subst.apply_subst_term term_db_ref theta in
+          let constrs' = Ct.conj trail_constr (Ct.substitute theta constrs) in
+          if Ct.unsat state.signature constrs' then acc
+          else
+            let lits_done' = apply_theta u :: (L.map apply_theta lits_done) in
+            let inst = (L.map apply_theta us, lits_done', constrs') in
+            inst :: acc
+        in
+        let vars = vars_lits (lits_todo @ lits_done) @ (Ct.vars constrs) in
+        let insts = L.fold_left app [] (inst_lit u vars) in
+        let insts' =
+          if is_I_all_true state u then insts
+          (* I-all-false literals do no have to be instantiated *)
+          else insts @ [(us, u :: lits_done, constrs)]
+        in
+        L.concat (L.map ext insts')
+    in
+    (* instantiate both I-all-true literals (see SGGS extension scheme) and
+    I-all-false ones, to reflect extension substitution in extension 2. But
+    I-all-false ones do not have to be instantiated, may also remain as are. *)
+    ext (C.get_lits c, [], Ct.top)
+  in
+  let combine acc x = LL.append acc (LL.of_list (ext_clause x)) in
+  let csx = L.fold_left combine LL.empty cs in
+  let cls_cmp (x,_) (y,_) = pcmp (C.hash_bc x) (C.hash_bc y) in
+  (*let csx = unique ~c:(fun (c,_) (c',_) -> cls_cmp c c') csx in*)
+  (*if !O.current_options.dbg_more then (
+    F.printf "%d potential extension instances:\n" (L.length (LL.to_list csx));
+      L.iter (fun (c,constr) -> F.printf "  %a | %a\n%!"
+        Ct.pp_constraint constr pp_clause c) (LL.to_list csx)); *)
+  let add_size = L.map (fun c -> c, clause_size (fst c)) in
+  let k = 50 in
+  let pre = Lib.unique ~c:cls_cmp (LL.to_list (LL.take k csx)) in
+  let suf = LL.from k csx in
+  let pre' = L.map fst (L.sort (fun (_,x) (_,y) -> pcmp x y) (add_size pre)) in
+  LL.append (LL.of_list pre') suf, true)
+;;
+
 
 exception Disposable
 
@@ -1370,14 +1386,6 @@ input clauses.
 *)
 let rec sggs_no_conflict state clauses =
   if !O.current_options.dbg_more then F.printf "start sggs_no_conflict\n%!";
-  (*if !O.current_options.dbg_more then
-    L.iter (fun c -> L.iter (fun c' -> 
-      let disj = 
-        c = c' || not (at_gnd_instance_inter (CC.to_clit c) (CC.to_clit c'))
-      in
-      if not disj then F.printf "dirty trail: %a\n%a\n%!"
-        CC.pp_cclause c CC.pp_cclause c';
-      assert disj) state.trail) state.trail;*)
   try
     let ix_state = index state.trail in
     let cc, pos = L.find (is_conflicting state <.> fst) ix_state in
@@ -1392,6 +1400,7 @@ let rec sggs_no_conflict state clauses =
       let t = time () in
       let valid_exts = LL.filter check_ext clausesx in
       let c = LL.hd valid_exts in
+      time_test := !time_test +. (time () -. t);
       let Some ((c,constr), conflict, select) = check_valid_extension state c in
       assert (not state.ground_preserving || C.is_ground (c));
       let cc = mk_cclause c select constr in
