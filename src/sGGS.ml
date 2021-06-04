@@ -182,19 +182,20 @@ let all_ground_terms sort funs =
   let funs = L.sort fun_cmp funs in
   let consts = L.filter (fun (c, a) -> a = 0 && val_type c = sort) funs in
   let nonconsts = L.filter (fun (f, a) -> a > 0 && val_type f = sort) funs in
-  let tconsts = L.map (fun (c,_) -> add_term (T.create_fun_term c [])) consts in
+  let tconsts = L.map (fun (c,_) -> mk_fun_term c []) consts in
   let rec sized sort size =
     try H.find ground_size_table (sort, size)
     with Not_found ->
-      let rec tuples = function
+      let rec tuples sz = function
         | [] -> [[]]
-        | s :: ss ->
-          let ts = upto_size s (size - 1) in
-          L.concat (L.map (fun a -> L.map (fun t -> t :: a) ts) (tuples ss))
+        | sort :: ss ->
+          let sz' = sz - 1 in (* overestimation as used twice: filter later *)
+          let ts = upto_size sort sz' in
+          L.concat (L.map (fun a -> L.map (fun t -> t::a) ts) (tuples sz' ss))
       in
       let gen_args (f, a) =
-        let args = if a > size then [] else tuples (arg_types f) in
-        L.map (fun ts -> add_term (T.create_fun_term f ts)) args 
+        let args = if a > size then [] else tuples (size - 1) (arg_types f) in
+        L.map (fun ts -> mk_fun_term f ts) args 
       in
       let funs_of_sort = L.filter (fun (f, a) -> val_type f = sort && a < size) funs in
       let all = L.concat (L.map gen_args funs_of_sort) in
@@ -250,7 +251,8 @@ let index_tuples diff_idx_pairs len =
     else
       let rng = LL.of_list (List.rev (intrange (sum + 1))) in
       let ext v t =
-        if L.exists (fun j -> j <= n-1 && (t <!> j) = v) (try IMap.find (n-1) dmap with Not_found -> F.printf " not found %d\n%!" (n-1); raise Not_found) then None
+        let diff_idxs = IMap.find (n-1) dmap in
+        if L.exists (fun j -> j <= n-1 && (t <!> j) = v) diff_idxs then None
         else Some (t @ [v])
       in
       let ext_prefxs v = LL.map (ext v) (tuples (n - 1) (sum - v)) in
@@ -307,10 +309,12 @@ let smallest_gnd_instance syms ((lit, constr) as cl) =
   else if Ct.unsat syms constr then raise Ct.Is_unsat
   else (
     let t = time () in
-    (*F.printf "start computing sgi of %a (term size %d)\n%!"
-      CL.pp_clit cl (T.get_num_of_symb (fst cl) + (T.get_num_of_var (fst cl)));*)
+    (*F.printf "start computing sgi of %a (term size %d, unsat %B)\n%!"
+      CL.pp_clit cl (T.get_num_of_symb (fst cl) + (T.get_num_of_var (fst cl)))
+      (Ct.unsat syms (snd cl));*)
     let terms v =
       let gterms = all_ground_terms (Var.get_type v) syms in
+      let vars = CL.vars cl in
       let sat_difftop t = function 
         | Ct.DiffTop(x, f) when x = v -> T.get_top_symb t <> f 
         | _ -> true
