@@ -34,6 +34,8 @@ let time_ground_instances = ref 0.;;
 let time_compute_ext_clauses = ref 0.;;
 let time_split = ref 0.;;
 let time_test = ref 0.;;
+let time_extend = ref 0.;;
+let time_resolve = ref 0.;;
 
 (*** FUNCTIONS ****************************************************************)
 let (<.>) f g x = f (g x)
@@ -195,7 +197,7 @@ let all_ground_terms sort funs =
           L.concat (L.map (fun a -> L.map (fun t -> t::a) ts) (tuples sz' ss))
       in
       let gen_args (f, a) =
-        let args = if a > size then [] else tuples (size - 1) (arg_types f) in
+        let args = if a > size then [] else tuples size (arg_types f) in
         L.map (fun ts -> mk_fun_term f ts) args 
       in
       let funs_of_sort = L.filter (fun (f, a) -> val_type f = sort && a < size) funs in
@@ -724,6 +726,8 @@ let print_stats state =
   F.printf " extension clauses:  %.2f\n" !time_compute_ext_clauses;
   F.printf " splits:             %.2f\n" !time_split;
   F.printf " ground instances:   %.2f\n" !time_ground_instances;
+  F.printf " extend:             %.2f\n" !time_extend;
+  F.printf " resolve:            %.2f\n" !time_resolve;
   if !time_test > 0. then
     F.printf " test:               %.2f\n" !time_test;
 ;;
@@ -1447,6 +1451,7 @@ trail, in this case a non-conflicting extension is performed. Otherwise,
 conflict-handling is triggered.
 *)
 and sggs_extend ?(print=true) ?(in_trail=false) state clauses cc conflict pos =
+  let tstart = time () in
   let state', added =
     if in_trail then state, true else add_clause_to_trail cc state pos
   in
@@ -1457,8 +1462,9 @@ and sggs_extend ?(print=true) ?(in_trail=false) state clauses cc conflict pos =
       try let _ = find_dependence state'.trail (CC.to_clit cc) false in true
       with _ -> false
     in
-    if conflict && has_dep then
-      sggs_conflict print state' clauses cc pos
+    if conflict && has_dep then (
+      time_extend := !time_extend +. (time () -. tstart);
+      sggs_conflict print state' clauses cc pos)
     else if conflict then (
       let compl_cc = (compl_lit cc.selected, cc.constr) in
       let inter c = gnd_instance_inter compl_cc (CC.to_clit c) && c <> cc in
@@ -1471,10 +1477,12 @@ and sggs_extend ?(print=true) ?(in_trail=false) state clauses cc conflict pos =
         if L.exists (not <.> sat) ps then L.find (not <.> sat) ps else L.hd ps
       in
       let state'' = remove_from_trail state' pos in
+      time_extend := !time_extend +. (time () -. tstart);
       sggs_extend ~print:false state'' clauses keep false pos)
     else (
       log_step_if print state' "extend-no-conflict";
       (* split recursively by similar or dissimilar literal *)
+      time_extend := !time_extend +. (time () -. tstart);
       sggs_no_conflict (complete_split state' cc) clauses))
       
 (* 
@@ -1515,6 +1523,7 @@ and sggs_conflict do_print statex clauses cc pos =
 Move cc in state from pos to below dep_pos.
 *)
 and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
+ let tstart = time () in
   let left_lit, right_lit = left_res_cls.selected, right_res_cls.selected in
   assert (left_pos < right_pos);
   assert (is_I_all_true state left_lit);
@@ -1532,8 +1541,10 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
       let rpos,do_res = try get_trail_pos state' rep, true with _ -> 0, false in
       state', rpos, do_res)
   in
-  if not resolve_required then sggs_no_conflict state clauses
-    else (
+  if not resolve_required then (
+    time_resolve := !time_resolve +. (time () -. tstart);
+    sggs_no_conflict state clauses)
+  else (
     let right_res_cls = state.trail <!> right_pos in
     let right_lit,right_constr = right_res_cls.selected, right_res_cls.constr in
     let theta = ensure_match (compl_lit left_lit) right_lit in
@@ -1552,6 +1563,7 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
       inc_clauses state;
       let state' = { state with trail = bef @ [cc] @ aft'} in
       log_step state' "resolve";
+      time_resolve := !time_resolve +. (time () -. tstart);
       state', Unsatisfiable)
     else (
       let state' = empty_extension_queue { state with trail = bef @ aft'} in
@@ -1563,9 +1575,11 @@ and sggs_resolve state clauses left_res_cls right_res_cls left_pos right_pos =
         inc_clauses state';
         DiscTree.add_elem_to_lit state'.trail_idx sel cc;
         log_step { state with trail = bef @ [cc] @ aft'} "resolve";
+        time_resolve := !time_resolve +. (time () -. tstart);
         sggs_extend ~print:false state' clauses cc conf right_pos
       with Disposable ->
         log_step state' "resolve+delete";
+        time_resolve := !time_resolve +. (time () -. tstart);
         sggs_no_conflict state' clauses
     ))
 
