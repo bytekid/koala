@@ -1326,31 +1326,11 @@ let rec factor_split state p1 p2 =
   match factorizable state p1 p2 with
   | Some l when is_I_true ->
     assert (unifies l cc.selected);
-    let vars = CC.get_vars cc in
-    let rho, l' = rename_term vars l in
-    let mod_lits = l' :: (remove_term l (C.get_lits (CC.clause cc))) in
-    let sigma = mgu_list [l', cc.selected] in
-    if !O.current_options.dbg_more then
-      F.printf "factoring %a\n with substitution %s\n%!"
-        CC.pp_cclause cc (Subst.to_string sigma);
-
-    let tstp_src = C.tstp_source_global_subsumption 0 cc.clause in
-    let sub_lits = L.map (S.apply_subst_term term_db_ref sigma) mod_lits in
-    let sub_clause = C.create_clause term_db_ref tstp_src sub_lits in
-
-    let constr0 = CC.constr cc in
-    let constr1 = Ct.substitute sigma constr0 in
-    let constr2' = Ct.substitute sigma (Ct.substitute rho constr0) in
-    let constr2' = Ct.conj constr1 constr2' in
-    let sub_constr = Ct.project (C.get_var_list sub_clause) constr2' in
-    let sub_l = S.apply_subst_term term_db_ref sigma l' in
-    
-    let factor = CC.make sub_clause sub_l sub_constr in
+    let sigma = mgu_list [l, cc.selected] in
+    let factor = CC.substitute sigma cc in
     (*F.printf "factor is %a\n%a%!" CC.pp_cclause factor pp_trail state;
-
     if not (Ct.equal constr1 sub_constr) then
       F.printf "need more complicated constraint for factoring\n%!";*)
-    
     let state, factor, _ = sggs_split Factor state p2 factor in
     (* selection in ccr may have changed, get modified factor *)
     let factor' (cc,_) = cc.clause=factor.clause && cc.constr = factor.constr in
