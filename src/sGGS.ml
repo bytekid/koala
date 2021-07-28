@@ -1084,9 +1084,9 @@ The returned set of clauses are candidates for conflict clauses.
 *)
 let add_intersecting_instances' state cs =
   (*let is_invalid c = check_valid_extension state c = None in*)
-  match state.extension_queue with
+  (*match state.extension_queue with
   | Some q -> q, false
-  | None -> ( 
+  | None ->*) ( 
   let ground_pres = state.ground_preserving in
   let vars_lits = L.fold_left (fun acc l -> T.get_vars l @ acc) [] in
   (* Instantiations of literal linst to (negation of) trail literal. Returns
