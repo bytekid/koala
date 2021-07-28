@@ -1163,7 +1163,7 @@ let add_intersecting_instances' state cs =
 let add_intersecting_instances state clauses =
   let check_ext c = check_valid_extension state c != None in
   let rec add = function
-  | [] -> LL.empty, false
+  | [] -> LL.empty, true
   | c :: cs -> (
     let clausesx, _ = add_intersecting_instances' state [c] in
     try
