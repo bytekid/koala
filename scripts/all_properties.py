@@ -26,6 +26,10 @@ def write_problem_properties(fs):
   f = open("data/properties.json", "w")
   f.write(json.dumps(fs,indent=2,sort_keys=True) + "\n")
 
+def write_dec_properties(fs):
+  f = open("data/decidability.json", "w")
+  f.write(json.dumps(fs,indent=2,sort_keys=True) + "\n")
+
 def problem_stats(outfile):
   f = open(outfile, "r")
   out = f.read()
@@ -126,7 +130,7 @@ def check(p, props, verbose = False):
   return res
 
 def property_details(prop, us, exclude):
-  avg = lambda l: sum(l)/len(l)
+  avg = lambda l: sum(l)/len(l) if len(l) > 0 else 0
   prop_pos = [u for u in us if u[prop]]
   s = prop + ": " + str(len(prop_pos)) + "\n"
   s += "avg rating: " + str(avg([u["rating"] for u in prop_pos])) + "\n"
@@ -155,7 +159,7 @@ if __name__ == "__main__":
       else:
         fs[f] = check(f, features[f])
   
-  write_problem_properties(fs)
+  write_dec_properties(fs)
   
   usable = [c for c in fs if not fs[c]["error"] ]
   print("<!--%d total" % len(fs))
@@ -188,11 +192,11 @@ if __name__ == "__main__":
       print("<td><?php if (file_exists(\"%s\")) { ?><a href=\"%s\">sggs run</a><?php } ?></td>" % (sggs, sggs))
     else:
       print("<td></td>")
-    if p["koala stats"]:
-      s = p["koala stats"]
-      print("<td>%d</td><td>%d</td><td>%d</td><td>%d</td>" % (s["steps"], s["clauses"], s["conflicts"], s["trail length"]))
-    else:
-      print("<td></td>")
+    #if p["koala stats"]:
+    #  s = p["koala stats"]
+    #  print("<td>%d</td><td>%d</td><td>%d</td><td>%d</td>" % (s["steps"], s["clauses"], s["conflicts"], s["trail length"]))
+    #else:
+    #  print("<td></td>")
     # restraining TRS
     trsfilename = "trss/" + u + ".trs"
     if isfile(trsfilename):

@@ -207,14 +207,18 @@ def check_ground_fixed(p, cs, flipped = False):
   lss = [literals(c) for c in fs]
   proven = False
   technique = ""
+  ppos = False
+  pneg = False
   if all_all_pos_all_ground(lss):
+    ppos = True
     proven, technique = check_trss(p, lss, True)
   if not proven and all_all_neg_all_ground(lss):
+    pneg = True
     proven, technique = check_trss(p, lss, False)
   #if not proven:
   #  proven, technique = check_non_ground(p, lss)
   
-  bounded = (all_all_pos_all_ground(lss), all_all_neg_all_ground(lss))
+  bounded = (ppos, pneg)
   return (bounded, proven, technique)
 
 # flip predicate p in f
