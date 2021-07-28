@@ -1082,7 +1082,7 @@ Repeatedly extend the set of clauses cs by instances C.theta of a clause C in cs
 such that l.theta occurs in interp (the trail).
 The returned set of clauses are candidates for conflict clauses.
 *)
-let add_intersecting_instances state cs =
+let add_intersecting_instances' state cs =
   (*let is_invalid c = check_valid_extension state c = None in*)
   match state.extension_queue with
   | Some q -> q, false
@@ -1160,6 +1160,20 @@ let add_intersecting_instances state cs =
   LL.append (LL.of_list pre') suf, true)
 ;;
 
+let add_intersecting_instances state clauses =
+  let check_ext c = check_valid_extension state c != None in
+  let rec add = function
+  | [] -> LL.empty, false
+  | c :: cs -> (
+    let clausesx, _ = add_intersecting_instances' state [c] in
+    try
+      let valid_exts = LL.filter check_ext clausesx in
+      let _ = LL.hd valid_exts in
+      valid_exts, false
+    with LL.Is_empty -> add cs
+  )
+  in add clauses
+;;
 
 exception Disposable
 
