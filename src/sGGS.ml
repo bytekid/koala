@@ -37,6 +37,12 @@ let time_test = ref 0.;;
 let time_extend = ref 0.;;
 let time_resolve = ref 0.;;
 
+(*** EXCEPTIONS ***************************************************************)
+exception Split_undefined
+exception Restart
+exception Disposable
+exception Invariant_invalid
+
 (*** FUNCTIONS ****************************************************************)
 let (<.>) f g x = f (g x)
 
@@ -435,8 +441,6 @@ let rename_term vars t =
   rho, L.hd ts
 ;;
 
-exception Split_undefined
-
 (* second argument is representative, in particular, an instance of first clause
    with stronger constraint. *)
 let diff cc by_cc sigma =
@@ -662,6 +666,7 @@ type trail = CC.constr_clause list
 exception No_dependence of CL.t
 
 type state = {
+  cache_extensions: bool;
   conflicts: int ref;
   deleted_clauses: int ref;
   extensions: int ref;
@@ -681,6 +686,7 @@ let mk_initial_state init gp syms =
   let funas = L.map (fun f -> (f,Sym.get_arity f)) (L.filter Sym.is_fun syms) in
   let epr = L.for_all (fun (_,a) -> a = 0) funas in
   {
+  cache_extensions = true;
   conflicts = ref 0;
   deleted_clauses = ref 0;
   extensions = ref 0;
@@ -824,8 +830,6 @@ let remove_assigned_to (l, lcnstr, pos) state is_split =
         remove lc (remove (CC.to_clit c) cs))
   in remove (l, lcnstr) aft
 ;;
-
-exception Invariant_invalid
 
 let has_dependence state (l,constr) = 
   try let _ = find_dependence state.trail (l, constr) false in true
@@ -1083,10 +1087,10 @@ such that l.theta occurs in interp (the trail).
 The returned set of clauses are candidates for conflict clauses.
 *)
 let add_intersecting_instances' state cs =
-  (*let is_invalid c = check_valid_extension state c = None in*)
-  (*match state.extension_queue with
+  let queue = if state.cache_extensions then state.extension_queue else None in
+  match queue with
   | Some q -> q, false
-  | None ->*) ( 
+  | None -> (
   let ground_pres = state.ground_preserving in
   let vars_lits = L.fold_left (fun acc l -> T.get_vars l @ acc) [] in
   (* Instantiations of literal linst to (negation of) trail literal. Returns
@@ -1172,10 +1176,10 @@ let add_intersecting_instances state clauses =
       valid_exts, false
     with LL.Is_empty -> add cs
   )
-  in add clauses
+  in 
+  if not state.cache_extensions then add clauses
+  else add_intersecting_instances' state clauses
 ;;
-
-exception Disposable
 
 (* Used to obtain selected literal in clause resulting from SGGS-resolve.
    pos is position of insertion, state does not contain c.
@@ -1383,6 +1387,8 @@ This is also the entry point for the procedure, where clauses are the set of
 input clauses.
 *)
 let rec sggs_no_conflict state clauses =
+  if state.cache_extensions && time () -. !start_time > 15. then
+    raise Restart;
   if !O.current_options.dbg_more then F.printf "start sggs_no_conflict\n%!";
   try
     let ix_state = index state.trail in
@@ -1707,16 +1713,21 @@ let do_something_smart clauses =
   if !O.current_options.dbg_backtrace then
     Format.printf "use %s\n%!" init_inter_str;
   let syms = fix_signature clauses fms in
-  let state = mk_initial_state initial gnd_preserving syms in
-  try
-    let state, res = sggs_no_conflict state clauses in
-    print_stats state;
-    res
-  with e -> 
-    let msg = Printexc.to_string e in
-    let stack = Printexc.get_backtrace () in
-    Printf.eprintf "%s\n%s\n" msg stack;
-    Unknown
+  let rec run do_ext_cache =
+    try
+      let state0 = mk_initial_state initial gnd_preserving syms in
+      let state = {state0 with cache_extensions = do_ext_cache} in
+      let state, res = sggs_no_conflict state clauses in
+      print_stats state;
+      res
+    with
+      | Restart -> run false
+      | e ->
+        let msg = Printexc.to_string e in
+        let stack = Printexc.get_backtrace () in
+        Printf.eprintf "%s\n%s\n" msg stack;
+        Unknown
+  in run true
 ;;
 
 let print_empty_clause_result _ =
