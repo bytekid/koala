@@ -27,11 +27,16 @@ will produce executable: koalaopt
 
 ## Usage 
 
+After successful compilation, the tool is called as follows:
+
 $ koalaopt --time_out_real 300. problem.p
        
-where problem.p is a CNF problem in the TPTP format; or to output the derivation:
-
-$ koalaopt  --dbg_backtrace true problem.p
-
- (Please use CNF problems as input; the translation from FOF is not (yet) done
- automatically.)
+where problem.p is a CNF problem in the TPTP format, and the command line option
+--time_out_real sets the timeout in seconds. Please use CNF problems as input; 
+the translation from FOF is not (yet) done automatically. urther available 
+options are:
+  --dbg_backtrace true
+    to trigger the entire SGGS derivation to be printed
+  --init_inter true
+    to set the initial interpretation of the SGGS derivation to I+ instead of
+    I-, which is used by default (and also when using --init_inter false).
