@@ -91,6 +91,10 @@ def rules_for_clause(ls, is_pos):
   return trs
 
 def ruless_for_clause(ls, is_pos):
+  if forall(lambda l: l.is_positive(), ls) or \
+     forall(lambda l: not l.is_positive(), ls):
+     return [] # only mixed clauses are relevant since narrowing is used
+     
   poss = [l for l in ls if l.is_positive()]
   negs = [l for l in ls if not l.is_positive()]
   (cover, to_cover) = (negs, poss) if is_pos else (poss, negs)
@@ -117,28 +121,26 @@ def get_combinations_trss(p, lss, is_pos):
     trss = cross([rs for rs in rss])[:20] # all combinations of rules, but at most 50 TRSs
   return trss
 
-def run_ttt2(f, relative):
+def run_tools(f):
   cmd = "./sandbox 10 /home/bytekid/tools/ghm/ttt2 " + f
-  cmd2 = "java -ea -jar ../aprove/aprove.jar -m wst -t 10 " + f
-  #print(cmd)
-  sys.stdout.flush()
-  process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-  out, err = process.communicate()
-  if err:
-    print(err)
-  if "MAYBE" in out:
-    print("MAYBE" + f)
-  if "YES" in out:
-    return True, "TTT2"
-  if relative: # AproVE does not like the relative format currently used
-    return False, ""
+  cmd2 = "java -ea -jar ../aprove/aprove.jar -m wst -t 10 " + f 
+  cmd3 = "./sandbox 10 /home/bytekid/tools/NaTT/bin/NaTT.exe -v:0 --z3 " + f 
   
-  process = subprocess.Popen(cmd2.split(), stdout=subprocess.PIPE)
-  out, err = process.communicate()
-  success = "YES" in out
-  if not success:
-    os.remove(f)
-  return success, "AProVE"
+  cmds = [("NaTT", cmd3), ("TTT2", cmd), ("Aprove", cmd2)]
+  
+  for (name, cmd) in cmds:
+    print(cmd)
+    sys.stdout.flush()
+
+    process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+    out, err = process.communicate()
+    if err:
+      print(err)
+    if "YES" in out:
+      return True, name
+    if "No" in out:
+      return False, name
+  return False, ""
   
 
 
@@ -167,14 +169,54 @@ def check_trs(p, trs, trs_rel):
   for (l,r) in trs_rel:
     trs_str = trs_str + str(l) + " ->= " + str(r) + "\n"
   trs_str = trs_str + ")\n"
-  relative = len(trs_rel) > 0
-  filename = "trss/" + p + "_controlled.trs"
+  filename = "trss/" + p + "_controlled1.trs"
   rfile = open(filename, "w")
   rfile.write(trs_str)
   rfile.close()
-  res, tool = run_ttt2(filename, relative)
+  res, tool = run_tools(filename)
   return res, tool
-  
+
+def get_trs_str(trs):
+  trs = list(set(trs))
+  vars = set([v for (l, r) in trs for v in set(l.vars()).union(set(r.vars()))])
+  var_str = fold_left(lambda s, v: s + " " + v, "", vars)
+  trs_str = "(VAR " + var_str + ")\n"
+  trs_str = trs_str + "(RULES \n"
+  trs_sub = []
+  for (l,r) in trs:
+    (l,r) = atom(l), atom(r)
+    if (l,r) in trs_sub or l == r:
+      continue
+    trs_sub.append((l,r))
+    trs_str = trs_str + str(l) + " -> " + str(r) + "\n"
+  trs_str = trs_str + ")\n"
+  return trs_str
+
+def transform_trs(filename, syms): # overwrites file
+  cmd = "/home/bytekid/tools/TNT/tnt/trans.pl " + filename
+  # print(cmd)
+  sys.stdout.flush()
+  process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+  out, err = process.communicate()
+  if err:
+    print("ERROR " + str(err))
+  rfile = open(filename, "w")
+  rfile.write(out)
+  rfile.close()
+
+def check_trs_TNT(p, trs, syms):
+  if not trs: # empty
+    return True, "trivial"
+
+  trs_str = get_trs_str(trs)
+  filename = "trss/" + p + "_controlled2.trs"
+  rfile = open(filename, "w")
+  rfile.write(trs_str)
+  rfile.close()
+  transform_trs(filename, syms)
+  res, tool = run_tools(filename)
+  return res, tool
+
 def mk_gen(syms):
   rs = []
   gen = expr.Fun("gen", [])
@@ -189,8 +231,11 @@ def check_non_ground_polarity1(p, lss, trs, is_pos):
   ts = set([t for c in lss for l in c for t in args(l)])
   syms = set([fa for t in list(ts) for fa in t.syms()])
   trs_gen = mk_gen(syms)
-  proven, tool = check_trs(p, trs, trs_gen)
-  return proven, "Rgen " + tool
+  proven1, tool1 = check_trs(p, trs, trs_gen)
+  proven2, tool2 = check_trs_TNT(p, trs, syms)
+  if proven1 != proven2:
+    print("my hack says " + str(proven1) + tool1 + " but TNT says " + str(proven2) + tool2)
+  return proven1 or proven2, tool1 + tool2
 
 def check_non_ground_polarity2(p, trs, is_pos):
   
@@ -262,9 +307,9 @@ def is_controlled(p, cs):
   
   is_controlled = False
   is_neg_controlled = False
-  if horn:
+  if True or horn:
     is_controlled = check_controlled(p, lss, True)[0]
-  if neg_horn:
+  if True or neg_horn:
     is_neg_controlled = check_controlled(p, lss, False)[0]
   return ((horn, is_controlled), (neg_horn, is_neg_controlled))
   

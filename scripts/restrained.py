@@ -89,32 +89,26 @@ def rules_for_clause(ls, is_pos, covered):
     trs = [[(l,lp) for l in cover] for lp in to_cover]
   return trs
 
-def run_ttt2(f):
-  cmd1 = "./sandbox 10 /home/bytekid/tools/ghm/ttt2 " + f
-  cmd2 = "java -ea -jar ../aprove/aprove.jar -m wst -t 10 " + f
-
-  def run(cmd, tool):
-    #print(cmd)
+def run_tools(f):
+  cmd = "./sandbox 10 /home/bytekid/tools/ghm/ttt2 " + f
+  cmd2 = "java -ea -jar ../aprove/aprove.jar -m wst -t 10 " + f 
+  cmd3 = "./sandbox 10 /home/bytekid/tools/NaTT/bin/NaTT.exe -v:0 --z3 " + f 
+  
+  cmds = [("NaTT", cmd3), ("TTT2", cmd), ("Aprove", cmd2)]
+  
+  for (name, cmd) in cmds:
+    print(cmd)
     sys.stdout.flush()
+
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     out, err = process.communicate()
     if err:
       print(err)
-    if "MAYBE" in out:
-      print("MAYBE" + f)
-    technique = tool + " "
-    if "LPO" in out:
-      technique = technique + "LPO"
-    elif "KBO" in out:
-      technique = technique + "KBO"
-    elif "Matrix" in out:
-      technique = technique + "Matrix"
-    return "YES" in out, technique
-
-  r1, t1 = run(cmd1, "TTT2")
-  if r1:
-    return r1, t1
-  return run(cmd2, "AProVE")
+    if "YES" in out:
+      return True, name
+    if "No" in out:
+      return False, name
+  return False, ""
 
 def is_permutative(l,r):
   def all_vars(ts):
@@ -142,7 +136,7 @@ def check_trs(p, i, trs, nonground = False):
   rfile = open(filename, "w")
   rfile.write(trs_str)
   rfile.close()
-  return run_ttt2(filename), "->=" in trs_str
+  return run_tools(filename), "->=" in trs_str
 
 def get_trss(p, lss, is_pos, covered):
   rss_all = [rules_for_clause(ls, is_pos, covered) for ls in lss]

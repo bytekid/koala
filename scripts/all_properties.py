@@ -22,10 +22,6 @@ def get_problem_properties():
   f = open("data/properties.json", "r")
   return json.loads(f.read())
 
-def write_problem_properties(fs):
-  f = open("data/properties.json", "w")
-  f.write(json.dumps(fs,indent=2,sort_keys=True) + "\n")
-
 def write_dec_properties(fs):
   f = open("data/decidability.json", "w")
   f.write(json.dumps(fs,indent=2,sort_keys=True) + "\n")
@@ -151,11 +147,11 @@ if __name__ == "__main__":
 
   fs = {}
   for f in features.keys():
-    if not ("=" in f):# and "SYN0" in f:
+    if not ("=" in f): # and "SYN0" in f:
       print(f + ": " + str(f in properties))
       if f in properties and \
         (properties[f]["error"] in ["equality"]): #  "error" not in properties[f] or 
-        fs[f] = properties[f] # take precomputed result
+        fs[f] = properties[f] 
       else:
         fs[f] = check(f, features[f])
   
