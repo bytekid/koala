@@ -1,0 +1,16 @@
+  66: ( top(X0_66) != iV16562 & top(X0_66) != iV16560 ) | [ra_Px1(esk2_1(X0_66),esk6_1(esk2_1(X0_66)))], ~(cC2xcomp(esk2_1(X0_66)))
+  67: ( top(X0_66) != iV16560 & top(X0_66) != esk8_1 ) | [ra_Px1(esk8_1(X0_66),esk6_1(esk8_1(X0_66)))], ~(cC2xcomp(esk8_1(X0_66)))
+  68: top(X0_66) != iV16562 | ~(rR1(iV16562,esk8_1(iV16562))), [cC10(iV16562)], ~(cC2xcomp(esk8_1(iV16562)))
+  69: top(X0_66) != iV16561 | ~(rR1(iV16561,esk2_1(iV16561))), [cC4(iV16561)], ~(cC2xcomp(esk2_1(iV16561)))
+  70: top(X0_66) != esk8_1 | [ra_Px1(esk8_1(esk8_1(X0_66)),esk6_1(esk8_1(esk8_1(X0_66))))], ~(cC2xcomp(esk8_1(esk8_1(X0_66))))
+
+
+# steps:             103
+# extensions:        72
+# conflicts:         7
+# generated clauses: 72
+# deleted clauses:   3
+max trail length:    71
+time:                0.36
+
+SZS status Satisfiable

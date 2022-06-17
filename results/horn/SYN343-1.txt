@@ -1,0 +1,16 @@
+
+Gamma_5: (resolve)
+  0:  | [~(f(a,a))]
+  1: []
+  2: top(X0_31) != a | [f(a,X0_31)], f(a,a)
+
+
+# steps:             6
+# extensions:        2
+# conflicts:         1
+# generated clauses: 3
+# deleted clauses:   0
+max trail length:    3
+time:                0.00
+
+SZS status Unsatisfiable

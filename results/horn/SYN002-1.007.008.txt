@@ -1,0 +1,16 @@
+  17: ( top(X0_4) != f ) | [p(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(X0_4))))))))))))))))))))))))))))))))], p(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(X0_4)))))))))))))))))))))))))))))))))))))))
+  18: ( top(X0_4) != f ) | [p(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(X0_4)))))))))))))))))))))))))))))))))], p(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(f(X0_4))))))))))))))))))))))))))))))))))))))))
+
+
+# steps:             278
+# extensions:        78
+# conflicts:         102
+# generated clauses: 142
+# deleted clauses:   73
+max trail length:    48
+time:                40.73
+ extension clauses:  0.41
+ splits:             0.07
+ ground instances:   0.00
+
+SZS status Unsatisfiable

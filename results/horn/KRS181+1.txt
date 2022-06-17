@@ -1,0 +1,16 @@
+  50: top(X0_68) != esk30_0 | status(esk7_2(X0_68,esk30_0),esk8_2(X0_68,esk30_0),X0_68), [nevera(X0_68,esk30_0)]
+  51:  | ~(status(esk3_2(X0_68,X0_68),esk4_2(X0_68,X0_68),X0_68)), [isa(X0_68,X0_68)]
+  52: top(X0_68) != esk30_0 | ~(status(esk3_2(X0_68,X1_68),esk4_2(X0_68,X1_68),X0_68)), [mighta(X0_68,X0_68)]
+  53: top(X0_68) != esk30_0 | [status(esk1_2(X0_68,X0_68),esk2_2(X0_68,X0_68),X0_68)], ~(mighta(X0_68,X0_68))
+  54:  | [~(nota(esk31_0,esk32_0))]
+
+
+# steps:             161
+# extensions:        81
+# conflicts:         21
+# generated clauses: 88
+# deleted clauses:   41
+max trail length:    96
+time:                1.15
+
+SZS status Unsatisfiable

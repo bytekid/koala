@@ -1,0 +1,16 @@
+
+------ Parsing...
+SZS status Unsatisfiable
+
+# steps:             0
+# extensions:        0
+# conflicts:         0
+# generated clauses: 0
+# deleted clauses:   0
+max trail length:    0
+time:                0.00
+ extension clauses:  0.00
+ splits:             0.00
+ ground instances:   0.00
+ extend:             0.00
+ resolve:            0.00

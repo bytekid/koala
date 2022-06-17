@@ -1,0 +1,16 @@
+  5: top(X0_4) != b | [is_a_theorem(implies(implies(X0_4,c),implies(a,implies(X0_4,c))))]
+  6: [is_a_theorem(implies(implies(X0_4,X1_4),implies(not(X1_4),not(X0_4))))]
+  7: top(X2_4) != c | [is_a_theorem(implies(implies(X0_4,implies(X1_4,X2_4)),implies(implies(X0_4,X1_4),implies(X0_4,X2_4))))]
+  8: top(X1_4) != b | [is_a_theorem(implies(implies(X0_4,implies(X1_4,c)),implies(implies(X0_4,X1_4),implies(X0_4,c))))]
+  9: top(X0_4) != a | [is_a_theorem(implies(implies(X0_4,implies(b,c)),implies(implies(X0_4,b),implies(X0_4,c))))]
+  10: [~(is_a_theorem(implies(a,c)))]
+
+
+# steps:             51
+# conflicts:         7
+# generated clauses: 28
+# deleted clauses:   39
+max trail length:    42
+time:                0.26
+
+SZS status Unsatisfiable

@@ -1,0 +1,16 @@
+
+# steps:             297
+# extensions:        206
+# conflicts:         46
+# generated clauses: 252
+# deleted clauses:   194
+max trail length:    177
+time:                5.25
+ extension clauses:  2.07
+ splits:             0.00
+ ground instances:   0.00
+ extend:             0.33
+ resolve:            0.24
+ test:               1.94
+
+SZS status Unsatisfiable

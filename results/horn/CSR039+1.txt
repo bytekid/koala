@@ -1,0 +1,16 @@
+  662:  | [disjointwith(c_tptpcol_8_18438,c_tptpcol_15_93775)], ~(disjointwith(c_tptpcol_8_18438,c_tptpcol_9_93699)), ~(genls(c_tptpcol_15_93775,c_tptpcol_9_93699))
+  663:  | [disjointwith(c_tptpcol_8_18438,c_tptpcol_14_93774)], ~(disjointwith(c_tptpcol_8_18438,c_tptpcol_9_93699)), ~(genls(c_tptpcol_14_93774,c_tptpcol_9_93699))
+  664:  | [disjointwith(c_tptpcol_8_18438,c_tptpcol_13_93766)], ~(disjointwith(c_tptpcol_8_18438,c_tptpcol_9_93699)), ~(genls(c_tptpcol_13_93766,c_tptpcol_9_93699))
+  665:  | [disjointwith(c_tptpcol_8_18438,c_tptpcol_12_93765)], ~(disjointwith(c_tptpcol_8_18438,c_tptpcol_9_93699)), ~(genls(c_tptpcol_12_93765,c_tptpcol_9_93699))
+  666:  | [disjointwith(c_tptpcol_8_18438,c_tptpcol_11_93764)], ~(disjointwith(c_tptpcol_8_18438,c_tptpcol_9_93699)), ~(genls(c_tptpcol_11_93764,c_tptpcol_9_93699))
+  667:  | [disjointwith(c_tptpcol_8_18438,c_tptpcol_10_93700)], ~(disjointwith(c_tptpcol_8_18438,c_tptpcol_9_93699)), ~(genls(c_tptpcol_10_93700,c_tptpcol_9_93699))
+  668:  | [disjointwith(c_tptpcol_5_90114,c_tptpcol_13_18664)], ~(disjointwith(c_tptpcol_5_90114,c_tptpcol_11_18631)), ~(genls(c_tptpcol_13_18664,c_tptpcol_11_18631))
+  669:  | [disjointwith(c_tptpcol_5_16388,c_tptpcol_15_93775)], ~(disjointwith(c_tptpcol_5_16388,c_tptpcol_12_93765)), ~(genls(c_tptpcol_15_93775,c_tptpcol_12_93765))
+  670:  | [disjointwith(c_tptpcol_5_16388,c_tptpcol_14_93774)], ~(disjointwith(c_tptpcol_5_16388,c_tptpcol_12_93765)), ~(genls(c_tptpcol_14_93774,c_tptpcol_12_93765))
+  671:  | [disjointwith(c_tptpcol_5_16388,c_tptpcol_13_93766)], ~(disjointwith(c_tptpcol_5_16388,c_tptpcol_12_93765)), ~(genls(c_tptpcol_13_93766,c_tptpcol_12_93765))
+  672:  | [disjointwith(c_tptpcol_6_18436,c_tptpcol_15_93775)], ~(disjointwith(c_tptpcol_6_18436,c_tptpcol_11_93764)), ~(genls(c_tptpcol_15_93775,c_tptpcol_11_93764))
+  673:  | [disjointwith(c_tptpcol_6_18436,c_tptpcol_14_93774)], ~(disjointwith(c_tptpcol_6_18436,c_tptpcol_11_93764)), ~(genls(c_tptpcol_14_93774,c_tptpcol_11_93764))
+  674:  | [disjointwith(c_tptpcol_6_18436,c_tptpcol_13_93766)], ~(disjointwith(c_tptpcol_6_18436,c_tptpcol_11_93764)), ~(genls(c_tptpcol_13_93766,c_tptpcol_11_93764))
+  675:  | [disjointwith(c_tptpcol_6_18436,c_tptpcol_12_93765)], ~(disjointwith(c_tptpcol_6_18436,c_tptpcol_11_93764)), ~(genls(c_tptpcol_12_93765,c_tptpcol_11_93764))
+
+TIMEOUT

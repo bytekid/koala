@@ -1,0 +1,16 @@
+  27: [~(distinct_lines(esk1_0,esk3_0))]
+  28: X2_40 != X3_40 & top(X0_40) != parallel_through_point | ~(convergent_lines(X0_40,parallel_through_point(X1_40,X2_40))), convergent_lines(X0_40,parallel_through_point(X1_40,X3_40)), [distinct_lines(parallel_through_point(X1_40,X2_40),parallel_through_point(X1_40,X3_40))]
+  29: X1_40 != X3_40 & top(X0_40) != parallel_through_point | ~(convergent_lines(X0_40,parallel_through_point(X1_40,X2_40))), convergent_lines(X0_40,parallel_through_point(X3_40,X4_40)), [distinct_lines(parallel_through_point(X1_40,X2_40),parallel_through_point(X3_40,X4_40))]
+  30: ~(convergent_lines(esk1_0,parallel_through_point(X0_40,X1_40))), convergent_lines(esk1_0,esk3_0), [distinct_lines(parallel_through_point(X0_40,X1_40),esk3_0)]
+  31: top(X0_40) != esk3_0 & top(X0_40) != esk1_0 & top(X0_40) != parallel_through_point | [~(distinct_lines(X0_40,X0_40))]
+  32: [~(distinct_lines(parallel_through_point(X0_40,X1_40),parallel_through_point(X0_40,X1_40)))]
+
+
+# steps:             119
+# conflicts:         38
+# generated clauses: 56
+# deleted clauses:   29
+max trail length:    48
+time:                0.70
+
+SZS status Unsatisfiable

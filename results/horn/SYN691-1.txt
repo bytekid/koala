@@ -1,0 +1,16 @@
+  26:  | [~(p39(c43,c46))]
+  27:  | [~(p39(f5(c40,f10(f13(f15(c42,c43),c44),c45)),c46))]
+
+
+# steps:             228
+# extensions:        204
+# conflicts:         9
+# generated clauses: 213
+# deleted clauses:   197
+max trail length:    219
+time:                256.42
+ extension clauses:  89.23
+ splits:             0.04
+ ground instances:   0.00
+
+SZS status Unsatisfiable

@@ -1,0 +1,16 @@
+
+
+Gamma_5: (resolve)
+  0:  | [~(f(esk1_0,esk1_0))]
+  1: []
+
+
+# steps:             6
+# extensions:        2
+# conflicts:         1
+# generated clauses: 3
+# deleted clauses:   0
+max trail length:    2
+time:                0.00
+
+SZS status Unsatisfiable

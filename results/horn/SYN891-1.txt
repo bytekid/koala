@@ -1,0 +1,16 @@
+
+
+Gamma_277: (resolve)
+  0:  | [~(ssNder1_0)]
+  1: []
+
+
+# steps:             278
+# extensions:        77
+# conflicts:         67
+# generated clauses: 143
+# deleted clauses:   158
+max trail length:    59
+time:                16.48
+
+SZS status Unsatisfiable

@@ -1,0 +1,16 @@
+  10:  | [less(esk2_1(esk2_1(X0_4)),esk1_1(esk2_1(esk2_1(X0_4))))], p(esk2_1(esk2_1(X0_4)))
+  11:  | [less(esk2_1(esk1_1(esk1_1(X0_4))),esk1_1(esk2_1(esk1_1(esk1_1(X0_4)))))], p(esk2_1(esk1_1(esk1_1(X0_4))))
+  12:  | [less(esk1_1(esk1_1(X0_4)),esk1_1(esk1_1(esk1_1(X0_4))))], p(esk1_1(esk1_1(X0_4)))
+  13:  | [less(esk1_1(esk1_1(X0_4)),esk1_1(esk2_1(esk1_1(esk1_1(X0_4)))))], ~(less(esk1_1(esk1_1(X0_4)),esk2_1(esk1_1(esk1_1(X0_4))))), ~(less(esk2_1(esk1_1(esk1_1(X0_4))),esk1_1(esk2_1(esk1_1(esk1_1(X0_4))))))
+  14: ( top(X0_4) != esk1_1 & top(X0_4) != esk2_1 ) | [less(X0_4,esk1_1(X0_4))], p(X0_4)
+
+
+# steps:             82
+# extensions:        17
+# conflicts:         32
+# generated clauses: 40
+# deleted clauses:   19
+max trail length:    22
+time:                0.06
+
+SZS status Unsatisfiable

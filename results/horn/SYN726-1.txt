@@ -1,0 +1,16 @@
+  14:  | q(sk4,sk4), [p(sk4,sk4)]
+  15:  | q(sk3,sk3), [p(sk3,sk3)]
+  16: ( top(X0_4) != sk3 & top(X0_4) != sk4 & top(X0_4) != sk1 ) | q(X0_4,sk3), [p(X0_4,sk3)]
+  17:  | [q(sk2,sk4)], p(sk2,sk4)
+  18:  | [q(sk1,sk3)], p(sk1,sk3)
+
+
+# steps:             122
+# extensions:        30
+# conflicts:         45
+# generated clauses: 63
+# deleted clauses:   23
+max trail length:    27
+time:                0.14
+
+SZS status Unsatisfiable

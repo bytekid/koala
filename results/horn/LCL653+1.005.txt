@@ -1,0 +1,16 @@
+  208:  | [r1(esk55_1(esk43_1(esk36_0)),esk57_2(esk43_1(esk36_0),esk55_1(esk43_1(esk36_0))))], r1(esk55_1(esk43_1(esk36_0)),esk56_2(esk43_1(esk36_0),esk55_1(esk43_1(esk36_0)))), ~(r1(esk43_1(esk36_0),esk55_1(esk43_1(esk36_0)))), ~(epred1_1(esk43_1(esk36_0)))
+  209:  | [r1(esk71_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0)),esk57_2(esk43_1(esk36_0),esk71_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0))))], r1(esk71_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0)),esk56_2(esk43_1(esk36_0),esk71_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0)))), ~(r1(esk43_1(esk36_0),esk71_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0)))), ~(epred1_1(esk43_1(esk36_0)))
+  210:  | [r1(esk70_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0)),esk57_2(esk43_1(esk36_0),esk70_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0))))], r1(esk70_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0)),esk56_2(esk43_1(esk36_0),esk70_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0)))), ~(r1(esk43_1(esk36_0),esk70_5(esk24_0,esk28_0,esk32_0,esk36_0,esk43_1(esk36_0)))), ~(epred1_1(esk43_1(esk36_0)))
+  211:  | ~(r1(esk1_0,esk8_0)), ~(r1(esk8_0,esk12_0)), ~(r1(esk12_0,esk49_1(esk12_0))), ~(p1(esk49_1(esk12_0))), [p1(esk50_1(esk8_0))]
+  212:  | ~(r1(esk1_0,esk8_0)), [r1(esk8_0,esk50_1(esk8_0))], ~(r1(esk8_0,esk12_0)), ~(r1(esk12_0,esk49_1(esk12_0))), ~(p1(esk49_1(esk12_0)))
+
+
+# steps:             213
+# extensions:        213
+# conflicts:         0
+# generated clauses: 213
+# deleted clauses:   0
+max trail length:    213
+time:                51.65
+
+SZS status Satisfiable

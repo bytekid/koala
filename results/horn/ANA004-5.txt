@@ -1,0 +1,16 @@
+  53: ( top(X2_4) != minimum & top(X4_4) != epsilon_0 & top(X4_4) != n0 & top(X4_4) != minimum & top(X3_4) != minimum ) | less_or_equal(add(minimum(minimum(X0_4,X1_4),minimum(X2_4,X3_4)),X4_4),epsilon_0), [less_or_equal(epsilon_0,add(minimum(minimum(X0_4,X1_4),minimum(X2_4,X3_4)),X4_4))]
+  54:  | [~(less_or_equal(epsilon_0,n0))]
+  55:  | [less_or_equal(n0,n0)]
+  56: ( X0_4 != X2_4 & X0_4 != X1_4 ) | less_or_equal(X0_4,minimum(X1_4,X2_4)), [less_or_equal(minimum(X1_4,X2_4),X0_4)]
+  57: ( top(X0_4) != n0 & top(X0_4) != minimum & top(X0_4) != epsilon_0 ) | [less_or_equal(X0_4,n0)], less_or_equal(absolute(add(xs(X0_4),negate(a_real_number))),X0_4)
+
+
+# steps:             70
+# extensions:        14
+# conflicts:         23
+# generated clauses: 23
+# deleted clauses:   1
+max trail length:    59
+time:                2.50
+
+SZS status Satisfiable

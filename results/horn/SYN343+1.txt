@@ -1,0 +1,16 @@
+  0:  | [big_f(X0_4,X1_4)], big_f(X0_4,X0_4)
+  1:  | ~(big_f(X0_4,X0_4))
+
+model:
+  0:  | [big_f(X0_4,X1_4)], big_f(X0_4,X0_4)
+
+
+# steps:             3
+# extensions:        2
+# conflicts:         1
+# generated clauses: 2
+# deleted clauses:   0
+max trail length:    2
+time:                0.00
+
+SZS status Satisfiable

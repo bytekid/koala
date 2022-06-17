@@ -1,0 +1,16 @@
+  5:  | [~(thursday(today))]
+  6: top(X0_42) != today | [tuesday(yesterday(yesterday(yesterday(yesterday(yesterday(X0_42))))))], ~(monday(yesterday(yesterday(yesterday(yesterday(yesterday(yesterday(X0_42))))))))
+  7: top(X0_42) != today | [wednesday(yesterday(yesterday(yesterday(yesterday(X0_42)))))], ~(tuesday(yesterday(yesterday(yesterday(yesterday(yesterday(X0_42)))))))
+  8: top(X0_42) != today | ~(wednesday(yesterday(yesterday(yesterday(yesterday(X0_42)))))), [thursday(yesterday(yesterday(yesterday(X0_42))))]
+  9: top(X0_42) != today | [friday(yesterday(yesterday(X0_42)))], ~(thursday(yesterday(yesterday(yesterday(X0_42)))))
+
+
+# steps:             349
+# extensions:        132
+# conflicts:         100
+# generated clauses: 214
+# deleted clauses:   140
+max trail length:    41
+time:                0.69
+
+SZS status Unsatisfiable

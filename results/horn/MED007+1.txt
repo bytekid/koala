@@ -1,0 +1,16 @@
+  13:  | gt(X0_4,X0_4), ~(gt(X0_4,esk19_1(X0_4))), [drugbg(X0_4)]
+  14:  | gt(X0_4,X0_4), ~(gt(X0_4,esk18_1(X0_4))), [drugsu(X0_4)]
+  15:  | gt(X0_4,X0_4), ~(gt(X0_4,esk16_1(X0_4))), [drugi(X0_4)]
+  16:  | gt(X0_4,X0_4), ~(gt(X0_4,esk1_1(X0_4))), [uptakelg(X0_4)]
+  17:  | gt(X0_4,X0_4), ~(gt(X0_4,esk1_1(X0_4))), [uptakepg(X0_4)]
+
+
+# steps:             34
+# extensions:        18
+# conflicts:         8
+# generated clauses: 22
+# deleted clauses:   0
+max trail length:    19
+time:                0.36
+
+SZS status Satisfiable

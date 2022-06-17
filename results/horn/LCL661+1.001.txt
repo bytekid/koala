@@ -1,0 +1,16 @@
+  17:  | [r1(esk1_0,esk14_1(esk1_0))], ~(epred1_1(esk1_0))
+  18:  | ~(r1(esk6_0,esk13_1(esk6_0))), [p1(esk13_1(esk6_0))]
+  19:  | ~(r1(esk2_0,esk13_1(esk2_0))), [p3(esk13_1(esk2_0))]
+  20:  | [r1(esk13_1(esk1_0),esk13_1(esk13_1(esk1_0)))], ~(r1(esk13_1(esk1_0),esk13_1(esk1_0))), ~(r1(esk1_0,esk13_1(esk1_0))), p2(esk13_1(esk1_0))
+  21:  | [r1(esk14_1(esk1_0),esk13_1(esk14_1(esk1_0)))], ~(r1(esk14_1(esk1_0),esk14_1(esk1_0))), ~(r1(esk1_0,esk14_1(esk1_0))), p2(esk14_1(esk1_0))
+
+
+# steps:             22
+# extensions:        22
+# conflicts:         0
+# generated clauses: 22
+# deleted clauses:   0
+max trail length:    22
+time:                221.54
+
+SZS status Satisfiable

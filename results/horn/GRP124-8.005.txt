@@ -1,0 +1,16 @@
+  215:  | ~(product1(e_1,e_5,e_3)), [~(product1(e_1,e_2,e_3))]
+  216:  | ~(product1(e_1,e_4,e_2)), [~(product1(e_1,e_2,e_2))]
+  217:  | [~(product1(e_1,e_2,e_1))], ~(product1(e_1,e_1,e_1))
+  218:  | [product1(e_1,e_2,e_5)], product1(e_1,e_2,e_4), product1(e_1,e_2,e_3), product1(e_1,e_2,e_2), product1(e_1,e_2,e_1), ~(group_element(e_2)), ~(group_element(e_1))
+  219:  | [product1(e_3,e_4,e_5)], product1(e_3,e_4,e_4), product1(e_3,e_4,e_3), product1(e_3,e_4,e_2), product1(e_3,e_4,e_1), ~(group_element(e_4)), ~(group_element(e_3))
+
+
+# steps:             1640
+# extensions:        613
+# conflicts:         673
+# generated clauses: 1286
+# deleted clauses:   393
+max trail length:    220
+time:                38.51
+
+SZS status Satisfiable

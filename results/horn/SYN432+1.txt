@@ -1,0 +1,16 @@
+  63: ( top(X0_4) != a186 & top(X0_4) != a187 & top(X0_4) != a164 & top(X0_4) != a167 & top(X0_4) != a184 & top(X0_4) != a192 & top(X0_4) != a181 & top(X0_4) != a178 ) | c1_1(X0_4), c1_1(a164), ~(c2_1(X0_4)), [c2_1(a164)], c3_1(X0_4), c3_1(a164), hskp10, ~(ndr1_0)
+  64:  | c1_1(a163), c2_1(a192), ~(c2_1(a163)), ~(c3_1(a192)), ~(c3_1(a163)), c0_1(a192), [hskp17], ~(ndr1_0)
+  65:  | c1_1(a181), c1_1(a163), c2_1(a181), ~(c2_1(a163)), ~(c3_1(a163)), ~(c0_1(a181)), [hskp18], ~(ndr1_0)
+  66: ( top(X0_4) != a186 & top(X0_4) != a187 & top(X0_4) != a164 & top(X0_4) != a167 & top(X0_4) != a184 & top(X0_4) != a192 & top(X0_4) != a181 & top(X0_4) != a178 ) | c1_1(X0_4), c1_1(a164), ~(c2_1(X0_4)), c2_1(a164), c3_1(X0_4), [c3_1(a164)], hskp10, ~(ndr1_0)
+  67:  | [~(c0_1(a186))], ~(hskp25)
+
+
+# steps:             1017
+# extensions:        336
+# conflicts:         426
+# generated clauses: 633
+# deleted clauses:   228
+max trail length:    69
+time:                18.09
+
+SZS status Satisfiable

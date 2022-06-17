@@ -1,0 +1,16 @@
+  4:  | [~(apart_point_and_line(esk1_0,esk2_0))]
+  5:  | [~(convergent_lines(esk2_0,parallel_through_point(esk3_0,esk1_0)))]
+  6: ( top(X0_39) != esk2_0 & top(X0_39) != parallel_through_point ) | [~(distinct_lines(X0_39,X0_39))]
+  7:  | [~(convergent_lines(parallel_through_point(esk3_0,esk1_0),esk3_0))]
+  8:  | [~(convergent_lines(esk2_0,esk3_0))]
+
+
+# steps:             41
+# extensions:        14
+# conflicts:         8
+# generated clauses: 20
+# deleted clauses:   16
+max trail length:    25
+time:                0.06
+
+SZS status Unsatisfiable

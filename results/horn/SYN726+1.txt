@@ -1,0 +1,16 @@
+  2:  | [~(q(esk3_0,esk4_0))]
+  3:  | [~(p(esk1_0,esk2_0))]
+
+
+# steps:             90
+# extensions:        19
+# conflicts:         38
+# generated clauses: 44
+# deleted clauses:   26
+max trail length:    24
+time:                0.07
+ extension clauses:  0.01
+ splits:             0.00
+ ground instances:   0.00
+
+SZS status Unsatisfiable

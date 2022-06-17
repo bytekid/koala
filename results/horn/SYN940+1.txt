@@ -1,0 +1,16 @@
+
+model:
+  0:  | [q(f(X0_36))]
+  1:  | [p(f(X0_36))], ~(q(f(X1_36)))
+  2:  | [r(X0_34)], ~(p(f(X0_36))), ~(q(f(X0_36)))
+
+
+# steps:             13
+# extensions:        4
+# conflicts:         4
+# generated clauses: 7
+# deleted clauses:   2
+max trail length:    5
+time:                0.00
+
+SZS status Satisfiable

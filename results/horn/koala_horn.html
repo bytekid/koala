@@ -1,0 +1,8199 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script src="http://masonry.desandro.com/jquery.masonry.min.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Alegreya Sans SC' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Alegreya' rel='stylesheet'>
+ <title>SGGS Decision Procedures</title>
+<style>
+ .item {
+  float: top; /* This is necessary */
+  width: 180px;
+  height: 30px;
+  background-color: #CCC;
+  margin: 10px 10px 5px 10px;
+  padding: 10px 10px;
+  font-family: 'Alegreya Sans SC';
+  font-size: 16pt;
+ }
+ .wide {
+  width: 440px; /* This is to compensate for margin and padding (2*200px)+(2*5px)+(2*5px) */
+  background-color: gray;
+ }
+ .subitem {
+  float: top; /* This is necessary */
+  width: 160px;
+  height: 30px;
+  background-color: #EEE;
+  margin: 10px 10px 5px 30px;
+  padding: 10px 10px;
+  font-family: 'Alegreya Sans SC';
+  font-size: 14pt;
+ }
+ h1 {
+  font-family: 'Alegreya Sans SC';
+  font-size: 20pt;
+  margin-bottom: 10px;
+  color: #86af49
+ }
+ #menu {
+  width:220 px;
+  float:left;
+  height:100%;
+  margin: 0px 20px 0px 20px;
+ }
+ #container {
+  margin: 5px;
+  padding: 10px 20px;
+ }
+ .content {
+  display: none;
+  margin-left: 10px;
+  padding: 10px 20px;
+  font-family: 'Alegreya';
+  font-size: 13pt;
+  max-width: 1300px;
+ }
+ .thead {
+  font-weight:bold
+ }
+
+ a{
+  color: #86af49;
+  text-decoration: none;
+  position: relative;
+  font-weight:bold
+ }
+
+ a:visited{
+  color:#668f38
+ }
+
+ a::after{
+  content: "";
+  background: #b5e7a0;
+  mix-blend-mode: exclusion;
+  width: calc(100% + 4px);
+  height: 0;
+  position: absolute;
+  bottom: -1px;
+  left: -2px;
+  transition: all .2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+ }
+
+ a:hover::after{
+  height: calc(100% + 4px)
+ }
+
+a.normal, a.normal::after{
+ display:inline;
+ color: #86af49;
+ text-decoration: none;
+ position: relative;
+ font-weight:bold
+}
+
+ .active {
+   background: #e3eaa7
+ }
+
+ th {
+  background: #e3eaa7
+ }
+
+ tbody td{
+  padding: 2px 4px 2px 4px;
+  spacing:2px
+ }
+
+ tbody tr:nth-child(odd){
+  background-color: #d5e1df;
+  color: #000;
+ }
+</style>
+<script>
+  $(function(){
+      $('#container').masonry({
+            // options
+          itemSelector : '.item',
+        columnWidth : 240
+    });
+        });
+</script>
+</head>
+<body>
+<div id="header" class="content" style="display:block; width:100%">
+ <h1>On SGGS and Horn Clauses</h1>
+ <p class="compressed">
+ This website contains supporting material for the PAAR 2022 paper <em>On SGGS and Horn Clauses</em>
+by Maria Paola Bonacina and Sarah Winkler.
+ The below table forms the basis of the experimental data reported on in the paper.
+ The source code of the Koala prover is available on <a href="https://github.com/bytekid/koala" target="_blank">github</a>.
+</div>
+<div>
+
+<div class="content" style="display:block">
+<h3>Horn Problems</h3>
+<p class="compressed">
+The following table lists all problems in TPTP 7.2.0 problems which are Horn.
+For each problem solved by Koala, we list its status (with a link to 
+a trace of the successful derivation), the derivation length, and the time required by Koala.
+The final column indicates whether the problem belongs to one of the decidable class due to
+one of the following properties: EPR, stratified, restrained, sort-restrained.
+</p>
+<table>
+<tr>
+<td class="thead">system</td>
+<td class="thead">result</td>
+<td class="thead">#steps</td>
+<td class="thead">time</td>
+<td class="thead">properties</td>
+</tr>
+<tr>
+<td class="system">ALG211+1</td>
+<td><a href="sggsruns/ALG211+1.txt" target="_blank">UNSAT</a></td>
+<td>150</td>
+<td>6.38</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">ANA003-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">ANA004-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">ANA005-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">ANA013-2</td>
+<td><a href="sggsruns/ANA013-2.txt" target="_blank">UNSAT</a></td>
+<td>11</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">ANA037-2</td>
+<td><a href="sggsruns/ANA037-2.txt" target="_blank">UNSAT</a></td>
+<td>133</td>
+<td>5.22</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">ANA038-2</td>
+<td><a href="sggsruns/ANA038-2.txt" target="_blank">UNSAT</a></td>
+<td>133</td>
+<td>3.39</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">ANA039-2</td>
+<td><a href="sggsruns/ANA039-2.txt" target="_blank">UNSAT</a></td>
+<td>299</td>
+<td>179.77</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">ANA041-2</td>
+<td><a href="sggsruns/ANA041-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">ANA042-2</td>
+<td><a href="sggsruns/ANA042-2.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">BOO109+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">COL101-2</td>
+<td><a href="sggsruns/COL101-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL102-2</td>
+<td><a href="sggsruns/COL102-2.txt" target="_blank">UNSAT</a></td>
+<td>28</td>
+<td>0.04</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">COL103-2</td>
+<td><a href="sggsruns/COL103-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL104-2</td>
+<td><a href="sggsruns/COL104-2.txt" target="_blank">UNSAT</a></td>
+<td>28</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">COL105-2</td>
+<td><a href="sggsruns/COL105-2.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL109-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL110-2</td>
+<td><a href="sggsruns/COL110-2.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL111-2</td>
+<td><a href="sggsruns/COL111-2.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL112-2</td>
+<td><a href="sggsruns/COL112-2.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL113-2</td>
+<td><a href="sggsruns/COL113-2.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL114-2</td>
+<td><a href="sggsruns/COL114-2.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL115-2</td>
+<td><a href="sggsruns/COL115-2.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.01</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL116-2</td>
+<td><a href="sggsruns/COL116-2.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL117-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL118-2</td>
+<td><a href="sggsruns/COL118-2.txt" target="_blank">UNSAT</a></td>
+<td>133</td>
+<td>12.71</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL119-2</td>
+<td><a href="sggsruns/COL119-2.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL120-2</td>
+<td><a href="sggsruns/COL120-2.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COL121-2</td>
+<td><a href="sggsruns/COL121-2.txt" target="_blank">UNSAT</a></td>
+<td>189</td>
+<td>12.60</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">COL122-2</td>
+<td><a href="sggsruns/COL122-2.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">COL123-2</td>
+<td><a href="sggsruns/COL123-2.txt" target="_blank">UNSAT</a></td>
+<td>617</td>
+<td>233.79</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">COL124-2</td>
+<td><a href="sggsruns/COL124-2.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COM001-1</td>
+<td><a href="sggsruns/COM001-1.txt" target="_blank">UNSAT</a></td>
+<td>27</td>
+<td>0.01</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">COM002-1</td>
+<td><a href="sggsruns/COM002-1.txt" target="_blank">UNSAT</a></td>
+<td>77</td>
+<td>0.12</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR025+1</td>
+<td><a href="sggsruns/CSR025+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR026+1</td>
+<td><a href="sggsruns/CSR026+1.txt" target="_blank">UNSAT</a></td>
+<td>86</td>
+<td>0.12</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR027+1</td>
+<td><a href="sggsruns/CSR027+1.txt" target="_blank">UNSAT</a></td>
+<td>101</td>
+<td>0.69</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR028+1</td>
+<td><a href="sggsruns/CSR028+1.txt" target="_blank">UNSAT</a></td>
+<td>14</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR029+1</td>
+<td><a href="sggsruns/CSR029+1.txt" target="_blank">UNSAT</a></td>
+<td>80</td>
+<td>0.14</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR030+1</td>
+<td><a href="sggsruns/CSR030+1.txt" target="_blank">UNSAT</a></td>
+<td>74</td>
+<td>0.19</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR031+1</td>
+<td><a href="sggsruns/CSR031+1.txt" target="_blank">UNSAT</a></td>
+<td>31</td>
+<td>0.02</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR032+1</td>
+<td><a href="sggsruns/CSR032+1.txt" target="_blank">UNSAT</a></td>
+<td>52</td>
+<td>0.13</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR033+1</td>
+<td><a href="sggsruns/CSR033+1.txt" target="_blank">UNSAT</a></td>
+<td>133</td>
+<td>0.48</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR034+1</td>
+<td><a href="sggsruns/CSR034+1.txt" target="_blank">UNSAT</a></td>
+<td>238</td>
+<td>4.07</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR035+1</td>
+<td><a href="sggsruns/CSR035+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.02</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR036+1</td>
+<td><a href="sggsruns/CSR036+1.txt" target="_blank">UNSAT</a></td>
+<td>933</td>
+<td>109.57</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR037+1</td>
+<td><a href="sggsruns/CSR037+1.txt" target="_blank">UNSAT</a></td>
+<td>70</td>
+<td>0.15</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR038+1</td>
+<td><a href="sggsruns/CSR038+1.txt" target="_blank">UNSAT</a></td>
+<td>51</td>
+<td>0.14</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR039+1</td>
+<td><a href="sggsruns/CSR039+1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR040+1</td>
+<td><a href="sggsruns/CSR040+1.txt" target="_blank">UNSAT</a></td>
+<td>512</td>
+<td>203.28</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR041+1</td>
+<td><a href="sggsruns/CSR041+1.txt" target="_blank">UNSAT</a></td>
+<td>125</td>
+<td>1.34</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR042+1</td>
+<td><a href="sggsruns/CSR042+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR043+1</td>
+<td><a href="sggsruns/CSR043+1.txt" target="_blank">UNSAT</a></td>
+<td>14</td>
+<td>0.01</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR044+1</td>
+<td><a href="sggsruns/CSR044+1.txt" target="_blank">UNSAT</a></td>
+<td>89</td>
+<td>0.29</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR045+1</td>
+<td><a href="sggsruns/CSR045+1.txt" target="_blank">UNSAT</a></td>
+<td>153</td>
+<td>0.76</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR046+1</td>
+<td><a href="sggsruns/CSR046+1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.08</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR047+1</td>
+<td><a href="sggsruns/CSR047+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR048+1</td>
+<td><a href="sggsruns/CSR048+1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR049+1</td>
+<td><a href="sggsruns/CSR049+1.txt" target="_blank">UNSAT</a></td>
+<td>976</td>
+<td>127.08</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR050+1</td>
+<td><a href="sggsruns/CSR050+1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>0.90</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR051+1</td>
+<td><a href="sggsruns/CSR051+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR052+1</td>
+<td><a href="sggsruns/CSR052+1.txt" target="_blank">UNSAT</a></td>
+<td>135</td>
+<td>1.63</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR053+1</td>
+<td><a href="sggsruns/CSR053+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR054+1</td>
+<td><a href="sggsruns/CSR054+1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.02</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR055+1</td>
+<td><a href="sggsruns/CSR055+1.txt" target="_blank">UNSAT</a></td>
+<td>31</td>
+<td>0.02</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR056+1</td>
+<td><a href="sggsruns/CSR056+1.txt" target="_blank">UNSAT</a></td>
+<td>84</td>
+<td>0.27</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR057+1</td>
+<td><a href="sggsruns/CSR057+1.txt" target="_blank">UNSAT</a></td>
+<td>110</td>
+<td>0.21</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR058+1</td>
+<td><a href="sggsruns/CSR058+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR059+1</td>
+<td><a href="sggsruns/CSR059+1.txt" target="_blank">UNSAT</a></td>
+<td>24</td>
+<td>0.01</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR060+1</td>
+<td><a href="sggsruns/CSR060+1.txt" target="_blank">UNSAT</a></td>
+<td>129</td>
+<td>0.72</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR061+1</td>
+<td><a href="sggsruns/CSR061+1.txt" target="_blank">UNSAT</a></td>
+<td>351</td>
+<td>47.27</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR062+1</td>
+<td><a href="sggsruns/CSR062+1.txt" target="_blank">UNSAT</a></td>
+<td>89</td>
+<td>0.17</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR063+1</td>
+<td><a href="sggsruns/CSR063+1.txt" target="_blank">UNSAT</a></td>
+<td>285</td>
+<td>10.58</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR064+1</td>
+<td><a href="sggsruns/CSR064+1.txt" target="_blank">UNSAT</a></td>
+<td>51</td>
+<td>0.10</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR065+1</td>
+<td><a href="sggsruns/CSR065+1.txt" target="_blank">UNSAT</a></td>
+<td>86</td>
+<td>0.14</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR066+1</td>
+<td><a href="sggsruns/CSR066+1.txt" target="_blank">UNSAT</a></td>
+<td>80</td>
+<td>0.41</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR067+1</td>
+<td><a href="sggsruns/CSR067+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR068+1</td>
+<td><a href="sggsruns/CSR068+1.txt" target="_blank">UNSAT</a></td>
+<td>69</td>
+<td>0.10</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR069+1</td>
+<td><a href="sggsruns/CSR069+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR070+1</td>
+<td><a href="sggsruns/CSR070+1.txt" target="_blank">UNSAT</a></td>
+<td>112</td>
+<td>0.44</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR071+1</td>
+<td><a href="sggsruns/CSR071+1.txt" target="_blank">UNSAT</a></td>
+<td>100</td>
+<td>0.46</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR072+1</td>
+<td><a href="sggsruns/CSR072+1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.08</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">CSR073+1</td>
+<td><a href="sggsruns/CSR073+1.txt" target="_blank">UNSAT</a></td>
+<td>107</td>
+<td>0.57</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">CSR074+1</td>
+<td><a href="sggsruns/CSR074+1.txt" target="_blank">UNSAT</a></td>
+<td>80</td>
+<td>0.07</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">GEO001-4</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GEO002-4</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GEO079-1</td>
+<td><a href="sggsruns/GEO079-1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">GRP001+6</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP001-5</td>
+<td><a href="sggsruns/GRP001-5.txt" target="_blank">SAT</a></td>
+<td>38</td>
+<td>0.02</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">GRP003-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP003-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP004-1</td>
+<td><a href="sggsruns/GRP004-1.txt" target="_blank">SAT</a></td>
+<td>87</td>
+<td>0.33</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP004-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP005-1</td>
+<td><a href="sggsruns/GRP005-1.txt" target="_blank">UNSAT</a></td>
+<td>17</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP006-1</td>
+<td><a href="sggsruns/GRP006-1.txt" target="_blank">UNSAT</a></td>
+<td>42</td>
+<td>0.16</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP012+5</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP028-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP028-3</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP028-4</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP029-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP031-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP033-3</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP034-4</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP041-2</td>
+<td><a href="sggsruns/GRP041-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP042-2</td>
+<td><a href="sggsruns/GRP042-2.txt" target="_blank">UNSAT</a></td>
+<td>52</td>
+<td>0.27</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP043-2</td>
+<td><a href="sggsruns/GRP043-2.txt" target="_blank">UNSAT</a></td>
+<td>160</td>
+<td>37.61</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP044-2</td>
+<td><a href="sggsruns/GRP044-2.txt" target="_blank">UNSAT</a></td>
+<td>89</td>
+<td>2.42</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP045-2</td>
+<td><a href="sggsruns/GRP045-2.txt" target="_blank">UNSAT</a></td>
+<td>162</td>
+<td>41.18</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP046-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP047-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP048-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">GRP394-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">KRS004-1</td>
+<td><a href="sggsruns/KRS004-1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT005-1</td>
+<td><a href="sggsruns/LAT005-1.txt" target="_blank">UNSAT</a></td>
+<td>287</td>
+<td>8.73</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT005-2</td>
+<td><a href="sggsruns/LAT005-2.txt" target="_blank">UNSAT</a></td>
+<td>318</td>
+<td>7.30</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT258+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LAT260-2</td>
+<td><a href="sggsruns/LAT260-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT261-2</td>
+<td><a href="sggsruns/LAT261-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT264-2</td>
+<td><a href="sggsruns/LAT264-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT265-2</td>
+<td><a href="sggsruns/LAT265-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT267-2</td>
+<td><a href="sggsruns/LAT267-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT270-2</td>
+<td><a href="sggsruns/LAT270-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LAT271-2</td>
+<td><a href="sggsruns/LAT271-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LAT272-2</td>
+<td><a href="sggsruns/LAT272-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL001-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL002-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL003-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL004-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL005-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL006-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL007-1</td>
+<td><a href="sggsruns/LCL007-1.txt" target="_blank">UNSAT</a></td>
+<td>21</td>
+<td>0.06</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL008-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL009-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL010-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL011-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL012-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL013-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL014-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL015-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL016-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL017-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL018-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL019-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL020-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL021-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL022-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL023-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL024-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL025-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL026-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL027-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL028-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL029-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL030-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL031-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL032-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL033-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL034-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL035-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL036-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL037-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL038-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL039-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL040-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL041-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL042-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL043-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL044-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL045-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL046-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL047-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL048-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL049-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL050-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL051-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL052-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL053-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL054-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL055-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL056-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL057-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL058-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL059-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL060-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL061-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL062-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL063-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL064-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL064-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL065-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL066-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL067-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL068-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL069-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL070-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL071-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL072-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL073-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL074-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL075-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL076-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL076-2</td>
+<td><a href="sggsruns/LCL076-2.txt" target="_blank">UNSAT</a></td>
+<td>24</td>
+<td>0.08</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL076-3</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL077-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL077-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL078-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL079-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL080-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL080-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL081-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL082-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL083-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL083-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL084-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL084-3</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL085-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL086-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL087-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL088-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL089-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL090-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL091-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL092-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL093-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL094-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL095-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL096-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL097-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL098-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL099-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL100-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL101-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL102-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL103-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL104-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL105-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL106-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL107-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL108-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL109-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL110-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL111-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL112-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL113-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL114-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL115-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL116-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL117-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL118-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL119-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL120-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL121-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL122-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL123-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL124-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL125-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL126-1</td>
+<td><a href="sggsruns/LCL126-1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL127-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL128-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL129-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL130-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL131-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL166-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL167-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL168-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL169-1</td>
+<td><a href="sggsruns/LCL169-1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.03</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL170-1</td>
+<td><a href="sggsruns/LCL170-1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.03</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL171-1</td>
+<td><a href="sggsruns/LCL171-1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.04</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL172-1</td>
+<td><a href="sggsruns/LCL172-1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL173-1</td>
+<td><a href="sggsruns/LCL173-1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.04</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL174-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL175-1</td>
+<td><a href="sggsruns/LCL175-1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL176-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL177-1</td>
+<td><a href="sggsruns/LCL177-1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.06</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL178-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL179-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL180-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL181-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL182-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL183-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL184-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL185-1</td>
+<td><a href="sggsruns/LCL185-1.txt" target="_blank">UNSAT</a></td>
+<td>33</td>
+<td>0.10</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL186-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL187-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL188-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL189-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL190-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL191-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL192-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL193-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL194-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL195-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL196-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL197-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL198-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL199-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL200-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL201-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL202-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL203-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL204-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL205-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL206-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL207-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL208-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL209-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL210-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL211-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL212-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL213-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL214-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL215-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL216-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL217-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL218-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL219-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL220-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL221-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL222-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL223-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL224-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL225-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL226-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL227-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL228-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL229-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL230+1</td>
+<td><a href="sggsruns/LCL230+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL230-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL230-2</td>
+<td><a href="sggsruns/LCL230-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL231-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL234-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL235-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL236-1</td>
+<td><a href="sggsruns/LCL236-1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.08</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL237-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL238-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL239-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL240-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL241-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL242-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL243-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL244-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL245-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL246-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL247-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL248-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL249-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL250-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL251-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL252-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL253-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL254-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL255-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL256-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL257-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL355-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL356-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL357-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL358-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL359-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL360-1</td>
+<td><a href="sggsruns/LCL360-1.txt" target="_blank">UNSAT</a></td>
+<td>21</td>
+<td>0.11</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL361-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL362-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL363-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL364-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL365-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL366-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL367-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL368-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL369-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL370-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL371-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL372-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL373-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL374-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL375-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL376-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL377-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL378-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL379-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL380-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL381-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL382-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL383-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL384-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL385-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL386-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL387-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL388-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL389-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL390-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL391-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL392-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL393-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL394-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL395-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL396-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL397-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL398-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL399-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL400-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL401-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL402-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL403-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL404-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL405-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL411-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL414+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL414-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL415-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL416-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL417-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL417-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL418-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL419-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL420-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL421-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL422-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL423-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL424-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL425-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL426-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL427-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL428-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL429-2</td>
+<td><a href="sggsruns/LCL429-2.txt" target="_blank">SAT</a></td>
+<td>37</td>
+<td>0.11</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL430-2</td>
+<td><a href="sggsruns/LCL430-2.txt" target="_blank">SAT</a></td>
+<td>37</td>
+<td>0.11</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL432-2</td>
+<td><a href="sggsruns/LCL432-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL433-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL435-2</td>
+<td><a href="sggsruns/LCL435-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL436-2</td>
+<td><a href="sggsruns/LCL436-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL437-2</td>
+<td><a href="sggsruns/LCL437-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL438-2</td>
+<td><a href="sggsruns/LCL438-2.txt" target="_blank">UNSAT</a></td>
+<td>20</td>
+<td>0.03</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL439-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL440-2</td>
+<td><a href="sggsruns/LCL440-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL441-2</td>
+<td><a href="sggsruns/LCL441-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL443-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL444-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL445-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL446-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL447-2</td>
+<td><a href="sggsruns/LCL447-2.txt" target="_blank">UNSAT</a></td>
+<td>14</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL645+1.001</td>
+<td><a href="sggsruns/LCL645+1.001.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL646+1.001</td>
+<td><a href="sggsruns/LCL646+1.001.txt" target="_blank">UNSAT</a></td>
+<td>21</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL648+1.001</td>
+<td><a href="sggsruns/LCL648+1.001.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL649+1.001</td>
+<td><a href="sggsruns/LCL649+1.001.txt" target="_blank">SAT</a></td>
+<td>3</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL662+1.001</td>
+<td><a href="sggsruns/LCL662+1.001.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL663+1.001</td>
+<td><a href="sggsruns/LCL663+1.001.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL664+1.001</td>
+<td><a href="sggsruns/LCL664+1.001.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL666+1.001</td>
+<td><a href="sggsruns/LCL666+1.001.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL667+1.001</td>
+<td><a href="sggsruns/LCL667+1.001.txt" target="_blank">SAT</a></td>
+<td>2</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL678+1.001</td>
+<td><a href="sggsruns/LCL678+1.001.txt" target="_blank">UNSAT</a></td>
+<td>17</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL679+1.001</td>
+<td><a href="sggsruns/LCL679+1.001.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL680+1.001</td>
+<td><a href="sggsruns/LCL680+1.001.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL681+1.001</td>
+<td><a href="sggsruns/LCL681+1.001.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL682+1.001</td>
+<td><a href="sggsruns/LCL682+1.001.txt" target="_blank">UNSAT</a></td>
+<td>47</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL684+1.001</td>
+<td><a href="sggsruns/LCL684+1.001.txt" target="_blank">UNSAT</a></td>
+<td>11</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL685+1.001</td>
+<td><a href="sggsruns/LCL685+1.001.txt" target="_blank">SAT</a></td>
+<td>3</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">LCL687+1.001</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL687+1.005</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL687+1.010</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL687+1.015</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL687+1.020</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL875-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL876+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL926-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL927-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL928-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">LCL929-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT001+1</td>
+<td><a href="sggsruns/MGT001+1.txt" target="_blank">UNSAT</a></td>
+<td>58</td>
+<td>0.03</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT001-1</td>
+<td><a href="sggsruns/MGT001-1.txt" target="_blank">UNSAT</a></td>
+<td>58</td>
+<td>0.03</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT002+1</td>
+<td><a href="sggsruns/MGT002+1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT002-1</td>
+<td><a href="sggsruns/MGT002-1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT003+1</td>
+<td><a href="sggsruns/MGT003+1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT003-1</td>
+<td><a href="sggsruns/MGT003-1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT006+1</td>
+<td><a href="sggsruns/MGT006+1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT006-1</td>
+<td><a href="sggsruns/MGT006-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT008+1</td>
+<td><a href="sggsruns/MGT008+1.txt" target="_blank">UNSAT</a></td>
+<td>46</td>
+<td>0.01</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT008-1</td>
+<td><a href="sggsruns/MGT008-1.txt" target="_blank">UNSAT</a></td>
+<td>46</td>
+<td>0.01</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT009+1</td>
+<td><a href="sggsruns/MGT009+1.txt" target="_blank">UNSAT</a></td>
+<td>46</td>
+<td>0.01</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT009-1</td>
+<td><a href="sggsruns/MGT009-1.txt" target="_blank">UNSAT</a></td>
+<td>46</td>
+<td>0.01</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT010+1</td>
+<td><a href="sggsruns/MGT010+1.txt" target="_blank">UNSAT</a></td>
+<td>55</td>
+<td>0.02</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT010-1</td>
+<td><a href="sggsruns/MGT010-1.txt" target="_blank">UNSAT</a></td>
+<td>55</td>
+<td>0.02</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT015+1</td>
+<td><a href="sggsruns/MGT015+1.txt" target="_blank">UNSAT</a></td>
+<td>50</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT015-1</td>
+<td><a href="sggsruns/MGT015-1.txt" target="_blank">UNSAT</a></td>
+<td>50</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT017+1</td>
+<td><a href="sggsruns/MGT017+1.txt" target="_blank">UNSAT</a></td>
+<td>50</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT017-1</td>
+<td><a href="sggsruns/MGT017-1.txt" target="_blank">UNSAT</a></td>
+<td>50</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MGT032+2</td>
+<td><a href="sggsruns/MGT032+2.txt" target="_blank">UNSAT</a></td>
+<td>22</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT032-2</td>
+<td><a href="sggsruns/MGT032-2.txt" target="_blank">UNSAT</a></td>
+<td>22</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT036+3</td>
+<td><a href="sggsruns/MGT036+3.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MGT036-3</td>
+<td><a href="sggsruns/MGT036-3.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC005-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">MSC011+1</td>
+<td><a href="sggsruns/MSC011+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC013+1</td>
+<td><a href="sggsruns/MSC013+1.txt" target="_blank">SAT</a></td>
+<td>34</td>
+<td>0.12</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC014+1</td>
+<td><a href="sggsruns/MSC014+1.txt" target="_blank">SAT</a></td>
+<td>18</td>
+<td>0.02</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC015-1.005</td>
+<td><a href="sggsruns/MSC015-1.005.txt" target="_blank">UNSAT</a></td>
+<td>97</td>
+<td>0.07</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC015-1.010</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC015-1.015</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC015-1.020</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC015-1.022</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC015-1.025</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC015-1.027</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC015-1.030</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">MSC016+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP104-1</td>
+<td><a href="sggsruns/NLP104-1.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.03</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP105-1</td>
+<td><a href="sggsruns/NLP105-1.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.05</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP106-1</td>
+<td><a href="sggsruns/NLP106-1.txt" target="_blank">SAT</a></td>
+<td>14</td>
+<td>0.05</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP107-1</td>
+<td><a href="sggsruns/NLP107-1.txt" target="_blank">SAT</a></td>
+<td>26</td>
+<td>0.05</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP108-1</td>
+<td><a href="sggsruns/NLP108-1.txt" target="_blank">SAT</a></td>
+<td>49</td>
+<td>0.08</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP109-1</td>
+<td><a href="sggsruns/NLP109-1.txt" target="_blank">SAT</a></td>
+<td>26</td>
+<td>0.05</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP110-1</td>
+<td><a href="sggsruns/NLP110-1.txt" target="_blank">SAT</a></td>
+<td>37</td>
+<td>0.04</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP111-1</td>
+<td><a href="sggsruns/NLP111-1.txt" target="_blank">SAT</a></td>
+<td>49</td>
+<td>0.06</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP112-1</td>
+<td><a href="sggsruns/NLP112-1.txt" target="_blank">SAT</a></td>
+<td>49</td>
+<td>0.06</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NLP113-1</td>
+<td><a href="sggsruns/NLP113-1.txt" target="_blank">SAT</a></td>
+<td>13</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM001-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM002-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM003-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM004-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM017-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM019-1</td>
+<td><a href="sggsruns/NUM019-1.txt" target="_blank">UNSAT</a></td>
+<td>24</td>
+<td>0.03</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM020-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM023-1</td>
+<td><a href="sggsruns/NUM023-1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM024-1</td>
+<td><a href="sggsruns/NUM024-1.txt" target="_blank">UNSAT</a></td>
+<td>127</td>
+<td>1.69</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM025-1</td>
+<td><a href="sggsruns/NUM025-1.txt" target="_blank">UNSAT</a></td>
+<td>35</td>
+<td>0.05</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM026-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM283-1.005</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM284-1.014</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM286-1</td>
+<td><a href="sggsruns/NUM286-1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">NUM286-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">NUM287-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA001-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA003-1</td>
+<td><a href="sggsruns/PLA003-1.txt" target="_blank">UNSAT</a></td>
+<td>31</td>
+<td>0.03</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA004-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA004-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA005-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA005-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA006-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA007-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA008-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA009-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA009-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA010-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA011-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA011-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA012-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA013-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA014-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA014-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA015-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA016-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA017-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA018-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA019-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA020-1</td>
+<td><a href="sggsruns/PLA020-1.txt" target="_blank">UNSAT</a></td>
+<td>155</td>
+<td>1.77</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA021-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA022-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA022-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA023-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">PLA029-1</td>
+<td><a href="sggsruns/PLA029-1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA030-1</td>
+<td><a href="sggsruns/PLA030-1.txt" target="_blank">SAT</a></td>
+<td>20</td>
+<td>0.01</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA031-1.001</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA031-1.002</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA031-1.003</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA031-1.004</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA031-1.005</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA031-1.006</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA031-1.007</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PLA031-1.008</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ003-1</td>
+<td><a href="sggsruns/PUZ003-1.txt" target="_blank">UNSAT</a></td>
+<td>43</td>
+<td>0.02</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ008-1</td>
+<td><a href="sggsruns/PUZ008-1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ008-2</td>
+<td><a href="sggsruns/PUZ008-2.txt" target="_blank">UNSAT</a></td>
+<td>39</td>
+<td>0.03</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ008-3</td>
+<td><a href="sggsruns/PUZ008-3.txt" target="_blank">UNSAT</a></td>
+<td>206</td>
+<td>0.89</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ011-1</td>
+<td><a href="sggsruns/PUZ011-1.txt" target="_blank">UNSAT</a></td>
+<td>37</td>
+<td>0.01</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ015-3</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ022-1</td>
+<td><a href="sggsruns/PUZ022-1.txt" target="_blank">UNSAT</a></td>
+<td>70</td>
+<td>0.09</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ036-1.005</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ037-1</td>
+<td><a href="sggsruns/PUZ037-1.txt" target="_blank">UNSAT</a></td>
+<td>24</td>
+<td>0.40</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ037-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ037-3</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ038-1</td>
+<td><a href="sggsruns/PUZ038-1.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.04</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ039-1</td>
+<td><a href="sggsruns/PUZ039-1.txt" target="_blank">UNSAT</a></td>
+<td>304</td>
+<td>38.04</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ040-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ041-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ042-1</td>
+<td><a href="sggsruns/PUZ042-1.txt" target="_blank">UNSAT</a></td>
+<td>304</td>
+<td>30.11</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ046-1</td>
+<td><a href="sggsruns/PUZ046-1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.01</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ047+1</td>
+<td><a href="sggsruns/PUZ047+1.txt" target="_blank">UNSAT</a></td>
+<td>364</td>
+<td>71.24</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ047-1</td>
+<td><a href="sggsruns/PUZ047-1.txt" target="_blank">UNSAT</a></td>
+<td>175</td>
+<td>6.23</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ048-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ049-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ050-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ051-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ052-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ053-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ054-1</td>
+<td><a href="sggsruns/PUZ054-1.txt" target="_blank">SAT</a></td>
+<td>74</td>
+<td>1.33</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ056-2.005</td>
+<td><a href="sggsruns/PUZ056-2.005.txt" target="_blank">SAT</a></td>
+<td>292</td>
+<td>4.52</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ056-2.010</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ056-2.015</td>
+<td><a href="sggsruns/PUZ056-2.015.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ056-2.020</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ056-2.022</td>
+<td><a href="sggsruns/PUZ056-2.022.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ056-2.025</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ056-2.027</td>
+<td><a href="sggsruns/PUZ056-2.027.txt" target="_blank">SAT</a></td>
+<td>9</td>
+<td>5.08</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ056-2.030</td>
+<td><a href="sggsruns/PUZ056-2.030.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ059-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ060+1</td>
+<td><a href="sggsruns/PUZ060+1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ061+1</td>
+<td><a href="sggsruns/PUZ061+1.txt" target="_blank">UNSAT</a></td>
+<td>25</td>
+<td>0.01</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">PUZ128+1</td>
+<td><a href="sggsruns/PUZ128+1.txt" target="_blank">UNSAT</a></td>
+<td>22</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">RNG001-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">RNG001-3</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">RNG001-5</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">RNG004-3</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">RNG005-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">RNG006-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">RNG037-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">RNG038-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">RNG039-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">ROB025-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SET574+3</td>
+<td><a href="sggsruns/SET574+3.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET575+3</td>
+<td><a href="sggsruns/SET575+3.txt" target="_blank">UNSAT</a></td>
+<td>15</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET818-2</td>
+<td><a href="sggsruns/SET818-2.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET819-2</td>
+<td><a href="sggsruns/SET819-2.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET824-2</td>
+<td><a href="sggsruns/SET824-2.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SET826-2</td>
+<td><a href="sggsruns/SET826-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET827-2</td>
+<td><a href="sggsruns/SET827-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET828-2</td>
+<td><a href="sggsruns/SET828-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET829-2</td>
+<td><a href="sggsruns/SET829-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET832-2</td>
+<td><a href="sggsruns/SET832-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET833-2</td>
+<td><a href="sggsruns/SET833-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET835-2</td>
+<td><a href="sggsruns/SET835-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET836-2</td>
+<td><a href="sggsruns/SET836-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET846-2</td>
+<td><a href="sggsruns/SET846-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET850-2</td>
+<td><a href="sggsruns/SET850-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SET852-2</td>
+<td><a href="sggsruns/SET852-2.txt" target="_blank">UNSAT</a></td>
+<td>17</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SET856-2</td>
+<td><a href="sggsruns/SET856-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SET859-2</td>
+<td><a href="sggsruns/SET859-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SET913+1</td>
+<td><a href="sggsruns/SET913+1.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SEU163+1</td>
+<td><a href="sggsruns/SEU163+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SEU163+3</td>
+<td><a href="sggsruns/SEU163+3.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SEU167+1</td>
+<td><a href="sggsruns/SEU167+1.txt" target="_blank">UNSAT</a></td>
+<td>33</td>
+<td>0.06</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SEU167+3</td>
+<td><a href="sggsruns/SEU167+3.txt" target="_blank">UNSAT</a></td>
+<td>89</td>
+<td>4.19</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SEU261+1</td>
+<td><a href="sggsruns/SEU261+1.txt" target="_blank">UNSAT</a></td>
+<td>57</td>
+<td>0.01</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SEU263+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SEU264+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SEU275+1</td>
+<td><a href="sggsruns/SEU275+1.txt" target="_blank">UNSAT</a></td>
+<td>26</td>
+<td>0.01</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB001+2</td>
+<td><a href="sggsruns/SWB001+2.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB001+4</td>
+<td><a href="sggsruns/SWB001+4.txt" target="_blank">UNSAT</a></td>
+<td>70</td>
+<td>0.22</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB002+2</td>
+<td><a href="sggsruns/SWB002+2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB002+4</td>
+<td><a href="sggsruns/SWB002+4.txt" target="_blank">UNSAT</a></td>
+<td>68</td>
+<td>0.33</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB003+2</td>
+<td><a href="sggsruns/SWB003+2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB003+4</td>
+<td><a href="sggsruns/SWB003+4.txt" target="_blank">UNSAT</a></td>
+<td>128</td>
+<td>1.76</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB004+4</td>
+<td><a href="sggsruns/SWB004+4.txt" target="_blank">SAT</a></td>
+<td>236</td>
+<td>5.63</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB005+2</td>
+<td><a href="sggsruns/SWB005+2.txt" target="_blank">SAT</a></td>
+<td>70</td>
+<td>0.02</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB005+4</td>
+<td><a href="sggsruns/SWB005+4.txt" target="_blank">SAT</a></td>
+<td>241</td>
+<td>9.68</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB006+4</td>
+<td><a href="sggsruns/SWB006+4.txt" target="_blank">SAT</a></td>
+<td>207</td>
+<td>4.37</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB007+4</td>
+<td><a href="sggsruns/SWB007+4.txt" target="_blank">SAT</a></td>
+<td>262</td>
+<td>12.53</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB008+4</td>
+<td><a href="sggsruns/SWB008+4.txt" target="_blank">SAT</a></td>
+<td>220</td>
+<td>7.71</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB009+2</td>
+<td><a href="sggsruns/SWB009+2.txt" target="_blank">UNSAT</a></td>
+<td>28</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWB009+4</td>
+<td><a href="sggsruns/SWB009+4.txt" target="_blank">SAT</a></td>
+<td>286</td>
+<td>17.60</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB010+4</td>
+<td><a href="sggsruns/SWB010+4.txt" target="_blank">SAT</a></td>
+<td>283</td>
+<td>16.46</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB011+4</td>
+<td><a href="sggsruns/SWB011+4.txt" target="_blank">SAT</a></td>
+<td>258</td>
+<td>11.33</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB012+4</td>
+<td><a href="sggsruns/SWB012+4.txt" target="_blank">SAT</a></td>
+<td>253</td>
+<td>7.94</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB013+4</td>
+<td><a href="sggsruns/SWB013+4.txt" target="_blank">SAT</a></td>
+<td>347</td>
+<td>20.56</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB014+4</td>
+<td><a href="sggsruns/SWB014+4.txt" target="_blank">SAT</a></td>
+<td>274</td>
+<td>11.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB015+4</td>
+<td><a href="sggsruns/SWB015+4.txt" target="_blank">SAT</a></td>
+<td>236</td>
+<td>9.32</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB016+4</td>
+<td><a href="sggsruns/SWB016+4.txt" target="_blank">SAT</a></td>
+<td>236</td>
+<td>9.33</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB017+4</td>
+<td><a href="sggsruns/SWB017+4.txt" target="_blank">SAT</a></td>
+<td>256</td>
+<td>11.81</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB018+4</td>
+<td><a href="sggsruns/SWB018+4.txt" target="_blank">SAT</a></td>
+<td>249</td>
+<td>10.87</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB019+4</td>
+<td><a href="sggsruns/SWB019+4.txt" target="_blank">SAT</a></td>
+<td>230</td>
+<td>9.03</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB020+4</td>
+<td><a href="sggsruns/SWB020+4.txt" target="_blank">SAT</a></td>
+<td>302</td>
+<td>21.57</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB021+4</td>
+<td><a href="sggsruns/SWB021+4.txt" target="_blank">SAT</a></td>
+<td>299</td>
+<td>12.20</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB022+4</td>
+<td><a href="sggsruns/SWB022+4.txt" target="_blank">SAT</a></td>
+<td>303</td>
+<td>22.14</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB023+4</td>
+<td><a href="sggsruns/SWB023+4.txt" target="_blank">SAT</a></td>
+<td>279</td>
+<td>16.37</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB024+4</td>
+<td><a href="sggsruns/SWB024+4.txt" target="_blank">SAT</a></td>
+<td>248</td>
+<td>11.37</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB025+4</td>
+<td><a href="sggsruns/SWB025+4.txt" target="_blank">SAT</a></td>
+<td>291</td>
+<td>18.63</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB026+4</td>
+<td><a href="sggsruns/SWB026+4.txt" target="_blank">SAT</a></td>
+<td>272</td>
+<td>14.18</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB027+4</td>
+<td><a href="sggsruns/SWB027+4.txt" target="_blank">SAT</a></td>
+<td>260</td>
+<td>12.83</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB028+4</td>
+<td><a href="sggsruns/SWB028+4.txt" target="_blank">SAT</a></td>
+<td>261</td>
+<td>12.35</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB029+4</td>
+<td><a href="sggsruns/SWB029+4.txt" target="_blank">SAT</a></td>
+<td>282</td>
+<td>17.12</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB030+4</td>
+<td><a href="sggsruns/SWB030+4.txt" target="_blank">SAT</a></td>
+<td>229</td>
+<td>8.51</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB031+4</td>
+<td><a href="sggsruns/SWB031+4.txt" target="_blank">SAT</a></td>
+<td>253</td>
+<td>11.49</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB032+4</td>
+<td><a href="sggsruns/SWB032+4.txt" target="_blank">SAT</a></td>
+<td>236</td>
+<td>5.65</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWB035+1</td>
+<td><a href="sggsruns/SWB035+1.txt" target="_blank">SAT</a></td>
+<td>236</td>
+<td>9.43</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV010+1</td>
+<td><a href="sggsruns/SWV010+1.txt" target="_blank">SAT</a></td>
+<td>16</td>
+<td>0.01</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV010-1</td>
+<td><a href="sggsruns/SWV010-1.txt" target="_blank">SAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV011+1</td>
+<td><a href="sggsruns/SWV011+1.txt" target="_blank">UNSAT</a></td>
+<td>21</td>
+<td>0.01</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV011-1</td>
+<td><a href="sggsruns/SWV011-1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV012+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV012-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV013+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV013-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV014+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV014-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV015+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV015-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV016+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV016-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV017+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV017-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV018+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV018-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV242-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV244-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV245-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV246-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV256-2</td>
+<td><a href="sggsruns/SWV256-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV257-2</td>
+<td><a href="sggsruns/SWV257-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV258-2</td>
+<td><a href="sggsruns/SWV258-2.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV259-2</td>
+<td><a href="sggsruns/SWV259-2.txt" target="_blank">UNSAT</a></td>
+<td>28</td>
+<td>0.04</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV263-2</td>
+<td><a href="sggsruns/SWV263-2.txt" target="_blank">UNSAT</a></td>
+<td>15</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV264-2</td>
+<td><a href="sggsruns/SWV264-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV265-2</td>
+<td><a href="sggsruns/SWV265-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV266-2</td>
+<td><a href="sggsruns/SWV266-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV267-2</td>
+<td><a href="sggsruns/SWV267-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV269-2</td>
+<td><a href="sggsruns/SWV269-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV270-2</td>
+<td><a href="sggsruns/SWV270-2.txt" target="_blank">UNSAT</a></td>
+<td>45</td>
+<td>0.12</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV271-2</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV272-2</td>
+<td><a href="sggsruns/SWV272-2.txt" target="_blank">UNSAT</a></td>
+<td>45</td>
+<td>0.11</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV273-2</td>
+<td><a href="sggsruns/SWV273-2.txt" target="_blank">UNSAT</a></td>
+<td>23</td>
+<td>0.01</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV277-2</td>
+<td><a href="sggsruns/SWV277-2.txt" target="_blank">UNSAT</a></td>
+<td>15</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV279-2</td>
+<td><a href="sggsruns/SWV279-2.txt" target="_blank">UNSAT</a></td>
+<td>43</td>
+<td>0.07</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV280-2</td>
+<td><a href="sggsruns/SWV280-2.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV299-2</td>
+<td><a href="sggsruns/SWV299-2.txt" target="_blank">UNSAT</a></td>
+<td>53</td>
+<td>0.04</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV309-2</td>
+<td><a href="sggsruns/SWV309-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV310-2</td>
+<td><a href="sggsruns/SWV310-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV312-2</td>
+<td><a href="sggsruns/SWV312-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV320-2</td>
+<td><a href="sggsruns/SWV320-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV330-2</td>
+<td><a href="sggsruns/SWV330-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV331-2</td>
+<td><a href="sggsruns/SWV331-2.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV333-2</td>
+<td><a href="sggsruns/SWV333-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV334-2</td>
+<td><a href="sggsruns/SWV334-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV336-2</td>
+<td><a href="sggsruns/SWV336-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV341-2</td>
+<td><a href="sggsruns/SWV341-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV349-2</td>
+<td><a href="sggsruns/SWV349-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV350-2</td>
+<td><a href="sggsruns/SWV350-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV351-2</td>
+<td><a href="sggsruns/SWV351-2.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV355-2</td>
+<td><a href="sggsruns/SWV355-2.txt" target="_blank">UNSAT</a></td>
+<td>64</td>
+<td>0.19</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV356-2</td>
+<td><a href="sggsruns/SWV356-2.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV357-2</td>
+<td><a href="sggsruns/SWV357-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV358-2</td>
+<td><a href="sggsruns/SWV358-2.txt" target="_blank">UNSAT</a></td>
+<td>64</td>
+<td>0.33</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV364-2</td>
+<td><a href="sggsruns/SWV364-2.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SWV437+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV438+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV439+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SWV440+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN001+1</td>
+<td><a href="sggsruns/SYN001+1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN003-1.006</td>
+<td><a href="sggsruns/SYN003-1.006.txt" target="_blank">UNSAT</a></td>
+<td>43</td>
+<td>0.01</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN004-1.007</td>
+<td><a href="sggsruns/SYN004-1.007.txt" target="_blank">UNSAT</a></td>
+<td>43</td>
+<td>0.01</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN005-1.010</td>
+<td><a href="sggsruns/SYN005-1.010.txt" target="_blank">UNSAT</a></td>
+<td>31</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN006-1</td>
+<td><a href="sggsruns/SYN006-1.txt" target="_blank">UNSAT</a></td>
+<td>23</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN008-1</td>
+<td><a href="sggsruns/SYN008-1.txt" target="_blank">UNSAT</a></td>
+<td>12</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN010-1.005.005</td>
+<td><a href="sggsruns/SYN010-1.005.005.txt" target="_blank">UNSAT</a></td>
+<td>79</td>
+<td>0.02</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN033-1</td>
+<td><a href="sggsruns/SYN033-1.txt" target="_blank">UNSAT</a></td>
+<td>14</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN035-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN040-1</td>
+<td><a href="sggsruns/SYN040-1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN041+1</td>
+<td><a href="sggsruns/SYN041+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN041-1</td>
+<td><a href="sggsruns/SYN041-1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN046-1</td>
+<td><a href="sggsruns/SYN046-1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN048+1</td>
+<td><a href="sggsruns/SYN048+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN048-1</td>
+<td><a href="sggsruns/SYN048-1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN049+1</td>
+<td><a href="sggsruns/SYN049+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN049-1</td>
+<td><a href="sggsruns/SYN049-1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN050+1</td>
+<td><a href="sggsruns/SYN050+1.txt" target="_blank">UNSAT</a></td>
+<td>11</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN050-1</td>
+<td><a href="sggsruns/SYN050-1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN057+1</td>
+<td><a href="sggsruns/SYN057+1.txt" target="_blank">UNSAT</a></td>
+<td>23</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN057-1</td>
+<td><a href="sggsruns/SYN057-1.txt" target="_blank">UNSAT</a></td>
+<td>23</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN058+1</td>
+<td><a href="sggsruns/SYN058+1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN058-1</td>
+<td><a href="sggsruns/SYN058-1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN062+1</td>
+<td><a href="sggsruns/SYN062+1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN062-1</td>
+<td><a href="sggsruns/SYN062-1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN063-2</td>
+<td><a href="sggsruns/SYN063-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN064+1</td>
+<td><a href="sggsruns/SYN064+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN064-1</td>
+<td><a href="sggsruns/SYN064-1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN065+1</td>
+<td><a href="sggsruns/SYN065+1.txt" target="_blank">SAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN065-1</td>
+<td><a href="sggsruns/SYN065-1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN066+1</td>
+<td><a href="sggsruns/SYN066+1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN066-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN068+1</td>
+<td><a href="sggsruns/SYN068+1.txt" target="_blank">UNSAT</a></td>
+<td>15</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN068-1</td>
+<td><a href="sggsruns/SYN068-1.txt" target="_blank">UNSAT</a></td>
+<td>15</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN073+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN073-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN079+1</td>
+<td><a href="sggsruns/SYN079+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN079-1</td>
+<td><a href="sggsruns/SYN079-1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN085-1.010</td>
+<td><a href="sggsruns/SYN085-1.010.txt" target="_blank">UNSAT</a></td>
+<td>34</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN086-1.003</td>
+<td><a href="sggsruns/SYN086-1.003.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN087-1.003</td>
+<td><a href="sggsruns/SYN087-1.003.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN088-1.010</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN089-1.002</td>
+<td><a href="sggsruns/SYN089-1.002.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN090-1.008</td>
+<td><a href="sggsruns/SYN090-1.008.txt" target="_blank">UNSAT</a></td>
+<td>97</td>
+<td>0.04</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN095-1.002</td>
+<td><a href="sggsruns/SYN095-1.002.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN096-1.008</td>
+<td><a href="sggsruns/SYN096-1.008.txt" target="_blank">UNSAT</a></td>
+<td>97</td>
+<td>0.05</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN101-1.002.002</td>
+<td><a href="sggsruns/SYN101-1.002.002.txt" target="_blank">UNSAT</a></td>
+<td>39</td>
+<td>0.02</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN102-1.007.007</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN103-1</td>
+<td><a href="sggsruns/SYN103-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.04</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN104-1</td>
+<td><a href="sggsruns/SYN104-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN105-1</td>
+<td><a href="sggsruns/SYN105-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.90</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN106-1</td>
+<td><a href="sggsruns/SYN106-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.85</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN107-1</td>
+<td><a href="sggsruns/SYN107-1.txt" target="_blank">UNSAT</a></td>
+<td>434</td>
+<td>35.58</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN108-1</td>
+<td><a href="sggsruns/SYN108-1.txt" target="_blank">UNSAT</a></td>
+<td>451</td>
+<td>54.35</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN109-1</td>
+<td><a href="sggsruns/SYN109-1.txt" target="_blank">UNSAT</a></td>
+<td>577</td>
+<td>120.47</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN110-1</td>
+<td><a href="sggsruns/SYN110-1.txt" target="_blank">UNSAT</a></td>
+<td>604</td>
+<td>69.34</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN111-1</td>
+<td><a href="sggsruns/SYN111-1.txt" target="_blank">UNSAT</a></td>
+<td>583</td>
+<td>123.28</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN112-1</td>
+<td><a href="sggsruns/SYN112-1.txt" target="_blank">UNSAT</a></td>
+<td>432</td>
+<td>52.86</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN113-1</td>
+<td><a href="sggsruns/SYN113-1.txt" target="_blank">UNSAT</a></td>
+<td>583</td>
+<td>126.34</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN114-1</td>
+<td><a href="sggsruns/SYN114-1.txt" target="_blank">UNSAT</a></td>
+<td>156</td>
+<td>1.20</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN115-1</td>
+<td><a href="sggsruns/SYN115-1.txt" target="_blank">UNSAT</a></td>
+<td>783</td>
+<td>260.46</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN116-1</td>
+<td><a href="sggsruns/SYN116-1.txt" target="_blank">UNSAT</a></td>
+<td>463</td>
+<td>59.14</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN117-1</td>
+<td><a href="sggsruns/SYN117-1.txt" target="_blank">UNSAT</a></td>
+<td>463</td>
+<td>52.26</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN118-1</td>
+<td><a href="sggsruns/SYN118-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN119-1</td>
+<td><a href="sggsruns/SYN119-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.03</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN120-1</td>
+<td><a href="sggsruns/SYN120-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.87</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN121-1</td>
+<td><a href="sggsruns/SYN121-1.txt" target="_blank">SAT</a></td>
+<td>837</td>
+<td>243.14</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN122-1</td>
+<td><a href="sggsruns/SYN122-1.txt" target="_blank">SAT</a></td>
+<td>459</td>
+<td>20.96</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN123-1</td>
+<td><a href="sggsruns/SYN123-1.txt" target="_blank">SAT</a></td>
+<td>187</td>
+<td>3.76</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN124-1</td>
+<td><a href="sggsruns/SYN124-1.txt" target="_blank">UNSAT</a></td>
+<td>188</td>
+<td>3.86</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN125-1</td>
+<td><a href="sggsruns/SYN125-1.txt" target="_blank">UNSAT</a></td>
+<td>432</td>
+<td>34.31</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN126-1</td>
+<td><a href="sggsruns/SYN126-1.txt" target="_blank">UNSAT</a></td>
+<td>471</td>
+<td>52.63</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN127-1</td>
+<td><a href="sggsruns/SYN127-1.txt" target="_blank">UNSAT</a></td>
+<td>467</td>
+<td>53.84</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN128-1</td>
+<td><a href="sggsruns/SYN128-1.txt" target="_blank">UNSAT</a></td>
+<td>460</td>
+<td>33.69</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN129-1</td>
+<td><a href="sggsruns/SYN129-1.txt" target="_blank">UNSAT</a></td>
+<td>460</td>
+<td>54.39</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN130-1</td>
+<td><a href="sggsruns/SYN130-1.txt" target="_blank">SAT</a></td>
+<td>120</td>
+<td>1.78</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN131-1</td>
+<td><a href="sggsruns/SYN131-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.03</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN132-1</td>
+<td><a href="sggsruns/SYN132-1.txt" target="_blank">UNSAT</a></td>
+<td>423</td>
+<td>47.98</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN133-1</td>
+<td><a href="sggsruns/SYN133-1.txt" target="_blank">SAT</a></td>
+<td>120</td>
+<td>1.87</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN134-1</td>
+<td><a href="sggsruns/SYN134-1.txt" target="_blank">UNSAT</a></td>
+<td>433</td>
+<td>52.40</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN135-1</td>
+<td><a href="sggsruns/SYN135-1.txt" target="_blank">UNSAT</a></td>
+<td>256</td>
+<td>6.68</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN136-1</td>
+<td><a href="sggsruns/SYN136-1.txt" target="_blank">UNSAT</a></td>
+<td>256</td>
+<td>8.12</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN137-1</td>
+<td><a href="sggsruns/SYN137-1.txt" target="_blank">SAT</a></td>
+<td>855</td>
+<td>266.83</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN138-1</td>
+<td><a href="sggsruns/SYN138-1.txt" target="_blank">SAT</a></td>
+<td>770</td>
+<td>264.28</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN139-1</td>
+<td><a href="sggsruns/SYN139-1.txt" target="_blank">UNSAT</a></td>
+<td>980</td>
+<td>219.43</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN140-1</td>
+<td><a href="sggsruns/SYN140-1.txt" target="_blank">SAT</a></td>
+<td>981</td>
+<td>213.85</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN141-1</td>
+<td><a href="sggsruns/SYN141-1.txt" target="_blank">UNSAT</a></td>
+<td>864</td>
+<td>241.18</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN142-1</td>
+<td><a href="sggsruns/SYN142-1.txt" target="_blank">SAT</a></td>
+<td>982</td>
+<td>272.70</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN143-1</td>
+<td><a href="sggsruns/SYN143-1.txt" target="_blank">UNSAT</a></td>
+<td>982</td>
+<td>287.66</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN144-1</td>
+<td><a href="sggsruns/SYN144-1.txt" target="_blank">UNSAT</a></td>
+<td>397</td>
+<td>12.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN145-1</td>
+<td><a href="sggsruns/SYN145-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN146-1</td>
+<td><a href="sggsruns/SYN146-1.txt" target="_blank">UNSAT</a></td>
+<td>125</td>
+<td>1.34</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN147-1</td>
+<td><a href="sggsruns/SYN147-1.txt" target="_blank">UNSAT</a></td>
+<td>125</td>
+<td>1.01</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN148-1</td>
+<td><a href="sggsruns/SYN148-1.txt" target="_blank">UNSAT</a></td>
+<td>188</td>
+<td>3.87</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN149-1</td>
+<td><a href="sggsruns/SYN149-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.80</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN150-1</td>
+<td><a href="sggsruns/SYN150-1.txt" target="_blank">UNSAT</a></td>
+<td>445</td>
+<td>39.69</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN151-1</td>
+<td><a href="sggsruns/SYN151-1.txt" target="_blank">UNSAT</a></td>
+<td>431</td>
+<td>54.52</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN152-1</td>
+<td><a href="sggsruns/SYN152-1.txt" target="_blank">UNSAT</a></td>
+<td>446</td>
+<td>53.21</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN153-1</td>
+<td><a href="sggsruns/SYN153-1.txt" target="_blank">UNSAT</a></td>
+<td>443</td>
+<td>52.30</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN154-1</td>
+<td><a href="sggsruns/SYN154-1.txt" target="_blank">UNSAT</a></td>
+<td>453</td>
+<td>54.09</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN155-1</td>
+<td><a href="sggsruns/SYN155-1.txt" target="_blank">UNSAT</a></td>
+<td>622</td>
+<td>117.60</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN156-1</td>
+<td><a href="sggsruns/SYN156-1.txt" target="_blank">UNSAT</a></td>
+<td>741</td>
+<td>201.67</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN157-1</td>
+<td><a href="sggsruns/SYN157-1.txt" target="_blank">UNSAT</a></td>
+<td>461</td>
+<td>55.69</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN158-1</td>
+<td><a href="sggsruns/SYN158-1.txt" target="_blank">UNSAT</a></td>
+<td>463</td>
+<td>36.56</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN159-1</td>
+<td><a href="sggsruns/SYN159-1.txt" target="_blank">UNSAT</a></td>
+<td>764</td>
+<td>109.95</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN160-1</td>
+<td><a href="sggsruns/SYN160-1.txt" target="_blank">UNSAT</a></td>
+<td>463</td>
+<td>35.54</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN161-1</td>
+<td><a href="sggsruns/SYN161-1.txt" target="_blank">UNSAT</a></td>
+<td>461</td>
+<td>54.61</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN162-1</td>
+<td><a href="sggsruns/SYN162-1.txt" target="_blank">UNSAT</a></td>
+<td>461</td>
+<td>30.56</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN163-1</td>
+<td><a href="sggsruns/SYN163-1.txt" target="_blank">UNSAT</a></td>
+<td>805</td>
+<td>201.40</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN164-1</td>
+<td><a href="sggsruns/SYN164-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN165-1</td>
+<td><a href="sggsruns/SYN165-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.01</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN166-1</td>
+<td><a href="sggsruns/SYN166-1.txt" target="_blank">UNSAT</a></td>
+<td>265</td>
+<td>8.28</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN167-1</td>
+<td><a href="sggsruns/SYN167-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.23</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN168-1</td>
+<td><a href="sggsruns/SYN168-1.txt" target="_blank">UNSAT</a></td>
+<td>214</td>
+<td>4.93</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN169-1</td>
+<td><a href="sggsruns/SYN169-1.txt" target="_blank">UNSAT</a></td>
+<td>214</td>
+<td>4.95</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN170-1</td>
+<td><a href="sggsruns/SYN170-1.txt" target="_blank">UNSAT</a></td>
+<td>266</td>
+<td>5.18</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN171-1</td>
+<td><a href="sggsruns/SYN171-1.txt" target="_blank">UNSAT</a></td>
+<td>715</td>
+<td>58.97</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN172-1</td>
+<td><a href="sggsruns/SYN172-1.txt" target="_blank">SAT</a></td>
+<td>41</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN173-1</td>
+<td><a href="sggsruns/SYN173-1.txt" target="_blank">SAT</a></td>
+<td>664</td>
+<td>197.39</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN174-1</td>
+<td><a href="sggsruns/SYN174-1.txt" target="_blank">SAT</a></td>
+<td>691</td>
+<td>222.68</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN175-1</td>
+<td><a href="sggsruns/SYN175-1.txt" target="_blank">UNSAT</a></td>
+<td>187</td>
+<td>3.85</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN176-1</td>
+<td><a href="sggsruns/SYN176-1.txt" target="_blank">SAT</a></td>
+<td>299</td>
+<td>11.74</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN177-1</td>
+<td><a href="sggsruns/SYN177-1.txt" target="_blank">UNSAT</a></td>
+<td>340</td>
+<td>19.52</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN178-1</td>
+<td><a href="sggsruns/SYN178-1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN179-1</td>
+<td><a href="sggsruns/SYN179-1.txt" target="_blank">SAT</a></td>
+<td>723</td>
+<td>184.74</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN180-1</td>
+<td><a href="sggsruns/SYN180-1.txt" target="_blank">UNSAT</a></td>
+<td>496</td>
+<td>35.43</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN181-1</td>
+<td><a href="sggsruns/SYN181-1.txt" target="_blank">SAT</a></td>
+<td>749</td>
+<td>79.51</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN182-1</td>
+<td><a href="sggsruns/SYN182-1.txt" target="_blank">UNSAT</a></td>
+<td>456</td>
+<td>39.55</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN183-1</td>
+<td><a href="sggsruns/SYN183-1.txt" target="_blank">UNSAT</a></td>
+<td>454</td>
+<td>36.57</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN184-1</td>
+<td><a href="sggsruns/SYN184-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.03</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN185-1</td>
+<td><a href="sggsruns/SYN185-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN186-1</td>
+<td><a href="sggsruns/SYN186-1.txt" target="_blank">UNSAT</a></td>
+<td>338</td>
+<td>19.45</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN187-1</td>
+<td><a href="sggsruns/SYN187-1.txt" target="_blank">UNSAT</a></td>
+<td>338</td>
+<td>19.38</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN188-1</td>
+<td><a href="sggsruns/SYN188-1.txt" target="_blank">UNSAT</a></td>
+<td>430</td>
+<td>30.48</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN189-1</td>
+<td><a href="sggsruns/SYN189-1.txt" target="_blank">SAT</a></td>
+<td>436</td>
+<td>52.73</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN190-1</td>
+<td><a href="sggsruns/SYN190-1.txt" target="_blank">UNSAT</a></td>
+<td>726</td>
+<td>126.84</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN191-1</td>
+<td><a href="sggsruns/SYN191-1.txt" target="_blank">UNSAT</a></td>
+<td>348</td>
+<td>18.45</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN192-1</td>
+<td><a href="sggsruns/SYN192-1.txt" target="_blank">UNSAT</a></td>
+<td>775</td>
+<td>162.41</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN193-1</td>
+<td><a href="sggsruns/SYN193-1.txt" target="_blank">UNSAT</a></td>
+<td>347</td>
+<td>7.92</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN194-1</td>
+<td><a href="sggsruns/SYN194-1.txt" target="_blank">UNSAT</a></td>
+<td>626</td>
+<td>74.92</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN195-1</td>
+<td><a href="sggsruns/SYN195-1.txt" target="_blank">UNSAT</a></td>
+<td>604</td>
+<td>126.81</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN196-1</td>
+<td><a href="sggsruns/SYN196-1.txt" target="_blank">SAT</a></td>
+<td>763</td>
+<td>279.69</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN197-1</td>
+<td><a href="sggsruns/SYN197-1.txt" target="_blank">SAT</a></td>
+<td>739</td>
+<td>263.26</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN198-1</td>
+<td><a href="sggsruns/SYN198-1.txt" target="_blank">UNSAT</a></td>
+<td>763</td>
+<td>281.41</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN199-1</td>
+<td><a href="sggsruns/SYN199-1.txt" target="_blank">SAT</a></td>
+<td>822</td>
+<td>207.68</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN200-1</td>
+<td><a href="sggsruns/SYN200-1.txt" target="_blank">UNSAT</a></td>
+<td>145</td>
+<td>0.66</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN201-1</td>
+<td><a href="sggsruns/SYN201-1.txt" target="_blank">SAT</a></td>
+<td>772</td>
+<td>267.70</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN202-1</td>
+<td><a href="sggsruns/SYN202-1.txt" target="_blank">SAT</a></td>
+<td>798</td>
+<td>293.13</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN203-1</td>
+<td><a href="sggsruns/SYN203-1.txt" target="_blank">SAT</a></td>
+<td>712</td>
+<td>78.52</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN204-1</td>
+<td><a href="sggsruns/SYN204-1.txt" target="_blank">SAT</a></td>
+<td>842</td>
+<td>216.02</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN205-1</td>
+<td><a href="sggsruns/SYN205-1.txt" target="_blank">SAT</a></td>
+<td>842</td>
+<td>174.86</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN206-1</td>
+<td><a href="sggsruns/SYN206-1.txt" target="_blank">SAT</a></td>
+<td>900</td>
+<td>272.55</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN207-1</td>
+<td><a href="sggsruns/SYN207-1.txt" target="_blank">SAT</a></td>
+<td>833</td>
+<td>169.11</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN208-1</td>
+<td><a href="sggsruns/SYN208-1.txt" target="_blank">UNSAT</a></td>
+<td>925</td>
+<td>260.89</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN209-1</td>
+<td><a href="sggsruns/SYN209-1.txt" target="_blank">UNSAT</a></td>
+<td>356</td>
+<td>19.38</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN210-1</td>
+<td><a href="sggsruns/SYN210-1.txt" target="_blank">UNSAT</a></td>
+<td>354</td>
+<td>19.08</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN211-1</td>
+<td><a href="sggsruns/SYN211-1.txt" target="_blank">UNSAT</a></td>
+<td>360</td>
+<td>17.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN212-1</td>
+<td><a href="sggsruns/SYN212-1.txt" target="_blank">UNSAT</a></td>
+<td>346</td>
+<td>19.10</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN213-1</td>
+<td><a href="sggsruns/SYN213-1.txt" target="_blank">UNSAT</a></td>
+<td>379</td>
+<td>8.80</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN214-1</td>
+<td><a href="sggsruns/SYN214-1.txt" target="_blank">UNSAT</a></td>
+<td>379</td>
+<td>9.47</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN215-1</td>
+<td><a href="sggsruns/SYN215-1.txt" target="_blank">UNSAT</a></td>
+<td>379</td>
+<td>9.40</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN216-1</td>
+<td><a href="sggsruns/SYN216-1.txt" target="_blank">UNSAT</a></td>
+<td>684</td>
+<td>188.96</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN217-1</td>
+<td><a href="sggsruns/SYN217-1.txt" target="_blank">SAT</a></td>
+<td>667</td>
+<td>211.51</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN218-1</td>
+<td><a href="sggsruns/SYN218-1.txt" target="_blank">SAT</a></td>
+<td>761</td>
+<td>295.33</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN219-1</td>
+<td><a href="sggsruns/SYN219-1.txt" target="_blank">SAT</a></td>
+<td>902</td>
+<td>270.79</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN220-1</td>
+<td><a href="sggsruns/SYN220-1.txt" target="_blank">UNSAT</a></td>
+<td>188</td>
+<td>3.81</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN221-1</td>
+<td><a href="sggsruns/SYN221-1.txt" target="_blank">UNSAT</a></td>
+<td>186</td>
+<td>2.40</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN222-1</td>
+<td><a href="sggsruns/SYN222-1.txt" target="_blank">UNSAT</a></td>
+<td>186</td>
+<td>2.06</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN223-1</td>
+<td><a href="sggsruns/SYN223-1.txt" target="_blank">UNSAT</a></td>
+<td>188</td>
+<td>3.78</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN224-1</td>
+<td><a href="sggsruns/SYN224-1.txt" target="_blank">UNSAT</a></td>
+<td>188</td>
+<td>2.33</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN225-1</td>
+<td><a href="sggsruns/SYN225-1.txt" target="_blank">UNSAT</a></td>
+<td>432</td>
+<td>36.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN226-1</td>
+<td><a href="sggsruns/SYN226-1.txt" target="_blank">UNSAT</a></td>
+<td>188</td>
+<td>2.06</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN227-1</td>
+<td><a href="sggsruns/SYN227-1.txt" target="_blank">UNSAT</a></td>
+<td>432</td>
+<td>46.99</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN228-1</td>
+<td><a href="sggsruns/SYN228-1.txt" target="_blank">UNSAT</a></td>
+<td>430</td>
+<td>58.44</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN229-1</td>
+<td><a href="sggsruns/SYN229-1.txt" target="_blank">UNSAT</a></td>
+<td>186</td>
+<td>3.74</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN230-1</td>
+<td><a href="sggsruns/SYN230-1.txt" target="_blank">UNSAT</a></td>
+<td>186</td>
+<td>3.88</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN231-1</td>
+<td><a href="sggsruns/SYN231-1.txt" target="_blank">UNSAT</a></td>
+<td>186</td>
+<td>3.81</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN232-1</td>
+<td><a href="sggsruns/SYN232-1.txt" target="_blank">UNSAT</a></td>
+<td>186</td>
+<td>2.85</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN233-1</td>
+<td><a href="sggsruns/SYN233-1.txt" target="_blank">UNSAT</a></td>
+<td>188</td>
+<td>3.85</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN234-1</td>
+<td><a href="sggsruns/SYN234-1.txt" target="_blank">UNSAT</a></td>
+<td>432</td>
+<td>52.31</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN235-1</td>
+<td><a href="sggsruns/SYN235-1.txt" target="_blank">SAT</a></td>
+<td>767</td>
+<td>224.45</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN236-1</td>
+<td><a href="sggsruns/SYN236-1.txt" target="_blank">UNSAT</a></td>
+<td>188</td>
+<td>3.19</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN237-1</td>
+<td><a href="sggsruns/SYN237-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.87</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN238-1</td>
+<td><a href="sggsruns/SYN238-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.55</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN239-1</td>
+<td><a href="sggsruns/SYN239-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.85</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN240-1</td>
+<td><a href="sggsruns/SYN240-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.89</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN241-1</td>
+<td><a href="sggsruns/SYN241-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.89</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN242-1</td>
+<td><a href="sggsruns/SYN242-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.89</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN243-1</td>
+<td><a href="sggsruns/SYN243-1.txt" target="_blank">UNSAT</a></td>
+<td>202</td>
+<td>3.43</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN244-1</td>
+<td><a href="sggsruns/SYN244-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.17</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN245-1</td>
+<td><a href="sggsruns/SYN245-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.27</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN246-1</td>
+<td><a href="sggsruns/SYN246-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.12</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN247-1</td>
+<td><a href="sggsruns/SYN247-1.txt" target="_blank">UNSAT</a></td>
+<td>148</td>
+<td>1.20</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN248-1</td>
+<td><a href="sggsruns/SYN248-1.txt" target="_blank">UNSAT</a></td>
+<td>432</td>
+<td>51.95</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN249-1</td>
+<td><a href="sggsruns/SYN249-1.txt" target="_blank">UNSAT</a></td>
+<td>432</td>
+<td>56.15</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN250-1</td>
+<td><a href="sggsruns/SYN250-1.txt" target="_blank">UNSAT</a></td>
+<td>226</td>
+<td>5.08</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN251-1</td>
+<td><a href="sggsruns/SYN251-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.81</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN252-1</td>
+<td><a href="sggsruns/SYN252-1.txt" target="_blank">SAT</a></td>
+<td>895</td>
+<td>190.67</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN253-1</td>
+<td><a href="sggsruns/SYN253-1.txt" target="_blank">UNSAT</a></td>
+<td>895</td>
+<td>255.25</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN254-1</td>
+<td><a href="sggsruns/SYN254-1.txt" target="_blank">SAT</a></td>
+<td>892</td>
+<td>238.45</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN255-1</td>
+<td><a href="sggsruns/SYN255-1.txt" target="_blank">UNSAT</a></td>
+<td>432</td>
+<td>53.83</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN256-1</td>
+<td><a href="sggsruns/SYN256-1.txt" target="_blank">UNSAT</a></td>
+<td>434</td>
+<td>54.58</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN257-1</td>
+<td><a href="sggsruns/SYN257-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN258-1</td>
+<td><a href="sggsruns/SYN258-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.88</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN259-1</td>
+<td><a href="sggsruns/SYN259-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.86</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN260-1</td>
+<td><a href="sggsruns/SYN260-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.86</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN261-1</td>
+<td><a href="sggsruns/SYN261-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.78</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN262-1</td>
+<td><a href="sggsruns/SYN262-1.txt" target="_blank">UNSAT</a></td>
+<td>146</td>
+<td>2.23</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN263-1</td>
+<td><a href="sggsruns/SYN263-1.txt" target="_blank">UNSAT</a></td>
+<td>457</td>
+<td>37.57</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN264-1</td>
+<td><a href="sggsruns/SYN264-1.txt" target="_blank">UNSAT</a></td>
+<td>186</td>
+<td>2.23</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN265-1</td>
+<td><a href="sggsruns/SYN265-1.txt" target="_blank">UNSAT</a></td>
+<td>265</td>
+<td>8.19</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN266-1</td>
+<td><a href="sggsruns/SYN266-1.txt" target="_blank">UNSAT</a></td>
+<td>360</td>
+<td>18.64</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN267-1</td>
+<td><a href="sggsruns/SYN267-1.txt" target="_blank">UNSAT</a></td>
+<td>266</td>
+<td>8.41</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN268-1</td>
+<td><a href="sggsruns/SYN268-1.txt" target="_blank">UNSAT</a></td>
+<td>260</td>
+<td>8.19</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN269-1</td>
+<td><a href="sggsruns/SYN269-1.txt" target="_blank">UNSAT</a></td>
+<td>738</td>
+<td>149.75</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN270-1</td>
+<td><a href="sggsruns/SYN270-1.txt" target="_blank">UNSAT</a></td>
+<td>446</td>
+<td>54.30</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN271-1</td>
+<td><a href="sggsruns/SYN271-1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN272-1</td>
+<td><a href="sggsruns/SYN272-1.txt" target="_blank">UNSAT</a></td>
+<td>718</td>
+<td>207.71</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN273-1</td>
+<td><a href="sggsruns/SYN273-1.txt" target="_blank">UNSAT</a></td>
+<td>736</td>
+<td>220.01</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN274-1</td>
+<td><a href="sggsruns/SYN274-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN275-1</td>
+<td><a href="sggsruns/SYN275-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN276-1</td>
+<td><a href="sggsruns/SYN276-1.txt" target="_blank">UNSAT</a></td>
+<td>40</td>
+<td>0.05</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN277-1</td>
+<td><a href="sggsruns/SYN277-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.96</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN278-1</td>
+<td><a href="sggsruns/SYN278-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.88</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN279-1</td>
+<td><a href="sggsruns/SYN279-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.18</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN280-1</td>
+<td><a href="sggsruns/SYN280-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.85</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN281-1</td>
+<td><a href="sggsruns/SYN281-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.86</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN282-1</td>
+<td><a href="sggsruns/SYN282-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.84</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN283-1</td>
+<td><a href="sggsruns/SYN283-1.txt" target="_blank">SAT</a></td>
+<td>667</td>
+<td>205.90</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN284-1</td>
+<td><a href="sggsruns/SYN284-1.txt" target="_blank">SAT</a></td>
+<td>691</td>
+<td>136.10</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN285-1</td>
+<td><a href="sggsruns/SYN285-1.txt" target="_blank">UNSAT</a></td>
+<td>186</td>
+<td>3.80</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN286-1</td>
+<td><a href="sggsruns/SYN286-1.txt" target="_blank">UNSAT</a></td>
+<td>184</td>
+<td>3.87</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN287-1</td>
+<td><a href="sggsruns/SYN287-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.09</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN288-1</td>
+<td><a href="sggsruns/SYN288-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.19</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN289-1</td>
+<td><a href="sggsruns/SYN289-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.12</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN290-1</td>
+<td><a href="sggsruns/SYN290-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.82</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN291-1</td>
+<td><a href="sggsruns/SYN291-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.82</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN292-1</td>
+<td><a href="sggsruns/SYN292-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.09</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN293-1</td>
+<td><a href="sggsruns/SYN293-1.txt" target="_blank">UNSAT</a></td>
+<td>571</td>
+<td>79.86</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN294-1</td>
+<td><a href="sggsruns/SYN294-1.txt" target="_blank">UNSAT</a></td>
+<td>575</td>
+<td>126.50</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN295-1</td>
+<td><a href="sggsruns/SYN295-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>1.84</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN296-1</td>
+<td><a href="sggsruns/SYN296-1.txt" target="_blank">SAT</a></td>
+<td>694</td>
+<td>217.50</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN297-1</td>
+<td><a href="sggsruns/SYN297-1.txt" target="_blank">UNSAT</a></td>
+<td>121</td>
+<td>1.12</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN298-1</td>
+<td><a href="sggsruns/SYN298-1.txt" target="_blank">UNSAT</a></td>
+<td>592</td>
+<td>48.29</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN299-1</td>
+<td><a href="sggsruns/SYN299-1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN300-1</td>
+<td><a href="sggsruns/SYN300-1.txt" target="_blank">SAT</a></td>
+<td>706</td>
+<td>83.56</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN301-1</td>
+<td><a href="sggsruns/SYN301-1.txt" target="_blank">UNSAT</a></td>
+<td>353</td>
+<td>18.84</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN302-1.003</td>
+<td><a href="sggsruns/SYN302-1.003.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN303-1</td>
+<td><a href="sggsruns/SYN303-1.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN304-1</td>
+<td><a href="sggsruns/SYN304-1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN309-1</td>
+<td><a href="sggsruns/SYN309-1.txt" target="_blank">SAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN310-1</td>
+<td><a href="sggsruns/SYN310-1.txt" target="_blank">UNSAT</a></td>
+<td>189</td>
+<td>2.31</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN311-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN312-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN317-1</td>
+<td><a href="sggsruns/SYN317-1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN318+1</td>
+<td><a href="sggsruns/SYN318+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN318-1</td>
+<td><a href="sggsruns/SYN318-1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN320+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN320-1</td>
+<td><a href="sggsruns/SYN320-1.txt" target="_blank">SAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN322+1</td>
+<td><a href="sggsruns/SYN322+1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN322-1</td>
+<td><a href="sggsruns/SYN322-1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN325+1</td>
+<td><a href="sggsruns/SYN325+1.txt" target="_blank">UNSAT</a></td>
+<td>12</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN325-1</td>
+<td><a href="sggsruns/SYN325-1.txt" target="_blank">UNSAT</a></td>
+<td>12</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN326+1</td>
+<td><a href="sggsruns/SYN326+1.txt" target="_blank">UNSAT</a></td>
+<td>24</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN326-1</td>
+<td><a href="sggsruns/SYN326-1.txt" target="_blank">UNSAT</a></td>
+<td>24</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN329+1</td>
+<td><a href="sggsruns/SYN329+1.txt" target="_blank">SAT</a></td>
+<td>2</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN329-1</td>
+<td><a href="sggsruns/SYN329-1.txt" target="_blank">SAT</a></td>
+<td>2</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN331+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN331-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN333+1</td>
+<td><a href="sggsruns/SYN333+1.txt" target="_blank">SAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN333-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN336+1</td>
+<td><a href="sggsruns/SYN336+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN336-1</td>
+<td><a href="sggsruns/SYN336-1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN337+1</td>
+<td><a href="sggsruns/SYN337+1.txt" target="_blank">SAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN337-1</td>
+<td><a href="sggsruns/SYN337-1.txt" target="_blank">SAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN338+1</td>
+<td><a href="sggsruns/SYN338+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN338-1</td>
+<td><a href="sggsruns/SYN338-1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN339+1</td>
+<td><a href="sggsruns/SYN339+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN339-1</td>
+<td><a href="sggsruns/SYN339-1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN340+1</td>
+<td><a href="sggsruns/SYN340+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN340-1</td>
+<td><a href="sggsruns/SYN340-1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN341+1</td>
+<td><a href="sggsruns/SYN341+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN341-1</td>
+<td><a href="sggsruns/SYN341-1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN342+1</td>
+<td><a href="sggsruns/SYN342+1.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN342-1</td>
+<td><a href="sggsruns/SYN342-1.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN346+1</td>
+<td><a href="sggsruns/SYN346+1.txt" target="_blank">UNSAT</a></td>
+<td>6</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN346-1</td>
+<td><a href="sggsruns/SYN346-1.txt" target="_blank">UNSAT</a></td>
+<td>6</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN355+1</td>
+<td><a href="sggsruns/SYN355+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN356+1</td>
+<td><a href="sggsruns/SYN356+1.txt" target="_blank">UNSAT</a></td>
+<td>19</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN357+1</td>
+<td><a href="sggsruns/SYN357+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN359+1</td>
+<td><a href="sggsruns/SYN359+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN360+1</td>
+<td><a href="sggsruns/SYN360+1.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN361+1</td>
+<td><a href="sggsruns/SYN361+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN362+1</td>
+<td><a href="sggsruns/SYN362+1.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN363+1</td>
+<td><a href="sggsruns/SYN363+1.txt" target="_blank">SAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN365+1</td>
+<td><a href="sggsruns/SYN365+1.txt" target="_blank">UNSAT</a></td>
+<td>172</td>
+<td>2.58</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN366+1</td>
+<td><a href="sggsruns/SYN366+1.txt" target="_blank">UNSAT</a></td>
+<td>15</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN367+1</td>
+<td><a href="sggsruns/SYN367+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN368+1</td>
+<td><a href="sggsruns/SYN368+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN369+1</td>
+<td><a href="sggsruns/SYN369+1.txt" target="_blank">UNSAT</a></td>
+<td>6</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN370+1</td>
+<td><a href="sggsruns/SYN370+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN371+1</td>
+<td><a href="sggsruns/SYN371+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN372+1</td>
+<td><a href="sggsruns/SYN372+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN376+1</td>
+<td><a href="sggsruns/SYN376+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN378+1</td>
+<td><a href="sggsruns/SYN378+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN379+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN380+1</td>
+<td><a href="sggsruns/SYN380+1.txt" target="_blank">UNSAT</a></td>
+<td>11</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN381+1</td>
+<td><a href="sggsruns/SYN381+1.txt" target="_blank">SAT</a></td>
+<td>19</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN382+1</td>
+<td><a href="sggsruns/SYN382+1.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN383+1</td>
+<td><a href="sggsruns/SYN383+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN384+1</td>
+<td><a href="sggsruns/SYN384+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN385+1</td>
+<td><a href="sggsruns/SYN385+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN386+1</td>
+<td><a href="sggsruns/SYN386+1.txt" target="_blank">UNSAT</a></td>
+<td>22</td>
+<td>0.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN387+1</td>
+<td><a href="sggsruns/SYN387+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN388+1</td>
+<td><a href="sggsruns/SYN388+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN389+1</td>
+<td><a href="sggsruns/SYN389+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN390+1</td>
+<td><a href="sggsruns/SYN390+1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN394+1</td>
+<td><a href="sggsruns/SYN394+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN395+1</td>
+<td><a href="sggsruns/SYN395+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN400+1</td>
+<td><a href="sggsruns/SYN400+1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN401+1</td>
+<td><a href="sggsruns/SYN401+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN402+1</td>
+<td><a href="sggsruns/SYN402+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN403+1</td>
+<td><a href="sggsruns/SYN403+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN404+1</td>
+<td><a href="sggsruns/SYN404+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN405+1</td>
+<td><a href="sggsruns/SYN405+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN406+1</td>
+<td><a href="sggsruns/SYN406+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN408+1</td>
+<td><a href="sggsruns/SYN408+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN410+1</td>
+<td><a href="sggsruns/SYN410+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN416+1</td>
+<td><a href="sggsruns/SYN416+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN553-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN555-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN556-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN557-1</td>
+<td><a href="sggsruns/SYN557-1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN558-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN559-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN561-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN562-1</td>
+<td><a href="sggsruns/SYN562-1.txt" target="_blank">UNSAT</a></td>
+<td>50</td>
+<td>0.14</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN563-1</td>
+<td><a href="sggsruns/SYN563-1.txt" target="_blank">UNSAT</a></td>
+<td>264</td>
+<td>5.70</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN564-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN565-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN566-1</td>
+<td><a href="sggsruns/SYN566-1.txt" target="_blank">UNSAT</a></td>
+<td>107</td>
+<td>0.77</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN569-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN570-1</td>
+<td><a href="sggsruns/SYN570-1.txt" target="_blank">UNSAT</a></td>
+<td>82</td>
+<td>0.35</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN572-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN577-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN584-1</td>
+<td><a href="sggsruns/SYN584-1.txt" target="_blank">UNSAT</a></td>
+<td>79</td>
+<td>2.25</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN588-1</td>
+<td><a href="sggsruns/SYN588-1.txt" target="_blank">UNSAT</a></td>
+<td>65</td>
+<td>0.96</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN589-1</td>
+<td><a href="sggsruns/SYN589-1.txt" target="_blank">UNSAT</a></td>
+<td>65</td>
+<td>0.99</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN590-1</td>
+<td><a href="sggsruns/SYN590-1.txt" target="_blank">UNSAT</a></td>
+<td>165</td>
+<td>1.48</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN596-1</td>
+<td><a href="sggsruns/SYN596-1.txt" target="_blank">UNSAT</a></td>
+<td>30</td>
+<td>0.04</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN597-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN598-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN599-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN600-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN601-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN602-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN603-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN614-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN615-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN616-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN617-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN618-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN628-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN629-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN631-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN632-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN637-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN638-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN639-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN640-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN646-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN647-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN649-1</td>
+<td><a href="sggsruns/SYN649-1.txt" target="_blank">UNSAT</a></td>
+<td>60</td>
+<td>0.52</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN651-1</td>
+<td><a href="sggsruns/SYN651-1.txt" target="_blank">UNSAT</a></td>
+<td>69</td>
+<td>0.93</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN652-1</td>
+<td><a href="sggsruns/SYN652-1.txt" target="_blank">UNSAT</a></td>
+<td>100</td>
+<td>1.61</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN653-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN654-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN655-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN688-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN689-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN691-1</td>
+<td><a href="sggsruns/SYN691-1.txt" target="_blank">UNSAT</a></td>
+<td>228</td>
+<td>256.42</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN702-1</td>
+<td><a href="sggsruns/SYN702-1.txt" target="_blank">UNSAT</a></td>
+<td>73</td>
+<td>1.99</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN703-1</td>
+<td><a href="sggsruns/SYN703-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>12.51</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN704-1</td>
+<td><a href="sggsruns/SYN704-1.txt" target="_blank">UNSAT</a></td>
+<td>290</td>
+<td>192.53</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN705-1</td>
+<td><a href="sggsruns/SYN705-1.txt" target="_blank">UNSAT</a></td>
+<td>123</td>
+<td>13.04</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN706-1</td>
+<td><a href="sggsruns/SYN706-1.txt" target="_blank">UNSAT</a></td>
+<td>102</td>
+<td>1.57</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN707-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN708-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN709-1</td>
+<td><a href="sggsruns/SYN709-1.txt" target="_blank">UNSAT</a></td>
+<td>95</td>
+<td>1.26</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN711-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN712-1</td>
+<td><a href="sggsruns/SYN712-1.txt" target="_blank">UNSAT</a></td>
+<td>225</td>
+<td>169.12</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN715-1</td>
+<td><a href="sggsruns/SYN715-1.txt" target="_blank">UNSAT</a></td>
+<td>142</td>
+<td>27.49</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN716-1</td>
+<td><a href="sggsruns/SYN716-1.txt" target="_blank">UNSAT</a></td>
+<td>140</td>
+<td>29.27</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN719-1</td>
+<td><a href="sggsruns/SYN719-1.txt" target="_blank">UNSAT</a></td>
+<td>110</td>
+<td>2.02</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN720-1</td>
+<td><a href="sggsruns/SYN720-1.txt" target="_blank">SAT</a></td>
+<td>645</td>
+<td>80.88</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN721+1</td>
+<td><a href="sggsruns/SYN721+1.txt" target="_blank">UNSAT</a></td>
+<td>11</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN721-1</td>
+<td><a href="sggsruns/SYN721-1.txt" target="_blank">UNSAT</a></td>
+<td>11</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN727+1</td>
+<td><a href="sggsruns/SYN727+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN727-1</td>
+<td><a href="sggsruns/SYN727-1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN729+1</td>
+<td><a href="sggsruns/SYN729+1.txt" target="_blank">UNSAT</a></td>
+<td>172</td>
+<td>4.40</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN729-1</td>
+<td><a href="sggsruns/SYN729-1.txt" target="_blank">UNSAT</a></td>
+<td>172</td>
+<td>4.39</td>
+<td>  restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN730+1</td>
+<td><a href="sggsruns/SYN730+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN731+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN731-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN732+1</td>
+<td><a href="sggsruns/SYN732+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN915+1</td>
+<td><a href="sggsruns/SYN915+1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN915-1</td>
+<td><a href="sggsruns/SYN915-1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN916+1</td>
+<td><a href="sggsruns/SYN916+1.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN916-1</td>
+<td><a href="sggsruns/SYN916-1.txt" target="_blank">SAT</a></td>
+<td>1</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN919+1</td>
+<td><a href="sggsruns/SYN919+1.txt" target="_blank">UNSAT</a></td>
+<td>11</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN921+1</td>
+<td><a href="sggsruns/SYN921+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN923+1</td>
+<td><a href="sggsruns/SYN923+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN925+1</td>
+<td><a href="sggsruns/SYN925+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN926+1</td>
+<td><a href="sggsruns/SYN926+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN927+1</td>
+<td><a href="sggsruns/SYN927+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN928+1</td>
+<td><a href="sggsruns/SYN928+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN929+1</td>
+<td><a href="sggsruns/SYN929+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN932+1</td>
+<td><a href="sggsruns/SYN932+1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN933+1</td>
+<td><a href="sggsruns/SYN933+1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN940+1</td>
+<td><a href="sggsruns/SYN940+1.txt" target="_blank">UNSAT</a></td>
+<td>13</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN941+1</td>
+<td><a href="sggsruns/SYN941+1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN944+1</td>
+<td><a href="sggsruns/SYN944+1.txt" target="_blank">UNSAT</a></td>
+<td>15</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN945+1</td>
+<td><a href="sggsruns/SYN945+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN946+1</td>
+<td><a href="sggsruns/SYN946+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN947+1</td>
+<td><a href="sggsruns/SYN947+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN948+1</td>
+<td><a href="sggsruns/SYN948+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN949+1</td>
+<td><a href="sggsruns/SYN949+1.txt" target="_blank">UNSAT</a></td>
+<td>15</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN951+1</td>
+<td><a href="sggsruns/SYN951+1.txt" target="_blank">UNSAT</a></td>
+<td>8</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN952+1</td>
+<td><a href="sggsruns/SYN952+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN953+1</td>
+<td><a href="sggsruns/SYN953+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN955+1</td>
+<td><a href="sggsruns/SYN955+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN956+1</td>
+<td><a href="sggsruns/SYN956+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN958+1</td>
+<td><a href="sggsruns/SYN958+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN959+1</td>
+<td><a href="sggsruns/SYN959+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN961+1</td>
+<td><a href="sggsruns/SYN961+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN962+1</td>
+<td><a href="sggsruns/SYN962+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN964+1</td>
+<td><a href="sggsruns/SYN964+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN968+1</td>
+<td><a href="sggsruns/SYN968+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN969+1</td>
+<td><a href="sggsruns/SYN969+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN970+1</td>
+<td><a href="sggsruns/SYN970+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN971+1</td>
+<td><a href="sggsruns/SYN971+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN972+1</td>
+<td><a href="sggsruns/SYN972+1.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN973+1</td>
+<td><a href="sggsruns/SYN973+1.txt" target="_blank">UNSAT</a></td>
+<td>0</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN974+1</td>
+<td><a href="sggsruns/SYN974+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN975+1</td>
+<td><a href="sggsruns/SYN975+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN976+1</td>
+<td><a href="sggsruns/SYN976+1.txt" target="_blank">UNSAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN979+1</td>
+<td><a href="sggsruns/SYN979+1.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN981+1</td>
+<td><a href="sggsruns/SYN981+1.txt" target="_blank">UNSAT</a></td>
+<td>10</td>
+<td>0.00</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYN982-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN986+1.000</td>
+<td><a href="sggsruns/SYN986+1.000.txt" target="_blank">UNSAT</a></td>
+<td>5</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN986+1.001</td>
+<td><a href="sggsruns/SYN986+1.001.txt" target="_blank">SAT</a></td>
+<td>12</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN986+1.002</td>
+<td><a href="sggsruns/SYN986+1.002.txt" target="_blank">SAT</a></td>
+<td>25</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN986+1.003</td>
+<td><a href="sggsruns/SYN986+1.003.txt" target="_blank">UNSAT</a></td>
+<td>99</td>
+<td>0.17</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN986+1.004</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN986+1.005</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYN986+1.006</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO525+1.015</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYO525+1.018</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYO525+1.021</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYO525+1.024</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYO525+1.027</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYO525+1.030</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYO611-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO612-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO613-1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO632-1</td>
+<td><a href="sggsruns/SYO632-1.txt" target="_blank">UNSAT</a></td>
+<td>9</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO633-1</td>
+<td><a href="sggsruns/SYO633-1.txt" target="_blank">UNSAT</a></td>
+<td>25</td>
+<td>0.04</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO634-1</td>
+<td><a href="sggsruns/SYO634-1.txt" target="_blank">UNSAT</a></td>
+<td>45</td>
+<td>0.29</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO635+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO636+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO637+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO638+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO640+1</td>
+<td><a href="sggsruns/SYO640+1.txt" target="_blank">SAT</a></td>
+<td>4</td>
+<td>0.00</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">SYO641+1</td>
+<td><a href="sggsruns/SYO641+1.txt" target="_blank">SAT</a></td>
+<td>2</td>
+<td>0.00</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO642+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO643+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO644+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td></td>
+</tr>
+<tr>
+<td class="system">SYO645+1</td>
+<td>TIMEOUT</td>
+<td colspan="2">&nbsp;</td>
+<td>  EPR, stratified, sort-restrained</td>
+</tr>
+<tr>
+<td class="system">TOP002-2</td>
+<td><a href="sggsruns/TOP002-2.txt" target="_blank">UNSAT</a></td>
+<td>7</td>
+<td>0.00</td>
+<td>  stratified, restrained sort-restrained</td>
+</tr>
+<tr>
+<td class="system">TOP021+1</td>
+<td><a href="sggsruns/TOP021+1.txt" target="_blank">UNSAT</a></td>
+<td>16</td>
+<td>0.00</td>
+<td>  stratified, sort-restrained</td>
+</tr>
+<!--
+<all steps: avg 148, median 37
+SAT steps: avg 260, median 120
+UNSAT steps: avg 123, median 31
+EPR steps: avg 227, median 121
+stratified steps: avg 191, median 58
+restrained steps: avg 21, median 7
+sort-restrained steps: avg 175, median 40
+-->
+</table>
+</div>
+</div>
+</body>
+</html>

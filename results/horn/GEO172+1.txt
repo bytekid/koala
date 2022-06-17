@@ -1,0 +1,16 @@
+
+
+------ Proving...
+
+Koala is working ...
+The problem is not ground preserving.
+
+# steps:             93
+# extensions:        33
+# conflicts:         20
+# generated clauses: 43
+# deleted clauses:   26
+max trail length:    39
+time:                0.27
+
+SZS status Unsatisfiable

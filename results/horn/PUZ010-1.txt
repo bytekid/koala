@@ -1,0 +1,16 @@
+------ Parsing...successful
+
+
+------ Proving...
+
+Koala is working ...
+
+# steps:             8698
+# extensions:        2792
+# conflicts:         3767
+# generated clauses: 6492
+# deleted clauses:   2686
+max trail length:    169
+time:                83.45
+
+SZS status Unsatisfiable

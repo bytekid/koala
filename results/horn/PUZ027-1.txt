@@ -1,0 +1,16 @@
+  12:  | [~(answer(a_and_b_truthteller))]
+  13:  | [~(answer(a_normal_b_liar))]
+  14:  | [~(answer(a_and_b_normal))]
+  15:  | [~(answer(a_normal_b_truthteller))]
+  16:  | [a_truth(lower(X0_49,X1_49))], a_truth(not_lower(X0_49,X1_49))
+
+
+# steps:             112
+# extensions:        42
+# conflicts:         33
+# generated clauses: 66
+# deleted clauses:   20
+max trail length:    21
+time:                0.08
+
+SZS status Unsatisfiable

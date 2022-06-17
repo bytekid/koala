@@ -1,0 +1,16 @@
+  15: ( top(X0_39) != esk4_0 & top(X0_39) != esk3_0 ) | [convergent_lines(X0_39,esk4_0)], ~(convergent_lines(esk4_0,X0_39)), convergent_lines(esk4_0,esk4_0)
+  16:  | [~(convergent_lines(esk3_0,esk3_0))]
+  17:  | [~(convergent_lines(esk3_0,line_connecting(esk1_0,esk2_0)))]
+  18: top(X1_39) != esk2_0 | convergent_lines(esk4_0,line_connecting(X0_39,X1_39)), [convergent_lines(esk3_0,line_connecting(X0_39,X1_39))], ~(convergent_lines(esk3_0,esk4_0))
+  19: top(X0_39) != esk1_0 | convergent_lines(esk4_0,line_connecting(X0_39,esk2_0)), [convergent_lines(esk3_0,line_connecting(X0_39,esk2_0))], ~(convergent_lines(esk3_0,esk4_0))
+
+
+# steps:             85
+# extensions:        30
+# conflicts:         21
+# generated clauses: 41
+# deleted clauses:   18
+max trail length:    34
+time:                0.14
+
+SZS status Unsatisfiable

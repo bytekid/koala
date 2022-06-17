@@ -1,0 +1,16 @@
+  1095:  | [aspatialinformationstore(c_unitedstatessociallifemt)], ~(microtheory(c_unitedstatessociallifemt))
+  1096:  | [aspatialinformationstore(c_tptp_spindleheadmt)], ~(microtheory(c_tptp_spindleheadmt))
+  1097:  | [aspatialinformationstore(c_tptp_member2610_mt)], ~(microtheory(c_tptp_member2610_mt))
+  1098:  | [aspatialinformationstore(c_tptpgeo_spindleheadmt)], ~(microtheory(c_tptpgeo_spindleheadmt))
+  1099:  | [aspatialinformationstore(c_wamt_evalinitial_p14)], ~(microtheory(c_wamt_evalinitial_p14))
+
+
+# steps:             1114
+# extensions:        1108
+# conflicts:         3
+# generated clauses: 1111
+# deleted clauses:   8
+max trail length:    1108
+time:                267.32
+
+SZS status Unsatisfiable

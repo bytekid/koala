@@ -1,0 +1,16 @@
+model:
+  0: ( top(X0_4) != esk2_0 & top(X0_4) != esk4_0 & top(X0_4) != esk1_1 ) | [big_p(X0_4)], big_p(X1_4), big_p(esk1_1(X0_4)), big_p(esk3_0)
+  1: ( top(X1_4) != esk4_0 & top(X1_4) != esk2_0 ) | big_p(X0_4), [big_p(esk1_1(X1_4))], big_p(esk1_1(esk1_1(X1_4))), big_p(esk3_0)
+  2:  | [~(big_p(esk1_1(esk4_0)))]
+  3: ( top(X1_4) != esk2_0 & top(X1_4) != esk4_0 & top(X0_4) != esk4_0 & top(X0_4) != esk2_0 ) | ~(big_p(esk1_1(X0_4))), ~(big_p(esk1_1(X1_4))), big_p(esk1_1(esk4_0)), [big_p(esk4_0)]
+
+
+# steps:             41
+# extensions:        11
+# conflicts:         16
+# generated clauses: 21
+# deleted clauses:   7
+max trail length:    7
+time:                0.08
+
+SZS status Satisfiable

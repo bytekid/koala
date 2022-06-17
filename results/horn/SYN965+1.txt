@@ -1,0 +1,16 @@
+  0:  | [p(X0_4,X1_4)], p(X1_4,esk1_1(X0_4))
+  1:  | ~(p(X0_4,esk1_1(X1_4)))
+
+model:
+  0:  | [p(X0_4,X1_4)], p(X1_4,esk1_1(X0_4))
+
+
+# steps:             3
+# extensions:        2
+# conflicts:         1
+# generated clauses: 2
+# deleted clauses:   0
+max trail length:    2
+time:                0.00
+
+SZS status Satisfiable

@@ -1,0 +1,16 @@
+  14:  | q(d,d), [p(d,d)]
+  15:  | q(c,c), [p(c,c)]
+  16: ( top(X0_4) != c & top(X0_4) != d & top(X0_4) != a ) | q(X0_4,c), [p(X0_4,c)]
+  17:  | [q(b,d)], p(b,d)
+  18:  | [q(a,c)], p(a,c)
+
+
+# steps:             122
+# extensions:        30
+# conflicts:         45
+# generated clauses: 63
+# deleted clauses:   23
+max trail length:    27
+time:                0.09
+
+SZS status Unsatisfiable

@@ -1,0 +1,16 @@
+  27:  | c2_1(a1), ~(c2_1(a16)), ~(c1_1(a1)), ~(c3_1(a1)), [hskp24], ~(ndr1_0)
+  28:  | ~(c0_1(a2)), [~(hskp1)]
+  29:  | ~(c2_1(a31)), c0_1(a1), ~(c1_1(a1)), c1_1(a31), ~(c3_1(a1)), ~(c3_1(a31)), [hskp10], ~(ndr1_0)
+  30:  | ~(c0_1(a37)), [~(hskp20)]
+  31:  | ~(c2_1(a18)), ~(c0_1(a18)), ~(c0_1(a37)), c3_1(a18), [hskp26], ~(ndr1_0)
+
+
+# steps:             95
+# extensions:        49
+# conflicts:         16
+# generated clauses: 57
+# deleted clauses:   15
+max trail length:    32
+time:                1.90
+
+SZS status Satisfiable

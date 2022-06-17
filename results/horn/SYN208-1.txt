@@ -1,0 +1,16 @@
+  239:  | ~(p2(e,b,e)), [l3(e,b)], ~(r0(e))
+  240:  | [~(s3(d,b))]
+
+
+# steps:             925
+# extensions:        829
+# conflicts:         19
+# generated clauses: 848
+# deleted clauses:   601
+max trail length:    836
+time:                260.89
+ extension clauses:  150.07
+ splits:             0.14
+ ground instances:   0.00
+
+SZS status Unsatisfiable

@@ -1,0 +1,16 @@
+  3:  | [~(g_true_only(X0_4,esk1_1(X0_4)))]
+  4: []
+  5: top(X0_4) != a | [g_both(a,esk1_1(X0_4))], g_true_only(a,esk1_1(X0_4))
+  6: top(X0_4) != a | [g_false_only(X0_4,X1_4)], g_both(X0_4,X1_4), g_true_only(X0_4,X1_4)
+  7: top(X0_4) != a | ~(g_false_only(X0_4,X1_4)), [g_false(X0_4,X1_4)]
+
+
+# steps:             26
+# extensions:        8
+# conflicts:         10
+# generated clauses: 17
+# deleted clauses:   4
+max trail length:    10
+time:                0.05
+
+SZS status Unsatisfiable

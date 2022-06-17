@@ -1,0 +1,16 @@
+
+
+Gamma_9: (resolve)
+  0:  | [~(p(esk1_0))]
+  1: []
+
+
+# steps:             10
+# extensions:        3
+# conflicts:         3
+# generated clauses: 6
+# deleted clauses:   1
+max trail length:    3
+time:                0.00
+
+SZS status Unsatisfiable

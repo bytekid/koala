@@ -1,0 +1,16 @@
+  16: top(X0_36) != g | [~(LE(f(g(X0_36)),0))]
+  17: top(X0_36) != g | [~(LE(f(X0_36),0))]
+  18: top(X0_36) != g | [~(LE(f(g(g(g(g(g(X0_36)))))),0))]
+  19: top(X0_36) != g | [~(LE(f(g(g(g(g(g(g(X0_36))))))),0))]
+  20: top(X0_36) != g | [E(s(s(s(s(s(0))))),f(g(X0_36)))], LE(f(g(X0_36)),s(s(s(s(s(0))))))
+
+
+# steps:             475
+# extensions:        135
+# conflicts:         207
+# generated clauses: 311
+# deleted clauses:   139
+max trail length:    63
+time:                4.43
+
+SZS status Unsatisfiable

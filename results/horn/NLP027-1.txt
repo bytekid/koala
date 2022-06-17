@@ -1,0 +1,16 @@
+  89:  | [with(skc63,skf18(skc63,skf32(skc63,skf29(skc63,X0_66)),X1_66),X1_66)], ~(ssSkP1(X1_66,skf29(skc63,X0_66),skc63)), ~(member(skc63,skf32(skc63,skf29(skc63,X0_66)),skf29(skc63,X0_66)))
+  90:  | [agent(skc63,skf18(skc63,skf32(skc63,skf29(skc63,X0_66)),X1_66),skf32(skc63,skf29(skc63,X0_66)))], ~(ssSkP1(X2_66,skf29(skc63,X0_66),skc63)), ~(member(skc63,skf32(skc63,skf29(skc63,X0_66)),skf29(skc63,X0_66)))
+  91:  | ~(ssSkP0(X0_65,X0_66,skf29(skc63,X1_66),skc63)), [agent(skc63,skf15(skc63,skf32(skc63,skf29(skc63,X1_66)),X0_65,X0_66),X0_66)], ~(member(skc63,skf32(skc63,skf29(skc63,X1_66)),skf29(skc63,X1_66)))
+  92:  | ~(ssSkP0(X0_65,X0_66,skf29(skc63,X1_66),skc63)), [at(skc63,skf15(skc63,skf32(skc63,skf29(skc63,X1_66)),X0_65,X2_66),X0_65)], ~(member(skc63,skf32(skc63,skf29(skc63,X1_66)),skf29(skc63,X1_66)))
+  93:  | ~(ssSkP0(X0_65,X0_66,skf29(skc63,X1_66),skc63)), [with(skc63,skf15(skc63,skf32(skc63,skf29(skc63,X1_66)),X1_65,X2_66),skf32(skc63,skf29(skc63,X1_66)))], ~(member(skc63,skf32(skc63,skf29(skc63,X1_66)),skf29(skc63,X1_66)))
+
+
+# steps:             237
+# extensions:        188
+# conflicts:         21
+# generated clauses: 208
+# deleted clauses:   112
+max trail length:    152
+time:                12.46
+
+SZS status Satisfiable

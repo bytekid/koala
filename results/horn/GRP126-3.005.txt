@@ -1,0 +1,16 @@
+  120:  | [~(equalish(e_2,e_1))]
+  121:  | ~(cycle(e_4,e_1)), ~(cycle(e_3,e_0)), [~(cycle(e_2,e_4))], ~(greater(e_4,e_1)), ~(greater(e_3,e_2)), ~(next(e_3,e_4))
+  122:  | ~(cycle(e_4,e_1)), ~(cycle(e_3,e_0)), [~(cycle(e_2,e_3))], ~(greater(e_3,e_2)), ~(greater(e_3,e_1)), ~(next(e_3,e_4))
+  123:  | ~(cycle(e_4,e_1)), ~(cycle(e_3,e_0)), [~(cycle(e_2,e_2))], ~(greater(e_3,e_2)), ~(greater(e_2,e_1)), ~(next(e_3,e_4))
+  124:  | ~(cycle(e_4,e_1)), ~(cycle(e_3,e_0)), cycle(e_2,e_0), [cycle(e_2,e_1)], ~(greater(e_4,e_1)), ~(greater(e_3,e_2)), ~(greater(e_3,e_1)), ~(greater(e_2,e_1)), ~(next(e_3,e_4)), ~(group_element(e_2))
+
+
+# steps:             11587
+# extensions:        4644
+# conflicts:         4615
+# generated clauses: 9143
+# deleted clauses:   4403
+max trail length:    146
+time:                250.64
+
+SZS status Satisfiable

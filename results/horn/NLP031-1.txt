@@ -1,0 +1,16 @@
+  37:  | ~(ssSkP0(X0_62,X0_63,skf22(skc50,X1_63),skc50)), [with(skc50,skf13(skc50,skf27(skc50,skf22(skc50,X1_63)),X1_62,X2_63),skf27(skc50,skf22(skc50,X1_63)))], ~(member(skc50,skf27(skc50,skf22(skc50,X1_63)),skf22(skc50,X1_63)))
+  38:  | ~(ssSkP0(X0_62,skf19(skc5,X0_62,X0_64),skc6,skc5)), ~(ssSkP0(skc7,skf26(skc5,X0_64),skf17(skc5,X0_63,X0_62),skc5)), ~(ssSkP0(skc7,skf26(skc5,X0_64),skf17(skc5,X1_63,X1_62),skc5)), ~(member(skc5,skf26(skc5,skc6),skc6)), [~(ssSkP1(skf23(skc50,X0_63),skc51,skc50))], ~(table(skc50,skf23(skc50,X0_63))), ~(three(skc50,skc51)), ~(group(skc50,skc51)), ~(actual_world(skc5)), ~(actual_world(skc50))
+  39:  | ~(ssSkP0(X0_62,skf19(skc5,X0_62,X0_64),skc6,skc5)), ~(ssSkP0(skc7,skf26(skc5,X0_64),skf17(skc5,X0_63,X0_62),skc5)), ~(ssSkP0(skc7,skf26(skc5,X0_64),skf17(skc5,X1_63,X1_62),skc5)), ~(member(skc5,skf26(skc5,skc6),skc6)), ~(actual_world(skc5)), [~(ssSkC0)]
+  40:  | ~(member(skc50,skf27(skc50,skf22(skc50,X0_63)),skf22(skc50,X0_63))), ~(member(skc50,skf27(skc50,skf22(skc50,X1_63)),skf22(skc50,X1_63))), [hamburger(skc50,skf27(skc50,skf22(skc50,X1_63)))], ~(ssSkP2(skf22(skc50,X0_63),skc50))
+  41:  | ~(ssSkP0(skf23(skc50,X0_63),skf19(skc50,skf23(skc50,X0_63),X0_64),skf22(skc50,X1_63),skc50)), [member(skc50,skf20(skc50,skf22(skc50,X1_63)),skf22(skc50,X1_63))], ssSkP1(skf23(skc50,X0_63),skc51,skc50), ~(group(skc50,skf22(skc50,X1_63)))
+
+
+# steps:             215
+# extensions:        132
+# conflicts:         43
+# generated clauses: 172
+# deleted clauses:   106
+max trail length:    116
+time:                4.53
+
+SZS status Satisfiable

@@ -1,0 +1,16 @@
+  134:  | ~(ssSkP0(X0_65,X0_66,skf32(skc4,X1_66),skc4)), [at(skc4,skf16(skc4,skf35(skc4,skf32(skc4,X1_66)),X0_65,X2_66),X0_65)], ~(member(skc4,skf35(skc4,skf32(skc4,X1_66)),skf32(skc4,X1_66)))
+  135:  | ~(ssSkP0(X0_65,X0_66,skf32(skc4,X1_66),skc4)), [with(skc4,skf16(skc4,skf35(skc4,skf32(skc4,X1_66)),X1_65,X2_66),skf35(skc4,skf32(skc4,X1_66)))], ~(member(skc4,skf35(skc4,skf32(skc4,X1_66)),skf32(skc4,X1_66)))
+  136:  | ~(member(skc4,skf30(skc4,skc5),skc5)), ~(member(skc4,skf15(skc4,skf32(skc4,X0_66)),skf32(skc4,X0_66))), [young(skc4,skf15(skc4,skf32(skc4,X0_66)))], ~(ssSkP3(skc5,skc4))
+  137:  | ~(member(skc4,skf30(skc4,skc5),skc5)), ~(member(skc4,skf15(skc4,skf32(skc4,X0_66)),skf32(skc4,X0_66))), [guy(skc4,skf15(skc4,skf32(skc4,X0_66)))], ~(ssSkP3(skc5,skc4))
+  138: top(X1_67) != skc5 | ~(ssSkP1(skf34(skc4,X0_67),skf32(skc4,X0_66),skc4)), ~(young(skc4,skf35(skc4,skf32(skc4,X1_66)))), ~(guy(skc4,skf35(skc4,skf32(skc4,X1_66)))), [ssSkP3(X1_67,skc4)], ~(three(skc4,skf32(skc4,X0_66))), ~(group(skc4,skf32(skc4,X0_66)))
+
+
+# steps:             203
+# extensions:        178
+# conflicts:         12
+# generated clauses: 188
+# deleted clauses:   39
+max trail length:    140
+time:                9.61
+
+SZS status Satisfiable

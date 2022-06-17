@@ -1,0 +1,16 @@
+  69: ( top(X0_4) != a309 & top(X0_4) != a353 & top(X0_4) != a315 & top(X0_4) != a321 & top(X0_4) != a310 & top(X0_4) != a308 & top(X0_4) != a295 & top(X0_4) != a302 & top(X0_4) != a323 & top(X0_4) != a307 & top(X0_4) != a299 & top(X0_4) != a313 & top(X0_4) != a303 & top(X0_4) != a301 ) | ~(c3_1(X0_4)), ~(c3_1(a303)), ~(c2_1(X0_4)), ~(c1_1(a303)), [~(c0_1(X0_4))], ~(hskp7), ~(ndr1_0)
+  70:  | ~(c3_1(a303)), ~(c3_1(a353)), ~(c2_1(a353)), ~(c1_1(a303)), [~(c0_1(a353))], ~(hskp7), ~(ndr1_0)
+  71:  | [~(c0_1(a315))], ~(hskp14)
+  72: top(X0_4) != a309 | c3_1(a309), ~(c3_1(a321)), c2_1(a309), ~(c2_1(a321)), ~(c1_1(a309)), c1_1(a321), [c0_1(a309)], ~(ndr1_0)
+  73:  | [~(c2_1(a303))], ~(hskp7)
+
+
+# steps:             191
+# extensions:        104
+# conflicts:         49
+# generated clauses: 130
+# deleted clauses:   24
+max trail length:    76
+time:                76.41
+
+SZS status Satisfiable

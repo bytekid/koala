@@ -1,0 +1,16 @@
+  607: ( top(X0_4) != s2 ) | [p(X0_4,s0,s1,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s2,s0,s1,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0))
+  608:  | [p(s0,s0,s2,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s0,s0,s1,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), ~(neq(s0,s2)), ~(neq(s0,s1))
+  609:  | [p(s1,s2,s1,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s1,s0,s1,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), ~(neq(s1,s2)), ~(neq(s1,s0))
+  610: ( top(X0_4) != s1 ) | [p(X0_4,s0,s2,s2,s1,s1,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s1,s0,s2,s2,s1,s1,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0))
+  611:  | ~(p(s0,s0,s2,s2,s1,s1,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), [p(s0,s0,s1,s2,s1,s1,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(neq(s0,s2)), ~(neq(s0,s1))
+  612:  | [p(s2,s1,s2,s2,s1,s1,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s2,s0,s2,s2,s1,s1,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), ~(neq(s2,s1)), ~(neq(s2,s0))
+  613: ( top(X0_4) != s0 ) | [p(X0_4,s0,s2,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s0,s0,s2,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0))
+  614:  | [p(s2,s1,s2,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s2,s0,s2,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), ~(neq(s2,s1)), ~(neq(s2,s0))
+  615:  | [p(s1,s2,s2,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s1,s0,s2,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), ~(neq(s1,s2)), ~(neq(s1,s0))
+  616: ( top(X0_4) != s0 & top(X0_4) != s1 ) | [p(X0_4,s2,s1,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s1,s2,s1,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0))
+  617:  | ~(p(s2,s2,s1,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), [p(s2,s2,s0,s2,s0,s2,s1,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(neq(s2,s1)), ~(neq(s2,s0))
+  618: ( top(X0_4) != s1 ) | [p(X0_4,s1,s1,s1,s2,s2,s2,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s1,s1,s1,s1,s2,s2,s2,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0))
+  619:  | ~(p(s2,s1,s1,s1,s2,s2,s2,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), [p(s2,s0,s1,s1,s2,s2,s2,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(neq(s2,s1)), ~(neq(s2,s0))
+  620:  | [p(s0,s2,s1,s1,s2,s2,s2,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)], ~(p(s0,s1,s1,s1,s2,s2,s2,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0,s0)), ~(neq(s0,s2)), ~(neq(s0,s1))
+
+TIMEOUT

@@ -1,0 +1,16 @@
+  1: ( top(X0_55) != esk2_0 & top(X0_55) != esk24_0 & top(X0_55) != esk7_1 ) | ~(big_p(X0_54)), ~(big_p(X1_54)), ~(big_p(esk1_1(X0_54))), ~(big_p(esk8_0)), [big_q(X0_55)], big_q(X1_55), big_q(esk7_1(X0_55)), big_q(esk3_0)
+  2: ( top(X1_55) != esk24_0 & top(X1_55) != esk2_0 & top(X1_55) != esk7_1 ) | ~(big_p(X0_54)), ~(big_p(X1_54)), ~(big_p(esk1_1(X0_54))), ~(big_p(esk8_0)), big_q(X0_55), [big_q(esk7_1(X1_55))], big_q(esk7_1(esk7_1(X1_55))), big_q(esk3_0)
+  3: top(X1_55) != esk24_0 | ~(big_p(X0_54)), ~(big_p(X1_54)), ~(big_p(esk1_1(X0_54))), ~(big_p(esk8_0)), big_q(X0_55), [big_q(esk7_1(esk7_1(X1_55)))], big_q(esk7_1(esk7_1(esk7_1(X1_55)))), big_q(esk3_0)
+  4:  | ~(big_p(X0_54)), ~(big_p(X1_54)), ~(big_p(esk1_1(X0_54))), ~(big_p(esk13_1(X0_54))), ~(big_p(esk8_0)), ~(big_p(esk22_0)), [~(big_q(esk7_1(esk7_1(esk24_0))))]
+  5: ( top(X0_55) != esk2_0 & top(X1_55) != esk24_0 & top(X0_55) != esk24_0 ) | ~(big_p(X0_54)), ~(big_p(X1_54)), ~(big_p(esk13_1(X0_54))), ~(big_p(esk22_0)), ~(big_q(esk7_1(esk7_1(X0_55)))), ~(big_q(esk7_1(esk7_1(X1_55)))), big_q(esk7_1(esk7_1(esk24_0))), [big_q(esk24_0)]
+
+
+# steps:             56
+# extensions:        15
+# conflicts:         22
+# generated clauses: 29
+# deleted clauses:   9
+max trail length:    8
+time:                1.83
+
+SZS status Satisfiable

@@ -3659,12 +3659,7 @@ let spec_list =
    (clausifier_options_str, Arg.String(clausifier_options_fun), clausifier_options_inf);
    (stdin_str, Arg.Bool(stdin_fun), stdin_inf);*)
    (dbg_backtrace_str, Arg.Bool(dbg_backtrace_fun), dbg_backtrace_inf);
-   (dbg_dump_prop_clauses_str,
-    Arg.Bool(dbg_dump_prop_clauses_fun),
-    dbg_dump_prop_clauses_inf);
-   (dbg_dump_prop_clauses_file_str,
-    Arg.String(dbg_dump_prop_clauses_file_fun),
-    dbg_dump_prop_clauses_file_inf);
+   (time_out_real_str, Arg.Float(time_out_real_fun), time_out_real_inf);
    (dbg_out_stat_str, Arg.Bool(dbg_out_stat_fun), dbg_out_stat_inf);
    (fix_init_inter_str, Arg.Bool(fix_init_inter_fun), fix_init_inter_inf);
 
@@ -4010,7 +4005,6 @@ let general_options_str_list opt =
   [
    (fix_init_inter_str, (string_of_bool_opt opt.fix_init_inter));
    (time_out_real_str, (string_of_float opt.time_out_real));
-   (time_out_virtual_str, (string_of_float opt.time_out_virtual));
    (symbol_type_check_str, (string_of_bool opt.symbol_type_check));
    (clausify_out_str, (string_of_bool opt.clausify_out));
   ]

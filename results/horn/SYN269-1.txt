@@ -1,0 +1,16 @@
+  60: ( top(X0_4) != d ) | [m0(a,X0_4,a)]
+  61: ( top(X0_4) != c & top(X0_4) != d ) | [p0(b,X0_4)]
+  62: ( top(X0_4) != d & top(X0_4) != c & top(X0_4) != b & top(X0_4) != a ) | [q1(X0_4,d,X0_4)], ~(p0(b,X0_4)), ~(n0(c,d))
+  63:  | [~(p4(b,a,a))]
+  64: ( top(X0_4) != d & top(X0_4) != c & top(X0_4) != e & top(X0_4) != b ) | [q1(X0_4,e,X0_4)], ~(p0(b,X0_4)), ~(n0(e,e))
+
+
+# steps:             738
+# extensions:        611
+# conflicts:         47
+# generated clauses: 658
+# deleted clauses:   557
+max trail length:    617
+time:                149.75
+
+SZS status Unsatisfiable

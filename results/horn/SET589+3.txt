@@ -1,0 +1,16 @@
+  15: ( top(X0_36) != difference & top(X1_36) != esk5_0 & top(X1_36) != esk3_0 & X0_36 != X1_36 ) | ~(member(esk1_2(X0_36,X1_36),X1_36)), [subset(X0_36,X1_36)]
+  16: ( top(X0_36) != esk3_0 & top(X0_36) != difference ) | ~(member(esk1_2(difference(X0_36,X1_36),esk3_0),esk3_0)), [subset(difference(X0_36,X1_36),esk3_0)]
+  17: ( top(X2_36) != esk3_0 & top(X2_36) != difference & X0_36 != X2_36 ) | ~(member(esk1_2(difference(X0_36,X1_36),X2_36),X2_36)), [subset(difference(X0_36,X1_36),X2_36)]
+  18:  | ~(member(esk1_2(difference(X0_36,X1_36),X0_36),X0_36)), [subset(difference(X0_36,X1_36),X0_36)]
+  19:  | [~(subset(difference(esk2_0,esk5_0),difference(esk3_0,esk4_0)))]
+
+
+# steps:             46
+# extensions:        24
+# conflicts:         5
+# generated clauses: 29
+# deleted clauses:   13
+max trail length:    31
+time:                0.10
+
+SZS status Unsatisfiable

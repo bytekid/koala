@@ -1,0 +1,16 @@
+  9: top(X0_38) != esk2_0 | convergent_lines(esk2_0,X0_38), [convergent_lines(esk1_0,X0_38)], ~(convergent_lines(esk1_0,esk2_0))
+  10: ( top(X0_38) != esk2_0 & top(X0_38) != esk1_0 ) | [~(distinct_lines(X0_38,X0_38))]
+  11: ( top(X0_38) != esk1_0 & top(X0_38) != esk2_0 & top(X1_38) != esk2_0 & X0_38 != X1_38 ) | [distinct_lines(X0_38,X1_38)], ~(distinct_lines(X0_38,esk2_0)), distinct_lines(esk2_0,X1_38)
+  12: ( top(X0_38) != esk2_0 & top(X0_38) != esk1_0 ) | [~(convergent_lines(X0_38,X0_38))]
+  13: ( top(X0_38) != esk1_0 & top(X0_38) != esk2_0 & top(X1_38) != esk2_0 & X0_38 != X1_38 ) | [convergent_lines(X0_38,X1_38)], ~(convergent_lines(X0_38,esk2_0)), convergent_lines(esk2_0,X1_38)
+
+
+# steps:             33
+# extensions:        15
+# conflicts:         4
+# generated clauses: 15
+# deleted clauses:   0
+max trail length:    15
+time:                0.03
+
+SZS status Satisfiable
